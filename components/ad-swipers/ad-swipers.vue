@@ -88,11 +88,7 @@ export default {
   },
   computed: {
     wrapStyle() {
-      debugger
-      return {
-        height: this.height,
-        'margin-top': this.marginTop
-      }
+      return `height:${this.height}; margin-top:${this.marginTop};`
     }
   },
   methods: {

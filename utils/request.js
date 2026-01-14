@@ -38,6 +38,7 @@ function checkParams(params) {
 }
 
 const service = axios.create({
+
     baseURL: baseURL + '/api/',
     timeout: 10000,
     header: {
@@ -48,6 +49,7 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
     (config) => {
+        console.log(baseURL,'baseURL')
         config.data = checkParams(config.data)
         config.params = checkParams(config.params)
         if (config.method == 'GET') {
