@@ -52,10 +52,16 @@ export default {
 	},
 	methods: {
 		getSystemInfo() {
-			const systemInfo = uni.getSystemInfoSync();
-			this.statusBarHeight = systemInfo.statusBarHeight || 0;
-			// 导航栏高度 = 状态栏高度 + 导航栏内容高度(44px)
-			this.navbarHeight = this.statusBarHeight + 44;
+			try {
+				const systemInfo = uni.getSystemInfoSync();
+				this.statusBarHeight = systemInfo.statusBarHeight || 0;
+				// 导航栏高度 = 状态栏高度 + 导航栏内容高度(44px)
+				this.navbarHeight = this.statusBarHeight + 44;
+			} catch (e) {
+				console.error('获取系统信息失败:', e);
+				this.statusBarHeight = 20;
+				this.navbarHeight = 64;
+			}
 		},
 		handleBack() {
 			if (this.customBack) {

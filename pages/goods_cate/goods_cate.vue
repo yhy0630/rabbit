@@ -1,12 +1,13 @@
 <template>
 	<view class="goods-cate">
 		<custom-navbar title="分类" :show-back="false"></custom-navbar>
-		<router-link to="/pages/goods_search/goods_search">
-			<view class="header" :style="{ marginTop: navbarHeight + 'px' }">
-				<u-search bg-colo
-				r="#FFF" :disabled="true" :show-publish-icon="true"></u-search>
-			</view>
-		</router-link>
+		<view class="search-wrapper" :style="{ marginTop: navbarHeight + 'px' }">
+			<router-link to="/pages/goods_search/goods_search">
+				<view class="search-box">
+					<text class="search-text">请输入商品名称</text>
+				</view>
+			</router-link>
+		</view>
 		<view class="content" v-if="appConfig.cate_style == 1 || appConfig.cate_style == 4">
 			<cate-two :cate-list="cateList"></cate-two>
 		</view>
@@ -38,9 +39,15 @@ export default {
 		};
 	},
 	async onLoad() {
-		const systemInfo = uni.getSystemInfoSync();
-		this.statusBarHeight = systemInfo.statusBarHeight || 0;
-		this.navbarHeight = this.statusBarHeight + 44;
+		try {
+			const systemInfo = uni.getSystemInfoSync();
+			this.statusBarHeight = systemInfo.statusBarHeight || 0;
+			this.navbarHeight = this.statusBarHeight + 44;
+		} catch (e) {
+			console.error('获取系统信息失败:', e);
+			this.statusBarHeight = 20;
+			this.navbarHeight = 64;
+		}
 		this.getLevelOneListFun();
 	},
 	onShow() {
@@ -62,8 +69,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$header-height: 94rpx;
-
 page {
 	background-color: #fff;
 	height: 100%;
@@ -72,10 +77,20 @@ page {
 .goods-cate {
 	height: 100%;
 	
-	.header {
-		box-sizing: border-box;
-		height: $header-height;
-		border-bottom: 1px solid #e5e5e5;
+	.search-wrapper {
+		padding: 20rpx;
+		background: #B3EE76;
+		
+		.search-box {
+			background: #FFFFFF;
+			border-radius: 60rpx;
+			padding: 20rpx 30rpx;
+			
+			.search-text {
+				color: #999999;
+				font-size: 28rpx;
+			}
+		}
 	}
 
 	.content {
