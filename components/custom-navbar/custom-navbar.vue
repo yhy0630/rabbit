@@ -1,14 +1,18 @@
 <template>
 	<view class="custom-navbar" :style="{ height: navbarHeight + 'px' }">
-		<view class="navbar-bg" :style="{ paddingTop: statusBarHeight + 'px' }">
-			<view class="navbar-content">
+		<view class="navbar-bg" :style="{ paddingTop: statusBarHeight + 'px', background: bgColor }">
+			<view class="navbar-content" :class="{ 'is-left-title': titleAlign === 'left' }">
 				<!-- 左侧返回按钮 -->
 				<view class="navbar-left" @tap="handleBack" v-if="showBack">
 					<u-icon name="arrow-left" color="#FFFFFF" size="44"></u-icon>
 				</view>
-				
-				<!-- 中间标题 -->
-				<view class="navbar-center">
+
+				<!-- 标题（默认居中，可选靠左 + 下拉箭头） -->
+				<view v-if="titleAlign === 'left'" class="navbar-title-left" @tap="handleTitleTap">
+					<text class="navbar-title">{{ title }}</text>
+					<text v-if="showDropdown" class="navbar-title-arrow">{{ dropdownIcon }}</text>
+				</view>
+				<view v-else class="navbar-center">
 					<text class="navbar-title">{{ title }}</text>
 				</view>
 				
@@ -39,6 +43,26 @@ export default {
 		customBack: {
 			type: Boolean,
 			default: false
+		},
+		// 标题位置：center / left
+		titleAlign: {
+			type: String,
+			default: 'center'
+		},
+		// 是否显示下拉箭头
+		showDropdown: {
+			type: Boolean,
+			default: false
+		},
+		// 下拉箭头图标字符
+		dropdownIcon: {
+			type: String,
+			default: '▼'
+		},
+		// 背景色（可覆盖默认渐变）
+		bgColor: {
+			type: String,
+			default: 'linear-gradient(180deg, #149906 0%, #B3EE76 100%)'
 		}
 	},
 	data() {
@@ -74,6 +98,10 @@ export default {
 				});
 			}
 		}
+		,
+		handleTitleTap() {
+			this.$emit('titleTap')
+		}
 	}
 };
 </script>
@@ -97,6 +125,12 @@ export default {
 			justify-content: space-between;
 			padding: 0 20rpx;
 			position: relative;
+
+				&.is-left-title {
+					/* 标题靠左时，让整体内容更贴近左侧，接近截图效果 */
+					padding-left: 12rpx;
+					padding-right: 20rpx;
+				}
 			
 			.navbar-left {
 				width: 80rpx;
@@ -104,6 +138,39 @@ export default {
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
+			}
+
+				&.is-left-title {
+					.navbar-left {
+						/* 缩小左侧占位，让标题再向左靠一点 */
+						width: 64rpx;
+					}
+				}
+
+			.navbar-title-left {
+				flex: 1;
+				height: 44px;
+				display: flex;
+				align-items: center;
+				justify-content: flex-start;
+				overflow: hidden;
+
+				.navbar-title {
+					font-size: 36rpx;
+					font-weight: 600;
+					color: #FFFFFF;
+					max-width: 360rpx;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+
+				.navbar-title-arrow {
+					margin-left: 12rpx;
+					font-size: 26rpx;
+					color: rgba(255, 255, 255, 0.9);
+					line-height: 1;
+				}
 			}
 			
 			.navbar-center {

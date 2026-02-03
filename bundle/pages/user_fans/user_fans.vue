@@ -1,7 +1,9 @@
 <template>
-	<mescroll-body ref="mescrollRef" @init="mescrollInit" @up="upCallback" :up="upOption" :down="downOption"
-		@down="downCallback">
-		<view class="user-fans">
+	<view class="user-fans">
+		<custom-navbar title="我的邀请"></custom-navbar>
+		<mescroll-body ref="mescrollRef" @init="mescrollInit" @up="upCallback" :up="upOption" :down="downOption"
+			@down="downCallback">
+			<view class="user-fans-content">
 			<view class="header">
 				<u-search v-model="keyword" shape="round" background="white" placeholder="请输入搜索关键词" @search="changeTab"
 					@custom="changeTab" />
@@ -9,36 +11,36 @@
 					<view class="bar-item flex" :class="{'item-active': active == 'all'}" @tap="changeTab('all')">全部粉丝
 					</view>
 					<view class="bar-item flex" :class="{'item-active': active == 'first'}" @tap="changeTab('first')">
-						一级粉丝</view>
+						一级</view>
 					<view class="bar-item flex" :class="{'item-active': active == 'second'}" @tap="changeTab('second')">
-						二级粉丝</view>
+						二级</view>
 				</view>
 				<view class="sort-bar flex bg-white">
 					<view class="sort-bar-item flex row-center" @tap="sortChange(0)">
 						<view :class="sortType == 0 ? 'item-active' : ''">团队排序</view>
 						<view class="arrow-icon flex-col col-center row-center">
 							<u-icon name="arrow-up-fill"
-								:color="fansSort == 'asc' ? colorConfig.primary : colorConfig.normal"></u-icon>
+								:color="fansSort == 'asc' ? '#239F08' : colorConfig.normal"></u-icon>
 							<u-icon name="arrow-down-fill"
-								:color="fansSort == 'desc' ? colorConfig.primary : colorConfig.normal"></u-icon>
+								:color="fansSort == 'desc' ? '#239F08' : colorConfig.normal"></u-icon>
 						</view>
 					</view>
 					<view class="sort-bar-item flex row-center" @tap="sortChange(1)">
 						<view :class="sortType == 1 ? 'item-active' : ''">金额排序</view>
 						<view class="arrow-icon flex-col col-center row-center">
 							<u-icon name="arrow-up-fill"
-								:color="moneySort == 'asc' ? colorConfig.primary : colorConfig.normal"></u-icon>
+								:color="moneySort == 'asc' ? '#239F08' : colorConfig.normal"></u-icon>
 							<u-icon name="arrow-down-fill"
-								:color="moneySort == 'desc' ? colorConfig.primary : colorConfig.normal"></u-icon>
+								:color="moneySort == 'desc' ? '#239F08' : colorConfig.normal"></u-icon>
 						</view>
 					</view>
 					<view class="sort-bar-item flex row-center" @tap="sortChange(2)">
 						<view :class="sortType == 2 ? 'item-active' : ''">订单排序</view>
 						<view class="arrow-icon flex-col col-center row-center">
 							<u-icon name="arrow-up-fill"
-								:color="orderSort == 'asc' ? colorConfig.primary : colorConfig.normal"></u-icon>
+								:color="orderSort == 'asc' ? '#239F08' : colorConfig.normal"></u-icon>
 							<u-icon name="arrow-down-fill"
-								:color="orderSort == 'desc' ? colorConfig.primary : colorConfig.normal"></u-icon>
+								:color="orderSort == 'desc' ? '#239F08' : colorConfig.normal"></u-icon>
 						</view>
 					</view>
 				</view>
@@ -46,26 +48,33 @@
 			<view class="content">
 				<view class="card-box p-t-20">
 					<view v-for="(item, index) in fansList" :key="index" class="card-item flex row-between bg-white p-20">
+						<!-- 级别标签 -->
+						<view class="level-badge" v-if="active === 'first' || active === 'second'">
+							<image class="level-icon" src="/static/images/矩形 69.png" mode="aspectFit"></image>
+							<view class="level-text">{{ active === 'first' ? '一级' : '二级' }}</view>
+						</view>
 						<view class="flex">
 							<u-image :src="item.avatar" border-radius="50%" width="100rpx" height="100rpx" />
 							<view class="fans-info m-l-20">
 								<view class="fans-name bold line-1">{{item.nickname}}</view>
-								<view class="flex lighter m-t-20">
-									<view v-if="item.mobile" class="m-r-20">{{item.mobile}}</view>
-									<view>{{item.create_time}}</view>
+								<view class="flex-col lighter m-t-20">
+									<view v-if="item.mobile" class="m-b-10">{{item.mobile}}</view>
+									<view class="m-b-10">注册日期：{{item.create_time}}</view>
+									<view>获得佣金：<span>{{item.fans_money}}</span>元</view>
 								</view>
 							</view>
 						</view>
-						<view class="flex-col xs flex-none m-l-20">
+						<!-- <view class="flex-col xs flex-none m-l-20">
 							<view class="msg"><span class="primary">{{item.fans_team}} </span>人</view>
 							<view class="m-t-5 msg"><span>{{item.fans_order}} </span>单</view>
 							<view class="m-t-5 msg"><span>{{item.fans_money}} </span>元</view>
-						</view>
+						</view> -->
 					</view>
 				</view>
 			</view>
 		</view>
-	</mescroll-body>
+		</mescroll-body>
+	</view>
 </template>
 
 <script>
@@ -76,8 +85,12 @@
 		getUserFans
 	} from '@/api/user';
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
+	import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue';
 	export default {
 		mixins: [MescrollMixin], // 使用mixin
+		components: {
+			CustomNavbar
+		},
 		data() {
 			return {
 				upOption: {
@@ -198,54 +211,104 @@
 </script>
 <style lang="scss">
 	.user-fans {
-		.header {
-			.top-bar {
-				padding: 18rpx 50rpx;
-				height: 100rpx;
+		padding-top: calc(128rpx + var(--status-bar-height));		
+		.user-fans-content {
+			.header {
+				.top-bar {
+					padding: 18rpx 50rpx;
+					height: 100rpx;
 
-				.bar-item {
-					flex: 1;
-					padding: 0 30rpx;
-					height: 58rpx;
+					.bar-item {
+						flex: 1;
+						padding: 0 30rpx;
+						height: 58rpx;
 
-					&:not(:last-of-type) {
-						margin-right: 54rpx;
-					}
-				}
-
-				.item-active {
-					color: white;
-					background-color: $-color-primary;
-					border-radius: 100rpx;
-				}
-			}
-
-			.sort-bar {
-				height: 80rpx;
-
-				.sort-bar-item {
-					flex: 1;
-
-					.arrow-icon {
-						transform: scale(0.36);
+						&:not(:last-of-type) {
+							margin-right: 54rpx;
+						}
 					}
 
 					.item-active {
-						color: $-color-primary;
+						color: #239F08;
+						position: relative;
+						
+						&::after {
+							content: '';
+							position: absolute;
+							bottom: 0;
+							left: 50%;
+							transform: translateX(-50%);
+							width: 60rpx;
+							height: 4rpx;
+							background-color: #239F08;
+							border-radius: 2rpx;
+						}
+					}
+				}
+
+				.sort-bar {
+					height: 80rpx;
+
+					.sort-bar-item {
+						flex: 1;
+
+						.arrow-icon {
+							transform: scale(0.36);
+						}
+
+						.item-active {
+							color: #239F08;
+						}
 					}
 				}
 			}
-		}
-	}
 
-	.content {
-		.card-box {
-			.card-item {
-				.fans-name {
-					width: 500rpx;
-				}
-				&:not(:last-of-type) {
-					border-bottom: $-solid-border;
+			.content {
+				.card-box {
+					margin: 20rpx;
+					border-radius: 30rpx;
+					.card-item {
+						position: relative;
+						border-radius: 20rpx;
+						overflow: hidden;
+						
+						.fans-name {
+							width: 500rpx;
+						}
+						&:not(:last-of-type) {
+							border-bottom: $-solid-border;
+							margin-bottom: 20rpx;
+						}
+						
+						.level-badge {
+							position: absolute;
+							top: 0rpx;
+							right: 0rpx;
+							width: 80rpx;
+							height: 40rpx;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+							z-index: 100;
+							
+							.level-icon {
+								position: absolute;
+								top: 0;
+								left: 0;
+								width: 100%;
+								height: 100%;
+							}
+							
+							.level-text {
+								position: relative;
+								z-index: 1;
+								font-size: 24rpx;
+								color: #666666;
+								font-weight: 500;
+								line-height: 1;
+							}
+						}
+					}
 				}
 			}
 		}

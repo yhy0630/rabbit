@@ -1,23 +1,16 @@
 <template>
-    <view
-        class="login"
-        :style="'background-image: url(' + $getImageUri('/images/login_bg.png') + ')'"
-    >
-        <!-- #ifndef  H5 -->
-        <u-sticky offset-top="0" h5-nav-height="0" bg-color="transparent">
-            <u-navbar
-                :is-back="true"
-                title="登录"
-                :title-bold="true"
-                :is-fixed="false"
-                :border-bottom="false"
-                :background="{ background: 'rgba(256,256, 256,0)' }"
-            ></u-navbar>
-        </u-sticky>
-        <!-- #endif -->
+    <view class="login">
+        <custom-navbar title="登录"></custom-navbar>
 
         <view class="acount-login">
-            <image class="logo" :src="appConfig.shop_login_logo" mode="heightFix"></image>
+             <!-- 顶部标题：根据是否为手机号登录切换文案 -->
+             <view class="login-title-wrapper">
+                 <text class="login-title">
+                     {{ phoneLogin ? (loginType == 0 ? '密码登录' : '手机号登录') : '登录' }}
+                 </text>
+                 <view class="login-title-underline"></view>
+             </view>
+             <!-- <image class="logo" :src="appConfig.shop_login_logo" mode="heightFix"></image> -->
             <block v-if="!phoneLogin">
                 <!-- #ifdef MP-WEIXIN -->
                 <button size="lg" class="white flex row-center btn" @click="mnpLoginFun">
@@ -120,7 +113,7 @@
                 </view>
 
                 <view class="m-t-30 flex" v-if="phoneLogin" style="width: 100%">
-                    <u-checkbox v-model="isAgreement" shape="circle">
+                <u-checkbox v-model="isAgreement" shape="circle" active-color="#149906">
                         <div class="flex text-xs">
                             已阅读并同意
                             <router-link to="/bundle/pages/server_explan/server_explan?type=0">
@@ -146,7 +139,7 @@
                 <view class="flex row-between m-t-30" style="width: 100%">
                     <view class="lighter" @click="changeLoginType"
                         >已有账号，使用
-                        <text style="color: #ff2c3c">{{
+                        <text style="color: #1B8902">{{
                             loginType == 0 ? '验证码登录' : '密码登录'
                         }}</text></view
                     >
@@ -179,7 +172,7 @@
         </view>
 
         <view class="flex p-l-60" v-if="!phoneLogin">
-            <u-checkbox v-model="isAgreement" shape="circle">
+            <u-checkbox v-model="isAgreement" shape="circle" active-color="#149906">
                 <div class="flex text-xs">
                     已阅读并同意
                     <router-link to="/bundle/pages/server_explan/server_explan?type=0">
@@ -221,6 +214,7 @@
 </template>
 
 <script>
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 import { mapMutations, mapActions, mapGetters } from 'vuex'
 import {
     accountLogin,
@@ -261,6 +255,9 @@ export default {
             showModel: false,
             phoneLogin: false
         }
+    },
+    components: {
+        CustomNavbar
     },
 
     async onLoad(option) {
@@ -519,10 +516,9 @@ export default {
 </script>
 <style lang="scss">
 page {
-    background-color: #fff;
+    background: linear-gradient(180deg, #F4FFF2 0%, #FFFFFF 100%);
     text-align: center;
-    padding: 0;
-    // background-image: url(../../static/images/login_bg.png);
+    padding-top: calc(180rpx + var(--status-bar-height));    // background-image: url(../../static/images/login_bg.png);
 
     .login {
         min-height: 100vh;
@@ -546,17 +542,20 @@ page {
         .btn {
             width: 100%;
             height: 100rpx;
-            background-color: $-color-primary;
             margin: 100rpx auto 0rpx;
-            border-radius: 14rpx;
+            border-radius: 36rpx;
+            background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
         }
         .phone-btn {
             width: 100%;
             height: 100rpx;
-            border: 1px solid #bbb;
             margin: 40rpx auto 0rpx;
-            color: #666666;
             border-radius: 14rpx;
+            border: 1px solid #1B8902;
+            color: #1B8902;
+            background-color: #F0FFF8;
+            border-radius: 36rpx;
+
         }
         .acount-login {
             padding: 60rpx;
@@ -565,6 +564,29 @@ page {
             align-items: center;
             box-sizing: border-box;
             min-height: 0;
+
+            .login-title-wrapper {
+                 align-self: flex-start;
+                 margin-bottom: 30rpx;
+                 display: inline-flex;
+                 flex-direction: column;
+                 align-items: center;
+            }
+
+            .login-title {
+                font-size: 40rpx;
+                font-weight: 600;
+                color: #000;
+                text-align: left;
+            }
+
+            .login-title-underline {
+                margin-top: 12rpx;
+                 width: 60rpx;
+                height: 10rpx;
+                border-radius: 20rpx;
+                background-color: #1B8902;
+            }
 
             .logo {
                 width: 180rpx;
@@ -585,10 +607,11 @@ page {
             }
 
             .sms-btn {
-                border: 1px solid $-color-primary;
                 width: 176rpx;
                 height: 60rpx;
                 box-sizing: border-box;
+                border-width: 0;
+                color: #1B8902;
             }
 
             .wx-login {
@@ -607,7 +630,10 @@ page {
         padding: 60rpx 0 70rpx 0;
     }
     .agreement {
-        color: $-color-primary;
+        color: #1B8902 ;
+    }
+    .primary {
+        color: #1B8902;
     }
     .disable {
         opacity: 0.5;

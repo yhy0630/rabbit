@@ -1,6 +1,18 @@
 <template>
 	<view class="user-collection">
-		<tabs :is-scroll="false" :current="active" @change="onChange">
+		<custom-navbar title="我的收藏"></custom-navbar>
+		<tabs
+			:is-scroll="false"
+			:current="active"
+			bg-color="#B3EE76"
+			sticky-bg-color="#B3EE76"
+			active-color="#FFF"
+			inactive-color="#FFF"
+			:bar-style="{
+				backgroundImage: 'linear-gradient(90deg, #1D9D0A 0%, #ACFF00 85.84%)'
+			}"
+			@change="onChange"
+		>
 			<tab name="商品">
 				<collection-list :type="1" :i="0" :index="active"></collection-list>
 			</tab>
@@ -30,7 +42,11 @@
 // | author: likeshop.cn.team
 // +----------------------------------------------------------------------
 
+	import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 	export default {
+		components: {
+			CustomNavbar
+		},
 		data() {
 			return {
 				active: 0
@@ -47,5 +63,7 @@
 	};
 </script>
 <style lang="scss">
-	
+.user-collection {
+	padding-top: 88px; // 为固定定位的导航栏留出空间（状态栏高度 + 导航栏高度）
+}
 </style>

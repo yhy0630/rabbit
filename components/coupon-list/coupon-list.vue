@@ -3,7 +3,7 @@
     <view v-for="(item, index) in list" :key="index" class="m-t-20">
       <view
         :class="
-          'coupon-item flex ' + (btnType == 1 || btnType == 2 ? 'gray' : '')
+          'coupon-item flex ' + (btnType == 2 ? 'gray' : '')
         "
       >
         <img
@@ -12,7 +12,7 @@
           class="received"
           v-if="item.is_get"
         />
-        <view class="price white flex-col col-center">
+        <view class="price flex-col col-center">
           <view class="xl">
             <price-format
               :first-size="60"
@@ -24,20 +24,23 @@
           </view>
           <view class="sm text-center">{{ item.condition_type_desc }}</view>
         </view>
-        <view class="info m-l-20">
+        <view class="info ">
           <view class="lg m-b-20">{{ item.coupon_name }}</view>
           <view class="xs lighter m-b-20">{{ item.user_time_desc }}</view>
           <view class="xs lighter">{{ item.use_scene_desc }}</view>
         </view>
         <button
-          v-show="!(btnType == 1 || btnType == 2)"
+          v-show="btnType == 0 || btnType == 1 || btnType == 2"
           type="primary"
           :class="
-            'btn br60 white xs ' + (getBtn(item) == '去使用' ? 'plain' : '')
+            'btn br60 white xs ' + 
+            (btnType == 0 ? 'btn-use' : '') + 
+            (btnType == 1 ? 'btn-used' : '') +
+            (btnType == 2 ? 'btn-expired' : '')
           "
           @tap="onHandle(item.id, item)"
         >
-          {{ getBtn(item) }}
+          {{ btnType == 1 ? '已使用' : (btnType == 2 ? '已过期' : getBtn(item)) }}
         </button>
         <image
           v-if="item.is_get"
@@ -51,10 +54,10 @@
         v-if="item.use_goods_desc"
         @tap="onShowTips(index)"
       >
-        <view class="flex row-between">
+        <!-- <view class="flex row-between">
           <view class="xs">使用说明</view>
           <u-icon :class="showTips[index] ? 'rotate' : ''" name="arrow-down" />
-        </view>
+        </view> -->
         <view v-show="showTips[index]" class="m-t-10 xs">{{
           item.use_goods_desc
         }}</view>
@@ -134,6 +137,10 @@ export default {
   },
   methods: {
     onHandle(id, item) {
+      // 已使用状态不执行任何操作
+      if (this.btnType == 1) {
+        return;
+      }
       this.id = id;
       //   const { btnType } = this;
       const btnText = this.getBtn(item);
@@ -197,12 +204,14 @@ export default {
   .coupon-item {
     position: relative;
     height: 200rpx;
-    background-image: url(../../static/images/coupon_bg.png);
-    background-size: 100% 100%;
+    background-color: #FFFFFF;
+    border-radius: 20rpx;
+    padding: 20rpx;
 
     &.gray {
-      background-image: url(../../static/images/coupon_bg_grey.png);
-
+      .price {
+        color: #666;
+      }
       .btn {
         &.plain {
           color: #cccccc;
@@ -212,6 +221,7 @@ export default {
 
     .price {
       width: 200rpx;
+      color: #29A50A;
     }
 
     .btn {
@@ -219,10 +229,27 @@ export default {
       height: 52rpx;
       position: absolute;
       right: 20rpx;
-      bottom: 20rpx;
+      top: 75%;
+      transform: translateY(-50%);
       width: 120rpx;
       text-align: center;
-      padding: 0;
+      padding: 0; 
+      border: none;
+
+      &.btn-use {
+        background: linear-gradient(90deg, #268F08 0%, #E6F46B 100%);
+        color: #FFF;
+      }
+
+      &.btn-expired {
+        background-color: #F0FFF8;
+        color: #34960F;
+      }
+
+      &.btn-used {
+        background-color: #F5F5F5;
+        color: #999999;
+      }
 
       &.plain {
         background-color: #fff;

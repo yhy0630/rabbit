@@ -2,24 +2,80 @@
 
 <template>
     <view class="user-withdraw">
-        <!-- Tabs -->
-        <view class="withdraw-tabs">
-            <u-tabs
-                :list="tabsList"
-                :is-scroll="true"
-                :current="currentTab"
-                :bold="true"
-                height="100"
-                font-size="30rpx"
-                active-color="#333333"
-                inactive-color="#666666"
-                :bar-style="styleTabsBarStyle"
-                @change="changeTab"
-            />
+        <custom-navbar title="申请提现"></custom-navbar>
+        
+        <!-- 提现金额 -->
+        <view class="withdraw-money-section m-t-20 bg-white">
+            <view class="money-header flex row-between">
+                <text class="money-title">提现金额</text>
+                <text class="money-detail-link" @tap="goToWithdrawDetail">提现明细</text>
+            </view>
+            <view class="money-input-box">
+                <text class="money-symbol">¥</text>
+                <u-input
+                    v-model="form.money"
+                    placeholder="请输入自定义金额"
+                    :custom-style="{
+                        'font-size': '32rpx',
+                        'color': '#999999'
+                    }"
+                    placeholder-style="color: #999999"
+                />
+            </view>
+            <view class="money-footer flex row-between">
+                <text class="balance-text">可提现余额:¥{{ widthDrawConfig.able_withdraw || '0.00' }}</text>
+                <text class="withdraw-all-link" @tap="form.money = widthDrawConfig.able_withdraw">全部提现</text>
+            </view>
         </view>
 
-        <!-- 微信钱包 -->
-        <view v-if="currentValue == 3" class="withdraw-wechat m-t-20 bg-white">
+        <!-- 选择提现账户 -->
+        <view class="withdraw-account-section m-t-20 bg-white">
+            <view class="account-header">
+                <view class="account-header-bar"></view>
+                <text class="account-title">选择提现账户</text>
+            </view>
+            
+            <u-radio-group v-model="currentValue" @change="changeTab">
+                <!-- 微信 -->
+                <view class="account-item" @tap="selectAccount(3)">
+                    <view class="account-item-left flex">
+                        <image class="account-icon" src="/static/images/weixinzhifu 1 (1).png" mode="aspectFit"></image>
+                        <view class="account-info">
+                            <text class="account-name">提现至微信</text>
+                            <text class="account-hint">请设置提现账户 ></text>
+                        </view>
+                    </view>
+                    <u-radio :name="3" active-color="#189B07"></u-radio>
+                </view>
+                
+                <!-- 支付宝 -->
+                <view class="account-item" @tap="selectAccount(4)">
+                    <view class="account-item-left flex">
+                        <image class="account-icon" src="/static/images/zhifubao 2.png" mode="aspectFit"></image>
+                        <view class="account-info">
+                            <text class="account-name">提现至支付宝</text>
+                            <text class="account-hint">请设置提现账户 ></text>
+                        </view>
+                    </view>
+                    <u-radio :name="4" active-color="#189B07"></u-radio>
+                </view>
+                
+                <!-- 银行卡 -->
+                <view class="account-item" @tap="selectAccount(5)">
+                    <view class="account-item-left flex">
+                        <image class="account-icon" src="/static/images/qianbao 1.png" mode="aspectFit"></image>
+                        <view class="account-info">
+                            <text class="account-name">提现至银行卡</text>
+                            <text class="account-hint">请设置提现账户 ></text>
+                        </view>
+                    </view>
+                    <u-radio :name="5" active-color="#189B07"></u-radio>
+                </view>
+            </u-radio-group>
+        </view>
+
+        <!-- 微信钱包表单 -->
+        <view v-if="currentValue == 3" class="withdraw-form m-t-20 bg-white">
             <!-- Account -->
             <u-field
                 label-width="160"
@@ -63,8 +119,8 @@
             </view>
         </view>
 
-        <!-- 支付宝 -->
-        <view v-else-if="currentValue == 4" class="withdraw-alipay m-t-20 bg-white">
+        <!-- 支付宝表单 -->
+        <view v-else-if="currentValue == 4" class="withdraw-form m-t-20 bg-white">
             <!-- Account -->
             <u-field
                 label-width="160"
@@ -108,8 +164,8 @@
             </view>
         </view>
 
-        <!-- 银行卡 -->
-        <view v-else-if="currentValue == 5" class="withdraw-alipay m-t-20 bg-white">
+        <!-- 银行卡表单 -->
+        <view v-else-if="currentValue == 5" class="withdraw-form m-t-20 bg-white">
             <!-- Account -->
             <u-field
                 label-width="160"
@@ -142,38 +198,9 @@
             <u-field label-width="160" label="备注" v-model="form.remark" placeholder="(选填)" />
         </view>
 
-        <!-- 提现金额 -->
-        <view class="withdraw-money-wrap m-t-20 bg-white">
-            <view class="flex withdraw-money p-b-20">
-                <view class="flex flex-1">
-                    <text class="font-size-46 m-r-10 normal">¥</text>
-                    <u-input
-                        v-model="form.money"
-                        placeholder="0.00"
-                        :custom-style="{
-                            'font-size': '66rpx'
-                        }"
-                    />
-                </view>
-                <view class="flex-col flex-1 text-right">
-                    <text class="xs primary" @tap="form.money = widthDrawConfig.able_withdraw"
-                        >全部提现</text
-                    >
-                    <text class="xs muted m-t-10"
-                        >可提现金额 ¥ {{ widthDrawConfig.able_withdraw }}</text
-                    >
-                </view>
-            </view>
-            <view
-                class="muted xs m-t-30"
-                v-if="widthDrawConfig.poundage_percent && currentValue != 1"
-                >提示：提现需扣除服务费{{ widthDrawConfig.poundage_percent }}%</view
-            >
-        </view>
-
-        <!-- 确认提交 -->
+        <!-- 立即提现 -->
         <button class="withdraw-submit m-t-30 white br60" @tap="onSubmit" size="lg">
-            确认提交
+            立即提现
         </button>
 
         <!-- 提现记录 -->
@@ -187,24 +214,14 @@
 import { applyWithdraw, getWithdrawConfig } from '@/api/user'
 import { trottle } from '@/utils/tools'
 import { getMnpNotice } from '@/api/app'
-
 import { baseURL } from '@/config/app'
+
 export default {
     data() {
         return {
             action: baseURL + '/api/file/formimage',
-            currentTab: 0, // Tabs当前位置
-            // Tabs 列表
-            tabsList: [],
-            // Tabs滑块样式
-            styleTabsBarStyle: {
-                bottom: '12rpx',
-                width: '50rpx',
-                height: '6rpx',
-                background: 'green',
-                borderRadius: '50px',
-                backgroundImage: 'linear-gradient(to right, \#F79C0C, \#FF2C3C)'
-            },
+            currentValue: 4, // 当前选择的账户类型，默认支付宝
+            preferredType: null,
             // 表单数据
             form: {
                 money: '', // 提现金额
@@ -219,6 +236,12 @@ export default {
         }
     },
     onLoad() {
+        // 支持从其它页面跳转时，默认选中某个收款账户类型（3微信 / 4支付宝 / 5银行卡）
+        const t = Number(this.$Route?.query?.type)
+        if ([3, 4, 5].includes(t)) {
+            this.preferredType = t
+            this.currentValue = t
+        }
         this.getWithdrawConfigFun()
         this.onSubmit = trottle(this.onSubmit, 1000, this)
     },
@@ -250,9 +273,22 @@ export default {
                     })
             })
         },
-        // 改变当前的Tabs位置
-        changeTab(index) {
-            this.currentTab = index
+        // 选择账户
+        selectAccount(value) {
+            this.currentValue = value
+            this.form = {
+                money: '',
+                account: '',
+                real_name: '',
+                money_qr_code: '',
+                remark: '',
+                bank: '',
+                subbank: ''
+            }
+        },
+        // 改变账户类型
+        changeTab(value) {
+            this.currentValue = value
             this.form = {
                 money: '',
                 account: '',
@@ -268,8 +304,28 @@ export default {
 
             if (code == 1) {
                 this.widthDrawConfig = data
-                this.tabsList = data.type
+                // 如果有配置的账户类型，设置默认值
+                if (data.type && data.type.length > 0) {
+                    // 如果跳转时指定了账户类型，并且可用，则优先生效
+                    if (this.preferredType && data.type.some((item) => item.value == this.preferredType)) {
+                        this.currentValue = this.preferredType
+                        return
+                    }
+                    // 优先选择支付宝，如果没有则选择第一个
+                    const alipayType = data.type.find(item => item.value == 4)
+                    if (alipayType) {
+                        this.currentValue = 4
+                    } else {
+                        this.currentValue = data.type[0].value
+                    }
+                }
             }
+        },
+        // 跳转到提现明细
+        goToWithdrawDetail() {
+            uni.navigateTo({
+                url: '/bundle/pages/user_withdraw_code/user_withdraw_code'
+            })
         },
         // 提交表单
         onSubmit() {
@@ -313,37 +369,130 @@ export default {
             this.form.money_qr_code = ''
         }
     },
-    computed: {
-        currentValue(val) {
-            const { currentTab, tabsList } = this
-            return tabsList[currentTab] ? tabsList[currentTab].value : ''
-        }
-    }
 }
 </script>
 
 <style lang="scss" scoped>
 .user-withdraw {
     padding: 20rpx 30rpx;
+    padding-top: 88px; // Account for fixed navbar height (statusBar + navbar)
+    min-height: 100vh;
+    background-color: #F5F5F5;
 
-    .withdraw-tabs {
-        border-radius: 10px;
-        overflow: hidden;
-    }
+    .withdraw-money-section {
+        padding: 30rpx;
+        border-radius: 20rpx;
 
-    .withdraw-money-wrap {
-        padding: 50rpx 66rpx;
-        border-radius: 10px;
+        .money-header {
+            margin-bottom: 30rpx;
 
-        .withdraw-money {
-            border-bottom: $-solid-border;
+            .money-title {
+                font-size: 32rpx;
+                font-weight: 600;
+                color: #333333;
+            }
+
+            .money-detail-link {
+                font-size: 28rpx;
+                color: #999999;
+            }
+        }
+
+        .money-input-box {
+            display: flex;
+            align-items: center;
+            background-color: #F5F5F5;
+            border-radius: 10rpx;
+            padding: 20rpx 30rpx;
+            margin-bottom: 20rpx;
+
+            .money-symbol {
+                font-size: 32rpx;
+                color: #333333;
+                margin-right: 10rpx;
+            }
+        }
+
+        .money-footer {
+            .balance-text {
+                font-size: 24rpx;
+                color: #999999;
+            }
+
+            .withdraw-all-link {
+                font-size: 28rpx;
+                color: #189B07;
+            }
         }
     }
 
-    .withdraw-wechat,
-    .withdraw-alipay {
+    .withdraw-account-section {
+        padding: 30rpx;
+        border-radius: 20rpx;
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30rpx;
+
+            .account-header-bar {
+                width: 6rpx;
+                height: 32rpx;
+                background-color: #189B07;
+                border-radius: 3rpx;
+                margin-right: 12rpx;
+            }
+
+            .account-title {
+                font-size: 32rpx;
+                font-weight: 600;
+                color: #333333;
+            }
+        }
+
+        .account-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 30rpx 0;
+            border-bottom: 1rpx solid #E5E5E5;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            .account-item-left {
+                flex: 1;
+                align-items: center;
+
+                .account-icon {
+                    width: 80rpx;
+                    height: 80rpx;
+                    margin-right: 20rpx;
+                }
+
+                .account-info {
+                    display: flex;
+                    flex-direction: column;
+
+                    .account-name {
+                        font-size: 32rpx;
+                        color: #333333;
+                        margin-bottom: 10rpx;
+                    }
+
+                    .account-hint {
+                        font-size: 24rpx;
+                        color: #999999;
+                    }
+                }
+            }
+        }
+    }
+
+    .withdraw-form {
         padding: 0 36rpx 20rpx;
-        border-radius: 10px;
+        border-radius: 20rpx;
     }
 
     .upload-image {
@@ -354,8 +503,12 @@ export default {
     }
 
     .withdraw-submit {
-        background: linear-gradient(11deg, #f95f2f, #ff2c3c);
+        background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
+        border-radius: 50rpx;
+        font-size: 32rpx;
+        font-weight: 600;
     }
+
     ::v-deep .u-field {
         padding: 26rpx 0;
     }
