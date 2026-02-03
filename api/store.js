@@ -198,3 +198,23 @@ export function getCityLists() {
 export function getGeocoder(params) {
 	return request.get("index/geocoder", {params})
 }
+
+// 获取家政服务分类列表（首页显示）
+export function getHomeServiceCategoryList() {
+	return request.get("home_service_category/getHomeShowList")
+}
+
+// 获取所有家政服务分类列表（全部服务页面）
+export function getAllHomeServiceCategoryList() {
+	return request.get("home_service_category/getAllList")
+}
+
+// 根据分类获取服务列表
+export function getHomeServiceListByCategory(params) {
+	return request.get("home_service/getListByCategory", {params})
+}
+
+// 获取服务详情
+export function getHomeServiceDetail(params) {
+	return request.get("home_service/getDetail", {params})
+}

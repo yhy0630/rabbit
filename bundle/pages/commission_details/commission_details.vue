@@ -2,6 +2,7 @@
 
 <template>
 	<view class="commission-details">
+		<custom-navbar title="收益明细"></custom-navbar>
 		<mescroll-body ref="mescrollRef" @init="mescrollInit" @up="upCallback" :up="upOption" :down="downOption" @down="downCallback">
 			<view class="p-t-20" >
 				<view class="bg-white" v-for="(item, index) in list" :key="index" >
@@ -15,8 +16,12 @@
 <script>
 	import MescrollMixin from "@/components/mescroll-uni/mescroll-mixins.js";
 	import {getCommission} from "@/api/user"
+	import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue';
 	export default {
 		mixins: [MescrollMixin], // 使用mixin
+		components: {
+			CustomNavbar
+		},
 		data() {
 			return {
 				// Tabs 列表
@@ -59,5 +64,7 @@
 </script>
 
 <style scoped>
-	
+	.commission-details {
+		padding-top: calc(44px + var(--status-bar-height));
+	}
 </style>

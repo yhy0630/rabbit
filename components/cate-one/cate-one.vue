@@ -4,6 +4,7 @@
 			v-if="cateList.length"
 			:key="selectIndex"
 			:top="84"
+      :listType = 'listType'
 			ref="mescrollItem"
 			:i="selectIndex"
 			:index="selectIndex"
@@ -35,6 +36,7 @@
 											:src="cateItem.bg_image || cateItem.image" 
 											mode="aspectFill"
 										></image>
+
 									</view>
 									<!-- 分类名称 -->
 									<text class="cate-name">{{ cateItem.name }}</text>
@@ -73,6 +75,9 @@
 			cateList: {
 				type: Array,
 				default: () => ([])
+			},	listType: {
+				type: String,
+				default:''
 			},
 		},
 		data() {

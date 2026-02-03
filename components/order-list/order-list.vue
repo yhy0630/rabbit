@@ -1,7 +1,7 @@
 <template>
     <mescroll-uni
         ref="mescrollRef"
-        top="80rpx"
+        :top="mescrollTop"
         @init="mescrollInit"
         @down="downCallback"
         @up="upCallback"
@@ -231,6 +231,10 @@ export default {
     mixins: [MescrollMixin, MescrollMoreItemMixin],
     data() {
         return {
+            // 关键：mescroll-uni 默认 fixed=true，会生成 position:fixed 的 scroll-view。
+            // 如果 top 偏移不足，会覆盖 tabs 头部区域，导致 tabs 无法点击。
+            // 这里动态计算：自定义导航栏高度 + tabs 头部高度(80rpx)
+            mescrollTop: '0px',
             orderList: [],
             downOption: {
                 auto: false // 不自动加载 (mixin已处理第一个tab触发downCallback)
@@ -254,9 +258,26 @@ export default {
     props: {
         orderType: {
             type: String
+        },
+        // 订单模块：all/secondhand/life/rent/local/rideshare/express/recharge
+        module: {
+            type: String,
+            default: 'all'
         }
     },
     created() {
+        // 计算 mescroll 顶部偏移，避免 fixed scroll-view 覆盖 tabs 头部区域
+        try {
+            const sys = uni.getSystemInfoSync()
+            const statusBarHeight = sys.statusBarHeight || 0 // px
+            const navbarHeight = statusBarHeight + 44 // px (custom-navbar 内容高度 44px)
+            const tabsHeightPx = uni.upx2px(80) // tabs 默认高度 80rpx
+            this.mescrollTop = `${navbarHeight + tabsHeightPx}px`
+        } catch (e) {
+            // 兜底：约等于 128px
+            this.mescrollTop = '128px'
+        }
+
         uni.$on('refreshorder', () => {
             this.refresh()
         })
@@ -410,7 +431,6 @@ export default {
                 let res = {}
                 if (this.pay_way === 1) {
                     res = await getwechatSyncCheck({ id: this.orderId })
-                    console.log(res)
                 }
                 if (
                     compareWeChatVersion('2.6.0') === 1 &&
@@ -426,7 +446,6 @@ export default {
                         await this.querycomfirmReceive(this.orderId)
                         await confirmOrder(this.orderId)
                     } catch (error) {
-                        console.log(error)
                     }
                     this.refresh()
                 } else {
@@ -464,12 +483,17 @@ export default {
         upCallback(page) {
             let pageNum = page.num // 页码, 默认从1开始
             let pageSize = page.size // 页长, 默认每页10条
-            let { orderType } = this
-            getOrderList({
+            let { orderType, module } = this
+            const params = {
                 page_size: pageSize,
                 page_no: pageNum,
                 type: orderType
-            }).then(({ data }) => {
+            }
+            // 模块筛选：后端若支持，可按 module 过滤；all 则不传
+            if (module && module !== 'all') {
+                params.module = module
+            }
+            getOrderList(params).then(({ data }) => {
                 let curPageData = data.list
                 let curPageLen = curPageData.length
                 let hasNext = !!data.more

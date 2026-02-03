@@ -17,6 +17,11 @@
                             :border-radius="10"
                             :src="item.image"
                         ></u-image>
+                        <image class="corner-badge" src="/static/images/Exclude.png" mode="aspectFit"></image>
+                        <!-- 分类标签 - 从商品数据中读取 -->
+                        <view v-if="item.categoryName" class="category-tag">
+                            {{ item.categoryName }}
+                        </view>
                     </view>
                     <view class="goods-info">
                         <view class="goods-name line-2">{{ item.name }}</view>
@@ -375,10 +380,27 @@ export default {
         showBg: {
             type: Boolean,
             default: true
+        },
+        // 分类名称
+        categoryName: {
+            type: String,
+            default: ''
         }
     },
     data() {
         return {}
+    },
+    watch: {
+        categoryName(newVal) {
+            console.log('=== goods-list watch categoryName ===')
+            console.log('categoryName changed to:', newVal)
+            console.log('list length:', this.list.length)
+        }
+    },
+    mounted() {
+        console.log('=== goods-list mounted ===')
+        console.log('categoryName:', this.categoryName)
+        console.log('list length:', this.list.length)
     }
 }
 </script>
@@ -400,6 +422,31 @@ export default {
             width: 347rpx;
             border-radius: 10rpx;
             overflow: hidden;
+
+            .goods-img {
+                position: relative;
+                
+                .corner-badge {
+                    position: absolute;
+                    bottom: -80rpx;
+                    left: 0;
+                    width: 150rpx;
+                    height: 210rpx;
+                    z-index: 2;
+                }
+                
+                .category-tag {
+                    position: absolute;
+                    bottom: -5rpx;
+                    left: 5rpx;
+                    padding: 6rpx 16rpx;
+                    border-radius: 6rpx;
+                    color: #289301;
+                    font-size: 22rpx;
+                    font-weight: bold;
+                    z-index: 3;
+                }
+            }
 
             .goods-info {
                 padding: 10rpx;

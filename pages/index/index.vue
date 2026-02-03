@@ -169,6 +169,16 @@
                     </template>
                 </view>
             </view>
+
+            <!-- 悬浮：投诉/建议 -->
+            <view class="float-report" @tap="handleReport">
+                <image 
+                    src="/static/picture/Frame 1171275731.png" 
+                    class="float-report-icon"
+                    mode="aspectFit"
+                ></image>
+                <text class="float-report-text">投诉/建议</text>
+            </view>
             <!-- #ifdef APP-PLUS -->
             <lyg-popup
                 v-if="appConfig.app_agreement"
@@ -319,6 +329,12 @@ export default {
                 this.showCateList = []
             }
         },
+        handleReport() {
+            // 悬浮按钮：投诉/建议
+            console.log('点击投诉/建议')
+            // TODO: 如果你有具体页面路径，我可以直接接上跳转
+            // uni.navigateTo({ url: '/bundle_b/pages/xxx/xxx' })
+        },
         // 获取菜单
         async getMenuFun() {
             const { code, data } = await getMenu({
@@ -445,5 +461,33 @@ page {
     text-align: center;
     padding: 30rpx;
     font-size: 24rpx;
+}
+
+/* 悬浮投诉/建议按钮 */
+.float-report {
+    position: fixed;
+    right: 24rpx;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1201; /* 高于 u-no-network(1200) */
+    width: 120rpx;
+    padding: 10rpx 10rpx;
+    border-radius: 16rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.float-report-icon {
+    width: 90rpx;
+    height: 90rpx;
+}
+
+.float-report-text {
+    margin-top: 6rpx;
+    font-size: 20rpx;
+    color: #289301;
+    white-space: nowrap;
+    font-weight: bold;
 }
 </style>
