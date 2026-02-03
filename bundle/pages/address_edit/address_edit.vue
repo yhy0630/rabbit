@@ -38,11 +38,12 @@
         @click="changeDefault"
         v-model="addressObj.is_default"
         shape="circle"
+        active-color="#30930C"
       >
         <text class="xs">设置为默认</text>
       </u-checkbox>
     </view>
-    <button class="my-btn bg-primary white br60" @tap="formSubmit">完成</button>
+    <button class="my-btn btn-submit white br60" @tap="formSubmit">完成</button>
     <u-select
       v-model="showRegion"
       mode="mutil-column-auto"
@@ -233,6 +234,9 @@ export default {
   .my-btn {
     margin: 30rpx 26rpx;
     text-align: center;
+  }
+  .btn-submit {
+    background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
   }
 }
 </style>
