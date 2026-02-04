@@ -198,3 +198,63 @@ export function getCityLists() {
 export function getGeocoder(params) {
 	return request.get("index/geocoder", {params})
 }
+
+// 获取家政服务分类列表（首页显示）
+export function getHomeServiceCategoryList() {
+	return request.get("home_service_category/getHomeShowList")
+}
+
+// 获取所有家政服务分类列表（全部服务页面）
+export function getAllHomeServiceCategoryList() {
+	return request.get("home_service_category/getAllList")
+}
+
+// 根据分类获取服务列表
+export function getHomeServiceListByCategory(params) {
+	return request.get("home_service/getListByCategory", {params})
+}
+
+// 获取服务详情
+export function getHomeServiceDetail(params) {
+	return request.get("home_service/getDetail", {params})
+}
+
+// 入驻商家（添加公司）
+export function addHomeServiceCompany(data) {
+	return request.post("home_service_company/add", data)
+}
+
+// 发布服务
+export function addHomeService(data) {
+	return request.post("home_service/add", data)
+}
+
+// 创建家政服务订单
+export function createHomeServiceOrder(data) {
+	return request.post("home_service_order/create", data)
+}
+
+// 获取家政服务订单列表
+export function getHomeServiceOrderList(params) {
+	return request.get("home_service_order/lists", {params})
+}
+
+// 获取家政服务订单详情
+export function getHomeServiceOrderDetail(params) {
+	return request.get("home_service_order/detail", {params})
+}
+
+// 师傅入驻申请
+export function applyHomeServiceMaster(data) {
+	return request.post("home_service_master/apply", data)
+}
+
+// 获取师傅申请详情
+export function getHomeServiceMasterDetail() {
+	return request.get("home_service_master/detail")
+}
+
+// 检查师傅状态
+export function checkHomeServiceMasterStatus() {
+	return request.get("home_service_master/checkStatus")
+}

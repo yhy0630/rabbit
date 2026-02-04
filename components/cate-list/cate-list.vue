@@ -26,10 +26,14 @@
 				<!-- 5. 商品列表 -->
 				<view class="goods">
 					<view v-show="sortConfig.goodsType == 'double'" class="double">
-						<goods-list type="double" :list="goodsList"></goods-list>
+
+            <yhy_good_list v-if="listType === 'yhy'" :list="goodsList" type="double"></yhy_good_list>
+            <goods-list v-else :list="goodsList" type="double"></goods-list>
+
 					</view>
 					<view v-show="sortConfig.goodsType == 'one'" class="one">
-						<goods-list :list="goodsList" type="one"></goods-list>
+						<yhy_good_list v-if="listType === 'yhy'" :list="goodsList" type="one"></yhy_good_list>
+						<goods-list v-else :list="goodsList" type="one"></goods-list>
 					</view>
 				</view>
 			</view>
@@ -59,6 +63,9 @@
 			cate: {
 				type: Object,
 				default: () => ({})
+			},listType: {
+				type: String,
+				default: ''
 			}
 		},
 		data() {

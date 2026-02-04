@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<custom-navbar title="推广中心" :bg-color="'#189B07'"></custom-navbar>
 		<loading-view v-if="showLoading"></loading-view>
 		<u-notice-bar :show="showTips" mode="horizontal" :list="list" :font-size="26" :close-icon="true" :speed="100"
 			@close="showTips=false"></u-notice-bar>
@@ -13,7 +14,7 @@
 						<view class="m-b-10">
 							<view class="xxl bold  m-r-20">{{userInfo.user.nickname}}</view>
 						</view>
-						<view class="avatar-tag white xxs text-center m-b-10" v-if="distributionInfo.level_name">{{distributionInfo.level_name}}</view>
+						<!-- <view class="avatar-tag white xxs text-center m-b-10" v-if="distributionInfo.level_name">{{distributionInfo.level_name}}</view> -->
 						<view class="xs flex">
 							上级分销商：{{userInfo.leader.nickname ? userInfo.leader.nickname :  '无'}}
 							<view v-if="!userInfo.leader.nickname"
@@ -104,22 +105,31 @@
 				<!-- 已申请 -->
 				<view v-if="vipState==2" class="user-vip">
 					<view class="user-assets-box">
-						<view class="user-assets-header flex row-between">
-							<view class="flex nr bold" style="line-height: 80rpx;color: #8F430E;">
-								可提现佣金：
-								<price-format weight="bold" :first-size="36" :subscript-size="26" :second-size="36"
-									:price="distributionInfo.able_withdrawal" :color="colorConfig.primary" />
+						<view class="user-assets-header">
+							<view class="header-title-row flex row-between">
+								<view class="header-title">我的钱包</view>
+								<view class="header-link" @tap="goToCommissionDetails">收益明细 <u-icon name="arrow-right" size="28rpx" color="#666"></u-icon></view>
 							</view>
-							<navigator hover-class="none" class="primary-btn white flex row-center"
-								url="/bundle/pages/user_withdraw/user_withdraw">立即提现</navigator>
+							<view class="balance-display flex-col col-center">
+								<price-format 
+									weight="bold" 
+									:first-size="96" 
+									:subscript-size="60" 
+									:second-size="96"
+									:price="distributionInfo.able_withdrawal" 
+									:color="'#1B8902'" 
+								/>
+							</view>
+							<navigator hover-class="none" class="withdraw-btn white flex row-center"
+								url="/bundle/pages/user_withdraw/user_withdraw">申请提现</navigator>
 						</view>
-						<view class="user-assets-content flex  flex-wrap">
+						<!-- <view class="user-assets-content flex  flex-wrap">
 							<view class="user-item flex-col col-center">
 								<tool-tip v-if="false" class="m-t-20" id="today-profit" content="今日预估收益金额"
 									style="position: absolute;right: -66rpx;"></tool-tip>
 								<view class="nr user-assets-name flex" style="color: #8F430E">
 									今日预估收益
-									<!-- <u-icon class="ml10" name="question-circle" size="30rpx" color="#D88D5A" /> -->
+									<u-icon class="ml10" name="question-circle" size="30rpx" color="#D88D5A" />
 								</view>
 								<view class="assets m-l-20">
 									<price-format weight="bold" :first-size="36" :subscript-size="26" :second-size="36"
@@ -129,7 +139,7 @@
 							<view class="user-item flex-col col-center">
 								<view class="nr user-assets-name flex" style="color: #8F430E">
 									本月预估收益
-									<!-- <u-icon class="ml10" name="question-circle" size="30rpx" color="#D88D5A" /> -->
+									<u-icon class="ml10" name="question-circle" size="30rpx" color="#D88D5A" />
 								</view>
 								<view class="assets m-l-20">
 									<price-format weight="bold" :first-size="36" :subscript-size="26" :second-size="36"
@@ -139,34 +149,85 @@
 							<view class="user-item flex-col col-center">
 								<view class="nr user-assets-name flex" style="color: #8F430E">
 									累计获得收益
-									<!-- <u-icon class="ml10" name="question-circle" size="30rpx" color="#D88D5A" /> -->
+									<u-icon class="ml10" name="question-circle" size="30rpx" color="#D88D5A" />
 								</view>
 								<view class="assets">
 									<price-format weight="bold" :first-size="36" :subscript-size="26" :second-size="36"
 										:price="distributionInfo.history_earnings" :color="colorConfig.primary" />
 								</view>
 							</view>
-						</view>
+						</view> -->
 					</view>
-					<view class="mt20 fans-msg-box flex bg-white md">
-						<router-link  class="flex-1" to="/bundle/pages/user_fans/user_fans">
-							<view class="my-fans flex row-center normal">
-								我的粉丝 <view class="primary m-l-10">{{distributionInfo.fans}}</view>
-								<u-icon class="m-l-10" name="arrow-right" size="28rpx" color="#666" />
+					<view class="my-promote-box m-t-20 bg-white">
+						<view class="promote-title">我的推广</view>
+						<view class="promote-content flex">
+							<view class="promote-left flex-col col-center">
+								<view class="promote-section-title">我的推广码</view>
+								<view class="invite-code m-t-20" @tap="onCopy">{{userInfo.user.distribution_code || ''}}</view>
 							</view>
-						</router-link>
-						
-				
-					</view>
-					<view class="my-invite-box m-t-20 bg-white flex-col col-center">
-						<view class="my-invite-title sm normal">我的邀请码</view>
-						<view class="flex bold m-t-20" style="font-size: 42rpx;line-height: 30rpx">
-							{{userInfo.user.distribution_code}}
-							<view class="invite-copy-btn m-l-10 xxs" @click="onCopy">点击复制</view>
+							<view class="promote-divider"></view>
+							<view class="promote-right flex-col col-center" @tap="goToUserFans">
+								<view class="promote-section-title">总邀请人数</view>
+								<view class="invite-count m-t-20">{{distributionInfo.fans || 0}}</view>
+							</view>
 						</view>
-						<!-- <view class="row-center my-promote-banner bg-primary white">我的推广海报</view> -->
 					</view>
-					<view class="usual-tools-box bg-white m-t-20">
+					<view class="invite-personnel-box m-t-20 bg-white">
+						<view class="invite-header flex row-between">
+							<view class="invite-header-item flex row-center" @tap="goToUserFans">
+								<text>邀请人员 {{distributionInfo.fans || 0}}人</text>
+								<u-icon name="arrow-right" size="28rpx" color="#666"></u-icon>
+							</view>
+							<view class="invite-header-item flex row-center" @tap="goToCommissionDetails">
+								<text>收益明细</text>
+								<u-icon name="arrow-right" size="28rpx" color="#666"></u-icon>
+							</view>
+						</view>
+						<view class="invite-level-section">
+							<view class="level-item flex row-between" @tap="goToLevelFans('first')">
+								<view class="level-left flex-col">
+									<view class="level-count-row flex row-center">
+										<text class="level-count">{{distributionInfo.first_fans || distributionInfo.first_level_count || 0}}人</text>
+										<u-icon name="arrow-right" size="24rpx" color="#999"></u-icon>
+									</view>
+									<view class="level-label">一级</view>
+								</view>
+								<view class="level-divider"></view>
+								<view class="level-right flex-col">
+									<view class="revenue-item">
+										<text class="revenue-label">总收益</text>
+										<text class="revenue-value">¥{{distributionInfo.first_total_earnings || distributionInfo.first_level_total || 0}}</text>
+									</view>
+									<view class="revenue-item m-t-10">
+										<text class="revenue-label">今日收益</text>
+										<text class="revenue-value">¥{{distributionInfo.first_today_earnings || distributionInfo.first_level_today || 0}}</text>
+									</view>
+								</view>
+							</view>
+							<view class="section-divider"></view>
+							<view class="level-item flex row-between" @tap="goToLevelFans('second')">
+								<view class="level-left flex-col">
+									<view class="level-count-row flex row-center">
+										<text class="level-count">{{distributionInfo.second_fans || distributionInfo.second_level_count || 0}}人</text>
+										<u-icon name="arrow-right" size="24rpx" color="#999"></u-icon>
+									</view>
+									<view class="level-label">二级</view>
+								</view>
+								<view class="level-divider"></view>
+								<view class="level-right flex-col">
+									<view class="revenue-item">
+										<text class="revenue-label">总收益</text>
+										<text class="revenue-value">¥{{distributionInfo.second_total_earnings || distributionInfo.second_level_total || 0}}</text>
+									</view>
+									<view class="revenue-item m-t-10">
+										<text class="revenue-label">今日收益</text>
+										<text class="revenue-value">¥{{distributionInfo.second_today_earnings || distributionInfo.second_level_today || 0}}</text>
+									</view>
+								</view>
+							</view>
+						</view>
+					</view>
+					<!-- <view class="usual-tools-box bg-white m-t-20">
 						<view class="usual-tools-header flex lg bold">
 							常用工具
 						</view>
@@ -191,7 +252,7 @@
 								</view>
 							</router-link>
 						</view>
-					</view>
+					</view> -->
 				</view>
 			</view>
 			<u-popup v-model="showPop" mode="center" closeable border-radius="30">
@@ -212,6 +273,7 @@
 </template>
 
 <script>
+	import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 	import {
 		bindSuperior,
 		applyDistribute,
@@ -225,6 +287,9 @@
 		copy
 	} from '@/utils/tools'
 	export default {
+		components: {
+			CustomNavbar
+		},
 		data() {
 			return {
 				list: ['成为分销会员，推广下级可获得额外收益，推广越多收益越多'],
@@ -409,14 +474,31 @@
 				copy(this.userInfo.user.distribution_code)
 			},
 
+			goToUserFans() {
+				uni.navigateTo({
+					url: '/bundle/pages/user_fans/user_fans'
+				})
+			},
+
+			goToCommissionDetails() {
+				uni.navigateTo({
+					url: '/bundle/pages/commission_details/commission_details'
+				})
+			},
+
+			goToLevelFans(level) {
+				uni.navigateTo({
+					url: `/bundle/pages/user_fans/user_fans?level=${level}`
+				})
+			}
+
 		}
 	};
 </script>
 <style lang="scss">
 	.user-spread {
-		background-image: url(../../static/spread_top_bg.png);
-		background-repeat: no-repeat;
-		background-size: 100% auto;
+		padding-top: calc(35rpx + var(--status-bar-height));
+		background: linear-gradient(180deg, #189B07 10%, #B2DF14 23%,#F5F5F5 0%);
 
 		.header {
 
@@ -434,11 +516,13 @@
 					line-height: 32rpx;
 					padding: 0 10rpx;
 				}
-				.user-message {
+				.user-message { 
 					.write-btn {
 						height: 42rpx;
 						width: 100rpx;
-						background-color: #FF838D;
+						border: 2rpx solid #1B8902;
+						color: #1B8902;
+						background: #F0FFF8;
 					}
 				}
 			}
@@ -451,18 +535,52 @@
 				.user-assets-box {
 					background-color: #fff;
 					border-radius: 20rpx;
-					padding: 10rpx 20rpx 22rpx;
-					background: linear-gradient(90deg, #FBEFDB 0%, #FED09E 100%);
+					padding: 40rpx 30rpx 50rpx;
+					background: #FFFFFF;
 
 					.user-assets-header {
-						border-bottom: 1rpx dashed #8F430E;
-						padding-bottom: 4rpx;
+						.header-title-row {
+							margin-bottom: 30rpx;
+							
+							.header-title {
+								font-size: 36rpx;
+								font-weight: 600;
+								color: #333333;
+								position: relative;
+								padding-bottom: 8rpx;
+								
+								&::after {
+									content: '';
+									position: absolute;
+									bottom: 0;
+									left: 0;
+									width: 140rpx;
+									height: 8rpx;
+									background: linear-gradient(90deg, #1D9D0A 0%, #ACFF00 85.84%);
+									border-radius: 2rpx;
+								}
+							}
+							
+							.header-link {
+								font-size: 32rpx;
+								color: #000;
+								display: flex;
+								align-items: center;
+								gap: 8rpx;
+							}
+						}
+						
+						.balance-display {
+							margin-bottom: 30rpx;
+						}
 
-						.primary-btn {
-							height: 54rpx;
-							border-radius: 120rpx;
-							width: 144rpx;
-							background: linear-gradient(180deg, #FF3067 0%, #FF2C3C 100%);
+						.withdraw-btn {
+							height: 88rpx;
+							border-radius: 44rpx;
+							width: 100%;
+							background: linear-gradient(90deg, #189B07 0%, #B2DF14 100%);
+							font-size: 32rpx;
+							font-weight: 600;
 						}
 					}
 
@@ -487,42 +605,147 @@
 					}
 				}
 
-				.fans-msg-box {
-					border-radius: 10rpx;
-					line-height: 42rpx;
-
-					.my-fans {
-						height: 120rpx;
-					}
-
-					.line {
-						width: 3rpx;
-						height: 60rpx;
-						background-color: #E5E5E5;
-					}
-
-					.invite-fans {
-						height: 120rpx;
+				.my-promote-box {
+					border-radius: 20rpx;
+					padding: 30rpx 30rpx 40rpx;
+					
+					.promote-title {
+						font-size: 36rpx;
+						font-weight: 600;
+						color: #333333;
+						margin-bottom: 30rpx;
 					}
 				}
 
-				.my-invite-box {
-					padding: 26rpx 0 57rpx;
-					border-radius: 10rpx;
-
-					.invite-copy-btn {
-						line-height: 30rpx;
-						padding: 10rpx;
-						background: linear-gradient(90deg, #FEE4B4 0%, #FBCB96 100%);
-						color: #8F430E;
-						border-radius: 4rpx;
+				.invite-personnel-box {
+					border-radius: 20rpx;
+					padding: 30rpx;
+					
+					.invite-header {
+						padding-bottom: 30rpx;
+						border-bottom: 1rpx solid #E5E5E5;
+						
+						.invite-header-item {
+							font-size: 32rpx;
+							color: #333333;
+							gap: 8rpx;
+						}
 					}
+					
+					.invite-level-section {
+						padding-top: 30rpx;
+						
+						.level-item {
+							padding: 20rpx 0;
+							
+							.level-left {
+								flex: 1;
+								display: flex;
+								flex-direction: column;
+								
+								.level-count-row {
+									gap: 8rpx;
+									margin-bottom: 10rpx;
+									display: flex;
+									align-items: center;
+									
+									.level-count {
+										font-size: 32rpx;
+										color: #333333;
+										font-weight: 500;
+									}
+								}
+								
+								.level-label {
+									font-size: 24rpx;
+									color: #999999;
+									margin-top: 0;
+									margin-left: 110rpx;
+								}
+							}
+							
+							.level-divider {
+								width: 1rpx;
+								height: 80rpx;
+								background-color: #E5E5E5;
+								margin: 0 30rpx;
+							}
+							
+							.level-right {
+								flex: 1;
+								
+								.revenue-item {
+									display: flex;
+									justify-content: space-between;
+									align-items: center;
+									
+									.revenue-label {
+										font-size: 28rpx;
+										color: #666666;
+									}
+									
+									.revenue-value {
+										font-size: 32rpx;
+										color: #333333;
+										font-weight: 600;
+									}
+								}
+							}
+						}
+						
+						.section-divider {
+							height: 1rpx;
+							background-color: #E5E5E5;
+							margin: 20rpx 0;
+						}
+					}
+				}
 
-					.my-promote-banner {
-						margin-top: 30rpx;
-						height: 148rpx;
-						width: 542rpx;
-						border-radius: 10rpx;
+				.my-promote-box {
+					border-radius: 20rpx;
+					padding: 30rpx 30rpx 40rpx;
+					
+					.promote-title {
+						font-size: 36rpx;
+						font-weight: 600;
+						color: #333333;
+						margin-bottom: 30rpx;
+					}
+					
+					.promote-content {
+						.promote-left,
+						.promote-right {
+							flex: 1;
+							
+							.promote-section-title {
+								font-size: 28rpx;
+								color: #666666;
+							}
+							
+							.invite-code {
+								font-size: 42rpx;
+								font-weight: bold;
+								color: #333333;
+								word-break: break-all;
+								text-align: center;
+								cursor: pointer;
+								user-select: none;
+								-webkit-user-select: none;
+							}
+							
+							.invite-count {
+								font-size: 72rpx;
+								font-weight: bold;
+								color: #333333;
+							}
+						}
+						
+						.promote-divider {
+							width: 1rpx;
+							height: 200rpx;
+							background-color: #E5E5E5;
+							margin: 0 30rpx;
+						}
 					}
 				}
 
@@ -593,6 +816,7 @@
 				.apply-btn {
 					line-height: 30rpx;
 					height: 82rpx;
+					background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 				}
 			}
 
@@ -639,6 +863,7 @@
 				.apply-btn {
 					line-height: 30rpx;
 					height: 82rpx;
+					background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 				}
 
 				.bg-gray {
@@ -685,6 +910,7 @@
 		padding: 0 180rpx;
 		border-radius: 10rpx;
 		margin-top: 60rpx;
+		background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 	}
 
 </style>
