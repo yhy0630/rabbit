@@ -273,7 +273,7 @@ export default {
             // 跳转到服务详情页面
             let item = null;
             let serviceId = null;
-            
+
             // 优先从事件对象的 dataset 中获取
             if (event && event.currentTarget && event.currentTarget.dataset) {
                 const dataset = event.currentTarget.dataset;
@@ -283,7 +283,7 @@ export default {
                     item = this.serviceList[itemIndex];
                 }
             }
-            
+
             // 如果从 dataset 获取到了 id，直接使用
             if (serviceId && serviceId !== 'undefined' && serviceId !== 'null' && serviceId !== '') {
                 uni.navigateTo({
@@ -291,7 +291,7 @@ export default {
                 });
                 return;
             }
-            
+
             // 否则从 item 对象中获取
             if (item && item.id !== undefined && item.id !== null && item.id !== '' && item.id !== 0) {
                 uni.navigateTo({
@@ -299,7 +299,7 @@ export default {
                 });
                 return;
             }
-            
+
             // 如果都没有，尝试通过 index 获取
             if (index !== undefined && this.serviceList && this.serviceList[index]) {
                 item = this.serviceList[index];
@@ -310,7 +310,7 @@ export default {
                     return;
                 }
             }
-            
+
             // 所有方式都失败，显示错误
             console.error('服务信息不完整:', {
                 event: event,

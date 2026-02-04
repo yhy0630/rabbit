@@ -355,7 +355,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "收货地址"
+                        "navigationBarTitleText": "收货地址",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -383,7 +384,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "我的收藏"
+                        "navigationBarTitleText": "我的收藏",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -428,7 +430,58 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "个人资料"
+                        "navigationBarTitleText": "个人资料",
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/change_mobile/change_mobile",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "修改手机号",
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/change_nickname/change_nickname",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "修改昵称",
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/real_name_auth/real_name_auth",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "实名认证",
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/change_password/change_password",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "修改密码",
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/user_deposit/user_deposit",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "保证金",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -972,90 +1025,6 @@
                     },
                     "style": {
                         "navigationBarTitleText": "服务详情",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#4CAF50"
-                    }
-                },
-                {
-                    "path": "pages/merchant_join/merchant_join",
-                    "meta": {
-                        "auth": false
-                    },
-                    "style": {
-                        "navigationBarTitleText": "入驻商家",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#4CAF50"
-                    }
-                },
-                {
-                    "path": "pages/service_publish/service_publish",
-                    "meta": {
-                        "auth": false
-                    },
-                    "style": {
-                        "navigationBarTitleText": "发布服务",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#4CAF50"
-                    }
-                },
-                {
-                    "path": "pages/service_confirm_order/service_confirm_order",
-                    "meta": {
-                        "auth": false
-                    },
-                    "style": {
-                        "navigationBarTitleText": "确认订单",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#4CAF50"
-                    }
-                },
-                {
-                    "path": "pages/service_order_list/service_order_list",
-                    "meta": {
-                        "auth": true
-                    },
-                    "style": {
-                        "navigationBarTitleText": "我的订单",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#4CAF50"
-                    }
-                },
-                {
-                    "path": "pages/service_order_detail/service_order_detail",
-                    "meta": {
-                        "auth": true
-                    },
-                    "style": {
-                        "navigationBarTitleText": "订单详情",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#4CAF50"
-                    }
-                },
-                {
-                    "path": "pages/service_user/service_user",
-                    "meta": {
-                        "auth": false
-                    },
-                    "style": {
-                        "navigationBarTitleText": "我的",
-                        "navigationStyle": "custom",
-                        "navigationBarTextStyle": "white",
-                        "navigationBarBackgroundColor": "#FF3D00"
-                    }
-                },
-                {
-                    "path": "pages/master_apply/master_apply",
-                    "meta": {
-                        "auth": true
-                    },
-                    "style": {
-                        "navigationBarTitleText": "师傅入驻",
                         "navigationStyle": "custom",
                         "navigationBarTextStyle": "white",
                         "navigationBarBackgroundColor": "#4CAF50"

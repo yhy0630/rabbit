@@ -30,16 +30,17 @@
           <view class="xs lighter">{{ item.use_scene_desc }}</view>
         </view>
         <button
-          v-show="btnType == 0 || btnType == 2"
+          v-show="btnType == 0 || btnType == 1 || btnType == 2"
           type="primary"
           :class="
             'btn br60 white xs ' + 
             (btnType == 0 ? 'btn-use' : '') + 
+            (btnType == 1 ? 'btn-used' : '') +
             (btnType == 2 ? 'btn-expired' : '')
           "
           @tap="onHandle(item.id, item)"
         >
-          {{ btnType == 2 ? '已过期' : getBtn(item) }}
+          {{ btnType == 1 ? '已使用' : (btnType == 2 ? '已过期' : getBtn(item)) }}
         </button>
         <image
           v-if="item.is_get"
@@ -136,6 +137,10 @@ export default {
   },
   methods: {
     onHandle(id, item) {
+      // 已使用状态不执行任何操作
+      if (this.btnType == 1) {
+        return;
+      }
       this.id = id;
       //   const { btnType } = this;
       const btnText = this.getBtn(item);
@@ -204,8 +209,9 @@ export default {
     padding: 20rpx;
 
     &.gray {
-      background-image: url(../../static/images/coupon_bg_grey.png);
-
+      .price {
+        color: #666;
+      }
       .btn {
         &.plain {
           color: #cccccc;
@@ -223,7 +229,7 @@ export default {
       height: 52rpx;
       position: absolute;
       right: 20rpx;
-      top: 50%;
+      top: 75%;
       transform: translateY(-50%);
       width: 120rpx;
       text-align: center;
@@ -238,6 +244,11 @@ export default {
       &.btn-expired {
         background-color: #F0FFF8;
         color: #34960F;
+      }
+
+      &.btn-used {
+        background-color: #F5F5F5;
+        color: #999999;
       }
 
       &.plain {

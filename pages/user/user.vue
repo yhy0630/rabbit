@@ -34,7 +34,7 @@
                                         v-if="userInfo.vip"
                                     >
                                         <text class="m-r-10">
-                                            <text class="v xxl m-r-4">v</text>
+                                            <text class="v xxl m-r-4">T</text>
                                             <text class="xxs">{{ userInfo.vip }}</text>
                                         </text>
                                         <text class="xxs">{{ userInfo.level_name }}</text>

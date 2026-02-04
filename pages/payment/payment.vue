@@ -49,7 +49,7 @@
                                 <u-radio
                                     shape="circle"
                                     :name="item.pay_way"
-                                    :active-color="colorConfig.primary"
+                                    active-color="#149906"
                                 />
                             </view>
                         </view>
@@ -436,6 +436,7 @@ export default {
 page {
     height: 100%;
     padding: 0;
+    background: #F1F7F2;
 }
 .payment-pages {
     height: 100%;
@@ -450,8 +451,8 @@ page {
             justify-content: center;
             align-items: center;
             height: 300rpx;
-            background: linear-gradient(270deg, #ff2c3c 0%, #f95f2f 100%);
-            color: #ffffff;
+            // background: linear-gradient(270deg, #ff2c3c 0%, #f95f2f 100%);
+            color: #000;
         }
 
         &-main {
@@ -535,7 +536,7 @@ page {
             height: 74rpx;
             font-size: 28rpx;
             border-radius: 60px;
-            background: linear-gradient(270deg, #ff2c3c 0%, #f95f2f 100%);
+            background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
             color: #ffffff;
 
             &--disabled::before {
