@@ -3,7 +3,7 @@
 <template>
     <view class="user-withdraw">
         <custom-navbar title="申请提现"></custom-navbar>
-        
+
         <!-- 提现金额 -->
         <view class="withdraw-money-section m-t-20 bg-white">
             <view class="money-header flex row-between">
@@ -34,7 +34,7 @@
                 <view class="account-header-bar"></view>
                 <text class="account-title">选择提现账户</text>
             </view>
-            
+
             <u-radio-group v-model="currentValue" @change="changeTab">
                 <!-- 微信 -->
                 <view class="account-item" @tap="selectAccount(3)">
@@ -47,7 +47,7 @@
                     </view>
                     <u-radio :name="3" active-color="#189B07"></u-radio>
                 </view>
-                
+
                 <!-- 支付宝 -->
                 <view class="account-item" @tap="selectAccount(4)">
                     <view class="account-item-left flex">
@@ -59,7 +59,7 @@
                     </view>
                     <u-radio :name="4" active-color="#189B07"></u-radio>
                 </view>
-                
+
                 <!-- 银行卡 -->
                 <view class="account-item" @tap="selectAccount(5)">
                     <view class="account-item-left flex">
@@ -221,6 +221,7 @@ export default {
         return {
             action: baseURL + '/api/file/formimage',
             currentValue: 4, // 当前选择的账户类型，默认支付宝
+            preferredType: null,
             // 表单数据
             form: {
                 money: '', // 提现金额
@@ -235,6 +236,12 @@ export default {
         }
     },
     onLoad() {
+        // 支持从其它页面跳转时，默认选中某个收款账户类型（3微信 / 4支付宝 / 5银行卡）
+        const t = Number(this.$Route?.query?.type)
+        if ([3, 4, 5].includes(t)) {
+            this.preferredType = t
+            this.currentValue = t
+        }
         this.getWithdrawConfigFun()
         this.onSubmit = trottle(this.onSubmit, 1000, this)
     },
@@ -299,6 +306,11 @@ export default {
                 this.widthDrawConfig = data
                 // 如果有配置的账户类型，设置默认值
                 if (data.type && data.type.length > 0) {
+                    // 如果跳转时指定了账户类型，并且可用，则优先生效
+                    if (this.preferredType && data.type.some((item) => item.value == this.preferredType)) {
+                        this.currentValue = this.preferredType
+                        return
+                    }
                     // 优先选择支付宝，如果没有则选择第一个
                     const alipayType = data.type.find(item => item.value == 4)
                     if (alipayType) {

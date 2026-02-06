@@ -1,11 +1,12 @@
 <template>
 <view class="user-address">
+        <custom-navbar title="收货地址"></custom-navbar>
         <view class="no-address flex-col col-center" v-if="!hasAddress">
             <image class="img-null mt20" src="/static/images/address_null.png"></image>
             <view class="sm muted">暂无添加地址，请添加~</view>
         </view>
         <view class="address-list" v-else>
-            <u-radio-group v-model="currentId" class="radio-group" @change="radioChange" :active-color="colorConfig.primary">
+            <u-radio-group v-model="currentId" class="radio-group" @change="radioChange" active-color="#30930C">
                 <view v-for="(item, index) in addressList" :key="index" class="item bg-white m-b-20"  @tap="onSelect(item.id)">
                     <view class="address">
                         <view class="consignee md bold">
@@ -53,13 +54,13 @@
         </u-modal>        
     <view class="footer flex row-between fixed bg-white">
 		<!-- #ifdef H5 || MP-WEIXIN -->
-        <view class="btn flex row-center bg-gray br60 m-r-20" @click="getWxAddressFun" v-if="isWeixin">
+        <!-- <view class="btn flex row-center bg-gray br60 m-r-20" @click="getWxAddressFun" v-if="isWeixin">
             <image class="icon-lg m-r-10" src="/static/images/icon_wechat.png"></image>
             <text class="md">微信导入</text>
-        </view>
+        </view> -->
 		<!-- #endif -->
 		<router-link class="flex-1" :to="{path: '/bundle/pages/address_edit/address_edit'}">
-			<view class="btn bg-primary white md flex row-center br60">新增收货地址</view>
+			<view class="btn btn-add-address white md flex row-center br60">新增收货地址</view>
 		</router-link>
     </view>
 </view>
@@ -70,7 +71,11 @@
 import { getAddressLists, delAddress, setDefaultAddress } from '@/api/user';
 import wechath5 from '@/utils/wechath5'
 import {isWeixinClient} from '@/utils/tools'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 export default {
+  components: {
+    CustomNavbar
+  },
   data() {
     return {
       addressList: [],
@@ -206,6 +211,7 @@ export default {
 </script>
 <style lang="scss">
 .user-address {
+    padding-top: 88px; // 为固定定位的导航栏留出空间（状态栏高度 + 导航栏高度）
     padding-bottom: calc(140rpx + env(safe-area-inset-bottom));
 	.no-address {
 		padding-top: 300rpx;
@@ -239,6 +245,9 @@ export default {
 		.btn {
 		    flex: 1;
 		    height: 80rpx;
+		}
+		.btn-add-address {
+		    background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 		}
 	}
 }

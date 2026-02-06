@@ -1,18 +1,6 @@
 <template>
     <view class="service-category-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">全部服务</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+        <custom-navbar title="全部服务"></custom-navbar>
 
         <!-- 搜索框 -->
         <view class="search-bar">
@@ -101,12 +89,15 @@
 
 <script>
 import { getAllHomeServiceCategoryList, getHomeServiceListByCategory } from '@/api/store'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'ServiceCategory',
+    components: {
+        CustomNavbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
             currentCategoryIndex: 0,
             categories: [],
             serviceList: [],
@@ -117,9 +108,6 @@ export default {
         }
     },
     onLoad(options) {
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
-        
         // 加载分类数据
         this.loadCategories();
         
@@ -144,9 +132,6 @@ export default {
         }
     },
     methods: {
-        goBack() {
-            uni.navigateBack();
-        },
         async loadCategories() {
             try {
                 const res = await getAllHomeServiceCategoryList();
@@ -273,7 +258,7 @@ export default {
             // 跳转到服务详情页面
             let item = null;
             let serviceId = null;
-            
+
             // 优先从事件对象的 dataset 中获取
             if (event && event.currentTarget && event.currentTarget.dataset) {
                 const dataset = event.currentTarget.dataset;
@@ -283,7 +268,7 @@ export default {
                     item = this.serviceList[itemIndex];
                 }
             }
-            
+
             // 如果从 dataset 获取到了 id，直接使用
             if (serviceId && serviceId !== 'undefined' && serviceId !== 'null' && serviceId !== '') {
                 uni.navigateTo({
@@ -291,7 +276,7 @@ export default {
                 });
                 return;
             }
-            
+
             // 否则从 item 对象中获取
             if (item && item.id !== undefined && item.id !== null && item.id !== '' && item.id !== 0) {
                 uni.navigateTo({
@@ -299,7 +284,7 @@ export default {
                 });
                 return;
             }
-            
+
             // 如果都没有，尝试通过 index 获取
             if (index !== undefined && this.serviceList && this.serviceList[index]) {
                 item = this.serviceList[index];
@@ -310,7 +295,7 @@ export default {
                     return;
                 }
             }
-            
+
             // 所有方式都失败，显示错误
             console.error('服务信息不完整:', {
                 event: event,
@@ -337,56 +322,18 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-.status-bar {
-    width: 100%;
-    background-color: #4CAF50;
-}
-
-.header-navbar {
-    width: 100%;
-    background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-    padding: 10rpx 0;
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    height: 88rpx;
-}
-
-.back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-title {
-    flex: 1;
-    text-align: center;
-    color: #FFFFFF;
-    font-size: 36rpx;
-    font-weight: bold;
-}
-
-.navbar-right {
-    width: 60rpx;
+    padding-top: 88px; // 为固定定位的导航栏留出空间（状态栏高度 + 导航栏高度）
 }
 
 .search-bar {
     padding: 20rpx 30rpx;
-    background-color: #F5F5F5;
+    background-color: #fff;
 }
 
 .search-input-wrapper {
     display: flex;
     align-items: center;
-    background-color: #FFFFFF;
+    background-color: #f1f1f1;
     border-radius: 50rpx;
     padding: 20rpx 30rpx;
     gap: 20rpx;
@@ -395,6 +342,10 @@ export default {
 .search-icon {
     flex-shrink: 0;
 }
+/deep/ .search-icon .u-icon__icon {
+    font-size: 20px !important; /* 按需可再调大或调小 */
+}
+
 
 .search-input {
     flex: 1;
@@ -415,19 +366,31 @@ export default {
 }
 
 .category-nav-item {
+    position: relative;
     padding: 30rpx 20rpx;
-    border-left: 4rpx solid transparent;
     transition: all 0.3s;
     
     &.active {
-        background-color: #F5F5F5;
-        border-left-color: #4CAF50;
+        background-color: #fff;
         
         .category-nav-text {
-            color: #4CAF50;
+            color: #3EB676;
             font-weight: bold;
         }
     }
+}
+
+/* 左侧选中指示条：圆角 + 更粗（参考截图效果） */
+.category-nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 2rpx;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8rpx;
+    height: 50rpx;
+    background-color: #3EB676;
+    border-radius: 12rpx;
 }
 
 .category-nav-text {
@@ -500,11 +463,15 @@ export default {
 
 .service-type {
     margin-bottom: 10rpx;
+    border-radius: 10rpx;
 }
 
 .service-type-text {
     font-size: 26rpx;
-    color: #4CAF50;
+    color: #1B8902;
+    background-color: #F0FFF8; 
+    padding: 4rpx 12rpx;
+    font-weight: bold; 
 }
 
 .service-footer {
@@ -513,14 +480,16 @@ export default {
     gap: 8rpx;
 }
 
-.service-price {
+.service-price { 
     font-size: 32rpx;
     font-weight: bold;
-    color: #FF5722;
+    color: #F94B30;
+    border-bottom: 1rpx dashed #E4E4E4;
+    padding-bottom: 20rpx;
 }
 
 .service-company {
-    font-size: 24rpx;
+    font-size: 26rpx;
     color: #999999;
 }
 

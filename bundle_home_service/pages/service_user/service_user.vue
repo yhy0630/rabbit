@@ -1,15 +1,15 @@
 <template>
     <view class="service-user-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
+        <!-- 自定义导航栏 -->
+         <custom-navbar title="我的" bg-color="#149906"></custom-navbar>
         
         <!-- 头部区域（红色/橙色渐变） -->
         <view class="header-section">
             <view class="header-top">
-                <text class="switch-merchant" @click="switchIdentity">切换身份></text>
-                <view class="settings-icon" @click="goToSettings">
+                <text class="switch-merchant" @click="switchIdentity">切换商家版＞</text>
+                <!-- <view class="settings-icon" @click="goToSettings">
                     <u-icon name="setting" size="20" color="#FFFFFF"></u-icon>
-                </view>
+                </view> -->
             </view>
             <view class="user-info-section">
                 <image 
@@ -31,33 +31,36 @@
             <view class="order-section">
                 <view class="section-header">
                     <text class="section-title">我的订单</text>
-                    <text class="view-all" @click="goToOrderList">查看全部订单</text>
+                    <view class="view-all" @click="goToOrderList">
+                        <text>查看全部</text>
+                        <u-icon name="arrow-right" size="18" color="#999999"></u-icon>
+                    </view>
                 </view>
                 <view class="order-items">
                     <view class="order-item" @click="goToOrderList('pending_pay')">
                         <view class="order-icon-wrapper">
-                            <u-icon name="minus" size="32" color="#FF9800"></u-icon>
+                            <image src="/static/images/daifukuan-2 1.png" mode="aspectFit" class="order-icon-img"></image>
                             <view class="order-badge" v-if="orderCount.pending_pay > 0">{{ orderCount.pending_pay }}</view>
                         </view>
                         <text class="order-label">待付款</text>
                     </view>
                     <view class="order-item" @click="goToOrderList('pending_accept')">
                         <view class="order-icon-wrapper">
-                            <u-icon name="heart" size="32" color="#FF9800"></u-icon>
+                            <image src="/static/images/yuyue-2 1.png" mode="aspectFit" class="order-icon-img"></image>
                             <view class="order-badge" v-if="orderCount.pending_accept > 0">{{ orderCount.pending_accept }}</view>
                         </view>
                         <text class="order-label">待接单</text>
                     </view>
                     <view class="order-item" @click="goToOrderList('pending_service')">
                         <view class="order-icon-wrapper">
-                            <u-icon name="calendar" size="32" color="#FF9800"></u-icon>
+                            <image src="/static/images/daifahuo-2 1.png" mode="aspectFit" class="order-icon-img"></image>
                             <view class="order-badge" v-if="orderCount.pending_service > 0">{{ orderCount.pending_service }}</view>
                         </view>
                         <text class="order-label">待服务</text>
                     </view>
                     <view class="order-item" @click="goToOrderList('completed')">
                         <view class="order-icon-wrapper">
-                            <u-icon name="checkmark-circle" size="32" color="#FF9800"></u-icon>
+                            <image src="/static/images/daishouhuo 1.png" mode="aspectFit" class="order-icon-img"></image>
                             <view class="order-badge" v-if="orderCount.completed > 0">{{ orderCount.completed }}</view>
                         </view>
                         <text class="order-label">已完成</text>
@@ -65,49 +68,47 @@
                 </view>
             </view>
 
-            <!-- 家政工具 -->
+            <!-- 常用工具 -->
             <view class="tools-section">
-                <text class="section-title">家政工具</text>
-                <view class="tools-grid">
-                    <view class="tool-item" @click="goToFavorites">
-                        <u-icon name="star" size="40" color="#333333"></u-icon>
-                        <text class="tool-label">收藏</text>
+                <text class="section-title">常用工具</text>
+                <view class="tools-list">
+                    <view class="tools-item" @click="goToAddress">
+                        <view class="tools-left">
+                            <image src="/static/images/dingwei 1.png" class="tools-icon" mode="aspectFit"></image>
+                            <text class="tools-label">收货地址</text>
+                        </view>
+                        <u-icon name="arrow-right" size="24" color="#CCCCCC"></u-icon>
                     </view>
-                    <view class="tool-item" @click="goToAddress">
-                        <u-icon name="map" size="40" color="#333333"></u-icon>
-                        <text class="tool-label">我的地址</text>
+                    <view class="tools-item" @click="goToCustomerService">
+                        <view class="tools-left">
+                            <image src="/static/images/kefu-3 1.png" class="tools-icon" mode="aspectFit"></image>
+                            <text class="tools-label">联系客服</text>
+                        </view>
+                        <u-icon name="arrow-right" size="24" color="#CCCCCC"></u-icon>
                     </view>
-                    <view class="tool-item" @click="goToWallet">
-                        <u-icon name="wallet" size="40" color="#333333"></u-icon>
-                        <text class="tool-label">我的钱包</text>
+                    <view class="tools-item" @click="goToFavorites">
+                        <view class="tools-left">
+                            <image src="/static/images/gonggao 1.png" class="tools-icon" mode="aspectFit"></image>
+                            <text class="tools-label">我的收藏</text>
+                        </view>
+                        <u-icon name="arrow-right" size="24" color="#CCCCCC"></u-icon>
                     </view>
-                    <view class="tool-item" @click="goToHistory">
-                        <u-icon name="list" size="40" color="#333333"></u-icon>
-                        <text class="tool-label">足迹</text>
+                    <view class="tools-item" @click="goToFeedback">
+                        <view class="tools-left">
+                            <image src="/static/images/shenqing 1.png" class="tools-icon" mode="aspectFit"></image>
+                            <text class="tools-label">意见反馈</text>
+                        </view>
+                        <u-icon name="arrow-right" size="24" color="#CCCCCC"></u-icon>
                     </view>
                 </view>
             </view>
         </scroll-view>
 
-        <!-- 底部导航栏 -->
-        <view class="bottom-navbar">
-            <view class="nav-item" @click="goToHome">
-                <u-icon name="home" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">家政</text>
-            </view>
-            <view class="nav-item" @click="goToOrderList">
-                <u-icon name="list" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">订单</text>
-            </view>
-            <view class="nav-item" @click="goToMessage">
-                <u-icon name="chat" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">消息</text>
-            </view>
-            <view class="nav-item active">
-                <u-icon name="account" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">我的</text>
-            </view>
-        </view>
+        <!-- 底部导航栏：复用全局 custom-tabbar -->
+        <custom-tabbar
+            :current="2"
+            :tabs="tabbarTabs"
+        ></custom-tabbar>
     </view>
 </template>
 
@@ -115,12 +116,18 @@
 import { getUser } from '@/api/user'
 import { mapGetters } from 'vuex'
 import { getHomeServiceOrderList, checkHomeServiceMasterStatus } from '@/api/store'
+import CustomTabbar from '@/components/custom-tabbar/custom-tabbar.vue'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'ServiceUser',
+    components: {
+        CustomTabbar,
+        CustomNavbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
+            // statusBarHeight removed; custom-navbar used
             userInfo: {
                 nickname: '',
                 username: '',
@@ -133,15 +140,29 @@ export default {
                 pending_service: 0,
                 completed: 0
             },
-            masterInfo: null // 师傅信息
+            masterInfo: null, // 师傅信息
+            // 家政模块底部导航栏按钮配置：首页 / 消息 / 我的
+            tabbarTabs: [
+                {
+                    id: 'home',
+                    path: '/bundle_home_service/pages/home_service_index/home_service_index'
+                },
+                {
+                    id: 'message',
+                    // 暂无跳转页面，留空则点击不跳转（仅高亮）
+                    path: ''
+                },
+                {
+                    id: 'user',
+                    path: '/bundle_home_service/pages/service_user/service_user'
+                }
+            ]
         }
     },
     computed: {
         ...mapGetters(['isLogin'])
     },
     onLoad() {
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
         this.loadUserInfo();
         this.loadOrderCount();
         this.checkMasterStatus();
@@ -216,6 +237,18 @@ export default {
                 url: '/bundle/pages/user_address/user_address'
             });
         },
+        goToCustomerService() {
+            // 尝试跳转到客服页面，若不存在则提示
+            uni.navigateTo({
+                url: '/pages/customer_service/customer_service',
+                fail: () => {
+                    uni.showToast({
+                        title: '联系客服功能暂未开放',
+                        icon: 'none'
+                    });
+                }
+            });
+        },
         goToWallet() {
             // 跳转到钱包页面
             uni.navigateTo({
@@ -227,6 +260,18 @@ export default {
             uni.showToast({
                 title: '功能开发中',
                 icon: 'none'
+            });
+        },
+        goToFeedback() {
+            // 跳转到意见反馈页面或弹出提示
+            uni.navigateTo({
+                url: '/pages/feedback/feedback',
+                fail: () => {
+                    uni.showToast({
+                        title: '意见反馈功能暂未开放',
+                        icon: 'none'
+                    });
+                }
             });
         },
         goToProfile() {
@@ -341,20 +386,21 @@ export default {
 <style lang="scss" scoped>
 .service-user-page {
     width: 100%;
-    height: 100vh;
+    // height: 100vh;
     background-color: #F5F5F5;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    padding-top: calc(128rpx + var(--status-bar-height));
+    background: linear-gradient(180deg, #149906 38%, #F4F5F6 38%);
+
 }
 
 .status-bar {
     width: 100%;
-    background: linear-gradient(180deg, #FF3D00 0%, #FF6D00 50%, #FF9100 100%);
 }
 
 .header-section {
-    background: linear-gradient(180deg, #FF3D00 0%, #FF6D00 50%, #FF9100 100%);
     padding: 20rpx 20rpx 40rpx 20rpx;
     padding-top: calc(20rpx + env(safe-area-inset-top));
 }
@@ -415,6 +461,8 @@ export default {
     flex: 1;
     width: 100%;
     padding: 20rpx 20rpx 200rpx 20rpx;
+    box-sizing: border-box;
+
 }
 
 .order-section {
@@ -429,6 +477,8 @@ export default {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 30rpx;
+    border-bottom: 1rpx solid #EEE;
+    padding-bottom: 20rpx;
 }
 
 .section-title {
@@ -438,13 +488,24 @@ export default {
 }
 
 .view-all {
-    font-size: 24rpx;
+    font-size: 30rpx;
     color: #999999;
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+}
+/* 放大 view-all 内部 u-icon（覆盖组件内联 font-size） */
+/deep/ .view-all .u-icon__icon {
+    font-size: 18px !important;
 }
 
 .order-items {
     display: flex;
     justify-content: space-around;
+    // background-color: #FFFFFF;
+    // border-radius: 12rpx;
+    padding: 18rpx;
+    // box-shadow: 0 6rpx 18rpx rgba(0,0,0,0.06);
 }
 
 .order-item {
@@ -455,16 +516,24 @@ export default {
 }
 
 .order-icon-wrapper {
-    width: 80rpx;
-    height: 80rpx;
+    width: 72rpx;
+    height: 72rpx;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 16rpx;
+    background-color: transparent;
 }
 
 .order-label {
     font-size: 24rpx;
     color: #333333;
+}
+
+.order-icon-img {
+    width: 80rpx;
+    height: 80rpx;
+    display: block;
 }
 
 .order-icon-wrapper {
@@ -512,6 +581,41 @@ export default {
 .tool-label {
     font-size: 24rpx;
     color: #333333;
+}
+/* 常用工具 列表样式 */
+.tools-list {
+    margin-top: 20rpx;
+    display: flex;
+    flex-direction: column;
+    border-top: 1rpx solid #EEE;
+}
+.tools-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // padding: 20rpx 0;
+    border-bottom: 1rpx solid #F0F0F0;
+}
+.tools-item:last-child {
+    border-bottom: none;
+}
+.tools-left {
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
+}
+.tools-icon {
+    width: 100rpx;
+    height: 100rpx;
+    border-radius: 34rpx;
+    // background-color: #F7F8FA;
+    padding: 10rpx;
+    box-sizing: border-box;
+}
+.tools-label {
+    font-size: 30rpx;
+    color: #333333;
+    font-weight: 500;
 }
 
 .bottom-navbar {

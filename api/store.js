@@ -246,7 +246,7 @@ export function getHomeServiceOrderDetail(params) {
 
 // 创建快递订单
 export function createExpressOrder(data) {
-	return request.post("express_order/create", data)
+    return request.post("express_order/create", data)
 }
 
 // 师傅入驻申请

@@ -1,59 +1,27 @@
 <template>
     <view class="home-service-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">家政服务</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+        <custom-navbar title="家政服务"></custom-navbar>
 
         <!-- 内容区域 -->
         <scroll-view class="content-scroll" scroll-y>
-            <!-- 促销横幅 -->
+            <!-- 顶部横幅：固定背景图 -->
             <view class="promo-banner">
-                <view class="banner-location">
-                    <view class="location-tag" @click="goToCity">
-                        <text class="location-text">{{ cityInfo.name || '河北' }}</text>
-                        <u-icon name="arrow-down" size="12" color="#FFFFFF"></u-icon>
-                    </view>
-                </view>
-                <view class="banner-content">
-                    <view class="banner-title">
-                        <text class="title-text">大扫除</text>
-                        <view class="title-number">7</view>
-                    </view>
-                    <view class="banner-subtitle">
-                        <view class="gift-badge">
-                            <text class="gift-text">预定就送</text>
-                        </view>
-                        <text class="subtitle-text">年末狂抢价</text>
-                    </view>
-                    <view class="banner-footer">
-                        <text class="footer-text">免费送任意一台家电清洗!</text>
-                    </view>
-                    <view class="banner-icon">
-                        <image src="/static/picture/cleaning-icon.png" mode="aspectFit" class="icon-img"></image>
-                    </view>
-                </view>
-                <view class="ad-label">广告</view>
+                <image
+                    src="/static/picture/beijing.png"
+                    mode="aspectFill"
+                    class="promo-banner-image"
+                ></image>
             </view>
 
             <!-- 搜索框 -->
             <view class="search-bar">
                 <view class="search-input-wrapper">
-                    <u-icon name="search" size="18" color="#999999" class="search-icon"></u-icon>
+                    <u-icon name="search" size="22" color="#CCCCCC" class="search-icon"></u-icon>
                     <input 
                         class="search-input" 
                         type="text" 
                         placeholder="输入搜索关键词" 
-                        placeholder-style="color: #999999;"
+                        placeholder-style="color: #CCCCCC;"
                     />
                     <view class="search-btn">搜索</view>
                 </view>
@@ -67,8 +35,12 @@
                     :key="index"
                     @click="goToCategory(item)"
                 >
-                    <view class="category-icon" :style="{ backgroundColor: item.color }">
-                        <u-icon :name="item.icon" size="40" color="#FFFFFF"></u-icon>
+                    <view class="category-icon">
+                        <image
+                            :src="getCategoryIcon(item)"
+                            class="category-icon-img"
+                            mode="aspectFit"
+                        ></image>
                     </view>
                     <text class="category-name">{{ item.name }}</text>
                 </view>
@@ -76,17 +48,15 @@
 
             <!-- 最新入驻 -->
             <view class="latest-entry">
-                <view class="entry-badge">最新入驻</view>
+                <image
+                    src="/static/picture/new.png"
+                    mode="aspectFit"
+                    class="entry-badge-image"
+                ></image>
                 <view class="entry-content">
                     <text class="entry-text">03/12 欢迎</text>
                     <text class="entry-phone">152****3231</text>
                     <text class="entry-text">的店铺成功入驻</text>
-                </view>
-                <view class="entry-right">
-                    <view class="shield-icon">
-                        <u-icon name="checkmark-circle" size="24" color="#4CAF50"></u-icon>
-                    </view>
-                    <text class="complaint-text">投诉/建议</text>
                 </view>
             </view>
 
@@ -107,49 +77,53 @@
                 </view>
                 <view class="ad-slot">
                     <text class="ad-slot-text">广告位</text>
-                    <view class="ad-plus">+</view>
                 </view>
             </view>
         </scroll-view>
 
-        <!-- 底部导航栏 -->
-        <view class="bottom-navbar">
-            <view class="nav-item active">
-                <u-icon name="home" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">首页</text>
-            </view>
-            <view class="nav-item">
-                <u-icon name="plus" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">发布</text>
-            </view>
-            <view class="nav-item">
-                <u-icon name="chat" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">消息</text>
-            </view>
-            <view class="nav-item" @click="goToUser">
-                <u-icon name="account" size="24" color="#FFFFFF"></u-icon>
-                <text class="nav-text">我的</text>
-            </view>
-        </view>
+        <!-- 底部导航栏：复用全局 custom-tabbar -->
+        <custom-tabbar
+            :current="0"
+            :tabs="tabbarTabs"
+        ></custom-tabbar>
     </view>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { getHomeServiceCategoryList } from '@/api/store'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+import CustomTabbar from '@/components/custom-tabbar/custom-tabbar.vue'
 
 export default {
     name: 'HomeServiceIndex',
+    components: {
+        CustomNavbar,
+        CustomTabbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
-            categories: []
+            categories: [],
+            // 家政模块底部导航栏按钮配置：首页 / 消息 / 我的
+            // 图标与文字统一在 components/custom-tabbar/custom-tabbar.vue 中维护
+            tabbarTabs: [
+                {
+                    id: 'home',
+                    path: '/bundle_home_service/pages/home_service_index/home_service_index'
+                },
+                {
+                    id: 'message',
+                    // 暂无跳转页面，留空则点击不跳转（仅高亮）
+                    path: ''
+                },
+                {
+                    id: 'user',
+                    path: '/bundle_home_service/pages/service_user/service_user'
+                }
+            ]
         }
     },
     onLoad() {
-        // 获取状态栏高度
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
         // 加载分类数据
         this.loadCategories();
     },
@@ -157,9 +131,6 @@ export default {
         ...mapGetters(['cityInfo'])
     },
     methods: {
-        goBack() {
-            uni.navigateBack();
-        },
         goToCity() {
             uni.navigateTo({
                 url: '/bundle_b/pages/city/city'
@@ -202,6 +173,22 @@ export default {
                 { id: 0, name: '更多服务', icon: 'grid', color: '#FFA726' }
             ];
         },
+        // 根据分类名称返回对应的图标图片
+        getCategoryIcon(item) {
+            const name = item.name || '';
+            if (name === '保姆月嫂') return '/static/picture/baomu.png';
+            if (name === '保洁清洗') return '/static/picture/baojie.png';
+            if (name === '搬家货运') return '/static/picture/banjia.png';
+            if (name === '家电维修') return '/static/picture/jiadian.png';
+            if (name === '开锁换锁') return '/static/picture/kaisuo.png';
+            if (name === '鲜花绿植') return '/static/picture/xianhua.png';
+            if (name === '医护健康') return '/static/picture/yihu.png';
+            if (name === '美食餐饮') return '/static/picture/meishi.png';
+            if (name === '做饭阿姨') return '/static/picture/zuofan.png';
+            if (name === '更多服务' || item.id === 0) return '/static/picture/fuwu.png';
+            // 其他未指定的分类统一使用“更多服务”图标
+            return '/static/picture/fuwu.png';
+        },
         goToCategory(item) {
             // 如果是"更多服务"，跳转到全部服务页面
             if (item.name === '更多服务' || item.id === 0) {
@@ -238,52 +225,15 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
 .home-service-page {
     width: 100%;
-    height: 100vh;
-    background-color: #F5F5F5;
+    height: 110vh;
+    background-color: #F5F5F7;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-.status-bar {
-    width: 100%;
-    background-color: #4CAF50;
-}
-
-.header-navbar {
-    width: 100%;
-    background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-    padding: 10rpx 0;
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    height: 88rpx;
-}
-
-.back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-title {
-    flex: 1;
-    text-align: center;
-    color: #FFFFFF;
-    font-size: 36rpx;
-    font-weight: bold;
-}
-
-.navbar-right {
-    width: 60rpx;
+    padding-top: 88px; // 为固定定位的导航栏留出空间（状态栏高度 + 导航栏高度）
 }
 
 .content-scroll {
@@ -296,171 +246,54 @@ export default {
 .promo-banner {
     width: 100%;
     height: 420rpx;
-    background: linear-gradient(135deg, #FF3D00 0%, #FF6D00 50%, #FF9100 100%);
-    position: relative;
     margin-bottom: 20rpx;
-    border-radius: 0 0 20rpx 20rpx;
     overflow: hidden;
-    box-shadow: 0 4rpx 20rpx rgba(255, 87, 34, 0.3);
+    box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
 }
 
-.banner-location {
-    position: absolute;
-    top: 20rpx;
-    left: 20rpx;
-    z-index: 10;
-}
-
-.location-tag {
-    background-color: rgba(255, 0, 0, 0.8);
-    padding: 8rpx 16rpx;
-    border-radius: 20rpx;
-    display: flex;
-    align-items: center;
-    gap: 8rpx;
-    cursor: pointer;
-}
-
-.location-text {
-    color: #FFFFFF;
-    font-size: 24rpx;
-}
-
-.banner-content {
-    position: relative;
+.promo-banner-image {
     width: 100%;
     height: 100%;
-    padding: 60rpx 30rpx 30rpx;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.banner-title {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-}
-
-.title-text {
-    color: #FFFFFF;
-    font-size: 80rpx;
-    font-weight: bold;
-    text-shadow: 2rpx 2rpx 8rpx rgba(0, 0, 0, 0.2);
-    letter-spacing: 4rpx;
-}
-
-.title-number {
-    width: 80rpx;
-    height: 80rpx;
-    background-color: rgba(255, 255, 255, 0.3);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFFFFF;
-    font-size: 48rpx;
-    font-weight: bold;
-}
-
-.banner-subtitle {
-    display: flex;
-    align-items: center;
-    gap: 20rpx;
-    margin-top: 20rpx;
-}
-
-.gift-badge {
-    background-color: #FFEB3B;
-    padding: 10rpx 20rpx;
-    border-radius: 30rpx;
-    box-shadow: 0 2rpx 8rpx rgba(255, 235, 59, 0.5);
-}
-
-.gift-text {
-    color: #FF5722;
-    font-size: 24rpx;
-    font-weight: bold;
-}
-
-.subtitle-text {
-    color: #FFFFFF;
-    font-size: 52rpx;
-    font-weight: bold;
-    text-shadow: 1rpx 1rpx 4rpx rgba(0, 0, 0, 0.2);
-}
-
-.banner-footer {
-    margin-top: 20rpx;
-}
-
-.footer-text {
-    background-color: #FFEB3B;
-    color: #FF5722;
-    padding: 14rpx 28rpx;
-    border-radius: 40rpx;
-    font-size: 26rpx;
-    font-weight: bold;
-    display: inline-block;
-    box-shadow: 0 2rpx 8rpx rgba(255, 87, 34, 0.3);
-}
-
-.banner-icon {
-    position: absolute;
-    right: 20rpx;
-    bottom: 20rpx;
-    width: 140rpx;
-    height: 140rpx;
-    opacity: 0.9;
-}
-
-.icon-img {
-    width: 100%;
-    height: 100%;
-}
-
-.ad-label {
-    position: absolute;
-    bottom: 10rpx;
-    right: 10rpx;
-    background-color: rgba(0, 0, 0, 0.3);
-    color: #FFFFFF;
-    font-size: 20rpx;
-    padding: 4rpx 12rpx;
-    border-radius: 4rpx;
+    display: block;
 }
 
 /* 搜索框 */
 .search-bar {
     padding: 20rpx 30rpx;
-    background-color: #FFFFFF;
+    background-color: #F5F5F7;
 }
 
 .search-input-wrapper {
     display: flex;
     align-items: center;
-    background-color: #F5F5F5;
-    border-radius: 50rpx;
-    padding: 20rpx 30rpx;
-    gap: 20rpx;
+    background-color: #FFFFFF;
+    border-radius: 40rpx;
+    padding: 18rpx 26rpx;
+    gap: 18rpx;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .search-icon {
     flex-shrink: 0;
 }
 
+/* 放大搜索图标：覆盖 u-icon 内部的 font-size */
+/deep/ .search-icon .u-icon__icon {
+    font-size: 20px !important; /* 按需可再调大或调小 */
+}
+
 .search-input {
     flex: 1;
-    font-size: 28rpx;
-    color: #333333;
+    font-size: 26rpx;
+    color: #666666;
 }
 
 .search-btn {
-    background-color: #E0E0E0;
-    color: #666666;
-    padding: 12rpx 24rpx;
-    border-radius: 30rpx;
-    font-size: 24rpx;
+    background-color: transparent;
+    color: #999999;
+    padding-left: 24rpx;
+    // border-left: 1px solid #F0F0F0;
+    font-size: 30rpx;
     flex-shrink: 0;
 }
 
@@ -485,10 +318,13 @@ export default {
     width: 100rpx;
     height: 100rpx;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.category-icon-img {
+    width: 100%;
+    height: 100%;
+    display: block;
 }
 
 .category-name {
@@ -508,12 +344,9 @@ export default {
     gap: 20rpx;
 }
 
-.entry-badge {
-    background-color: #FF5722;
-    color: #FFFFFF;
-    padding: 8rpx 16rpx;
-    border-radius: 8rpx;
-    font-size: 24rpx;
+.entry-badge-image {
+    width: 90rpx;
+    height: 90rpx;
     flex-shrink: 0;
 }
 

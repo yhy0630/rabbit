@@ -1,18 +1,7 @@
 <template>
-    <view class="service-order-list-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">我的订单</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+    <view class="service-order-list-page" :style="{ paddingTop: navbarHeight + 'px' }">
+        <!-- 使用自定义导航栏 -->
+        <custom-navbar title="我的订单"></custom-navbar>
 
         <!-- 标签页 -->
         <view class="tabs-container">
@@ -28,28 +17,45 @@
         </view>
 
         <!-- 订单列表 -->
-        <scroll-view class="content-scroll" scroll-y @scrolltolower="loadMore" v-if="orderList.length > 0">
-            <view class="order-item" v-for="(item, index) in orderList" :key="index" @click="goToDetail(item.id)">
+        <scroll-view class="content-scroll" scroll-y @scrolltolower="loadMore" :style="{ height: scrollViewHeight }" v-if="orderList.length > 0">
+            <view class="order-item" v-for="(item, index) in orderList" :key="index">
                 <view class="order-header">
                     <text class="order-sn">订单号：{{ item.order_sn }}</text>
-                    <text class="order-status" :class="{
-                        'status-pending': item.status === 0 && item.pay_status === 0,
-                        'status-pending-accept': item.status === 0 && item.pay_status === 1,
-                        'status-waiting': item.status === 1,
-                        'status-completed': item.status === 3,
-                        'status-cancelled': item.status === 4
-                    }">
-                        {{ getStatusText(item.status, item.pay_status) }}
-                    </text>
+                    <view class="order-status-wrapper">
+                        <u-icon 
+                            name="rmb-circle" 
+                            :color="getStatusColor(item.status, item.pay_status)"
+                            size="28"
+                            class="status-icon"
+                        ></u-icon>
+                        <text class="order-status" :class="{
+                            'status-pending': item.status === 0 && item.pay_status === 0,
+                            'status-pending-accept': item.status === 0 && item.pay_status === 1,
+                            'status-waiting': item.status === 1,
+                            'status-completed': item.status === 3,
+                            'status-cancelled': item.status === 4
+                        }">
+                            {{ getStatusText(item.status, item.pay_status) }}
+                        </text>
+                    </view>
                 </view>
-                <view class="order-content">
-                    <text class="service-name">{{ item.service_name }}</text>
-                    <view class="order-info">
+                <view class="order-content" @click="goToDetail(item.id)">
+                    <view class="service-image-wrapper">
+                        <image 
+                            :src="item.image || item.service_image || item.service_img || '/static/picture/Rectangle 30305.png'" 
+                            mode="aspectFill" 
+                            class="service-image"
+                        ></image>
+                    </view>
+                    <view class="service-info">
+                        <text class="service-name">{{ item.service_name }}</text>
+                        <text class="service-address" v-if="item.service_address">{{ item.service_address }}</text>
                         <text class="appointment-time" v-if="item.appointment_time">上门时间：{{ item.appointment_time }}</text>
+                        <text class="order-price">¥{{ Number(item.total_amount || 0).toFixed(2) }}</text>
                     </view>
                 </view>
                 <view class="order-footer">
-                    <text class="order-price">¥{{ Number(item.total_amount || 0).toFixed(2) }}</text>
+                    <text class="create-time" v-if="item.create_time">创建时间：{{ item.create_time }}</text>
                     <view class="order-actions">
                         <button 
                             class="action-btn cancel-btn" 
@@ -63,7 +69,14 @@
                             v-if="item.status === 0 && item.pay_status === 0"
                             @click.stop="goToPay(item)"
                         >
-                            立即支付
+                            去支付
+                        </button>
+                        <button 
+                            class="action-btn cancel-btn" 
+                            v-if="(item.status === 0 && item.pay_status === 1) || item.status === 1"
+                            @click.stop="applyRefund(item.id)"
+                        >
+                            申请退款
                         </button>
                         <button 
                             class="action-btn detail-btn" 
@@ -74,7 +87,14 @@
                         </button>
                         <button 
                             class="action-btn detail-btn" 
-                            v-else
+                            v-if="item.status === 3"
+                            @click.stop="goToEvaluate(item.id)"
+                        >
+                            去评价
+                        </button>
+                        <button 
+                            class="action-btn detail-btn" 
+                            v-if="item.status === 1 || item.status === 3 || item.status === 4"
                             @click.stop="goToDetail(item.id)"
                         >
                             查看详情
@@ -102,12 +122,17 @@
 
 <script>
 import { getHomeServiceOrderList } from '@/api/store'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'ServiceOrderList',
+    components: {
+        CustomNavbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
+            navbarHeight: 88, // 默认导航栏高度（状态栏 + 导航栏内容）
+            scrollViewHeight: 'auto', // scroll-view 高度
             currentTab: 0,
             tabs: [
                 { name: '全部', status: '', pay_status: '' },
@@ -124,8 +149,21 @@ export default {
         }
     },
     onLoad(options) {
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
+        // 计算导航栏高度和 scroll-view 高度
+        try {
+            const systemInfo = uni.getSystemInfoSync();
+            const statusBarHeight = systemInfo.statusBarHeight || 0;
+            this.navbarHeight = statusBarHeight + 44; // 状态栏高度 + 导航栏内容高度(44px)
+            
+            // 计算 scroll-view 可用高度：视口高度 - 导航栏高度 - 标签栏高度(88rpx ≈ 44px)
+            const windowHeight = systemInfo.windowHeight || 667;
+            const tabsHeight = 44; // 标签栏高度(88rpx ≈ 44px)
+            this.scrollViewHeight = (windowHeight - this.navbarHeight - tabsHeight) + 'px';
+        } catch (e) {
+            console.error('获取系统信息失败:', e);
+            this.navbarHeight = 88; // 默认值
+            this.scrollViewHeight = 'calc(100vh - 132px)'; // 默认值
+        }
         
         // 如果有传入状态参数，切换到对应标签
         if (options.status !== undefined) {
@@ -240,6 +278,20 @@ export default {
             }
             return '未知';
         },
+        getStatusColor(status, payStatus) {
+            if (status === 0 && payStatus === 0) {
+                return '#888';
+            } else if (status === 0 && payStatus === 1) {
+                return '#1B8902';
+            } else if (status === 1) {
+                return '#1B8902';
+            } else if (status === 3) {
+                return '#999';
+            } else if (status === 4) {
+                return '#35393F';
+            }
+            return '#888';
+        },
         getStatusClass(status, payStatus) {
             // 此方法保留用于其他地方，但不在模板的:class中使用
             if (status === 0 && payStatus === 0) {
@@ -256,6 +308,18 @@ export default {
         goToDetail(orderId) {
             uni.navigateTo({
                 url: `/bundle_home_service/pages/service_order_detail/service_order_detail?id=${orderId}`
+            });
+        },
+        goToEvaluate(orderId) {
+            uni.navigateTo({
+                url: `/bundle_home_service/pages/service_order_evaluate/service_order_evaluate?order_id=${orderId}`,
+                fail: (err) => {
+                    console.error('跳转评价页面失败:', err);
+                    uni.showToast({
+                        title: '页面不存在',
+                        icon: 'none'
+                    });
+                }
             });
         },
         goToPay(order) {
@@ -281,6 +345,25 @@ export default {
                     }
                 }
             });
+        },
+        applyRefund(orderId) {
+            uni.showModal({
+                title: '提示',
+                content: '确定要申请退款吗？',
+                success: (res) => {
+                    if (res.confirm) {
+                        // TODO: 调用申请退款接口
+                        uni.showToast({
+                            title: '退款申请已提交',
+                            icon: 'success'
+                        });
+                        // 刷新列表
+                        this.page = 1;
+                        this.hasMore = true;
+                        this.loadOrderList();
+                    }
+                }
+            });
         }
     }
 }
@@ -289,11 +372,11 @@ export default {
 <style lang="scss" scoped>
 .service-order-list-page {
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #F5F5F5;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    padding-top: calc(130rpx + var(--status-bar-height));
 }
 
 .status-bar {
@@ -370,9 +453,9 @@ export default {
 }
 
 .content-scroll {
-    flex: 1;
     width: 100%;
     padding: 20rpx;
+    box-sizing: border-box;
 }
 
 .order-item {
@@ -380,6 +463,7 @@ export default {
     border-radius: 16rpx;
     padding: 30rpx;
     margin-bottom: 20rpx;
+    box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
 }
 
 .order-header {
@@ -388,12 +472,18 @@ export default {
     align-items: center;
     margin-bottom: 20rpx;
     padding-bottom: 20rpx;
-    border-bottom: 1rpx solid #F0F0F0;
+    // border-bottom: 1rpx solid #F0F0F0;
 }
 
 .order-sn {
-    font-size: 24rpx;
-    color: #999999;
+    font-size: 28rpx;
+    color: #35393F;
+}
+
+.order-status-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
 }
 
 .order-status {
@@ -401,28 +491,54 @@ export default {
     font-weight: bold;
 }
 
+.status-icon {
+    flex-shrink: 0;
+}
+
 .status-pending {
-    color: #FF5722;
+    color: #888;
 }
 
 .status-pending-accept {
-    color: #2196F3;
+    color: #1B8902;
 }
 
 .status-waiting {
-    color: #FF9800;
+    color: #1B8902;
 }
 
 .status-completed {
-    color: #4CAF50;
-}
+    color: #999;
+} 
 
 .status-cancelled {
-    color: #999999;
+    color: #35393F;
 }
 
 .order-content {
+    display: flex;
+    gap: 20rpx;
     margin-bottom: 20rpx;
+}
+
+.service-image-wrapper {
+    width: 160rpx;
+    height: 160rpx;
+    flex-shrink: 0;
+    border-radius: 12rpx;
+    overflow: hidden;
+}
+
+.service-image {
+    width: 100%;
+    height: 100%;
+}
+
+.service-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10rpx;
 }
 
 .service-name {
@@ -430,18 +546,29 @@ export default {
     color: #333333;
     font-weight: 500;
     display: block;
-    margin-bottom: 10rpx;
 }
 
-.order-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8rpx;
+.service-address {
+    font-size: 24rpx;
+    color: #666666;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.4;
 }
 
 .appointment-time {
     font-size: 24rpx;
     color: #666666;
+    display: block;
+}
+
+.order-price {
+    font-size: 28rpx;
+    color: #FF5722;
+    font-weight: bold;
+    display: block;
 }
 
 .order-footer {
@@ -450,39 +577,49 @@ export default {
     align-items: center;
     padding-top: 20rpx;
     border-top: 1rpx solid #F0F0F0;
+    gap: 20rpx;
 }
 
-.order-price {
-    font-size: 32rpx;
-    color: #FF5722;
-    font-weight: bold;
+.create-time {
+    font-size: 24rpx;
+    color: #999999;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .order-actions {
     display: flex;
     gap: 20rpx;
+    flex-shrink: 0;
 }
 
 .action-btn {
-    padding: 12rpx 32rpx;
+    padding: 0rpx 32rpx;
     border-radius: 40rpx;
     font-size: 26rpx;
     border: none;
+    height: 60rpx;
+    line-height: 60rpx;
 }
 
 .cancel-btn {
-    background-color: #F5F5F5;
-    color: #666666;
+    background-color: transparent;
+    color: #999999;
+    border: 1rpx solid #999999;
 }
 
 .pay-btn {
-    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    background-color: #1B8902;
     color: #FFFFFF;
 }
 
 .detail-btn {
-    background-color: #F5F5F5;
-    color: #333333;
+    background-color: transparent;
+    color: #1B8902;
+    border: 1rpx solid #1B8902;
 }
 
 .action-btn::after {
