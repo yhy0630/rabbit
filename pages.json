@@ -326,7 +326,18 @@
                         "auth": false
                     },
                     "style": {
-                        "navigationBarTitleText": "我的订单"
+                        "navigationBarTitleText": "我的订单",
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/order_modeSelect/order_modeSelect",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "订单模块",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -362,7 +373,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "我的优惠券"
+                        "navigationBarTitleText": "我的优惠券",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -524,7 +536,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "分销推广"
+                        "navigationBarTitleText": "分销推广",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -560,7 +573,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "提现"
+                        "navigationBarTitleText": "提现",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -569,7 +583,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "提现记录"
+                        "navigationBarTitleText": "提现记录",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -587,7 +602,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "邀请海报"
+                        "navigationBarTitleText": "邀请海报",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -623,7 +639,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "我的粉丝"
+                        "navigationBarTitleText": "我的粉丝",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -632,7 +649,8 @@
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "佣金明细"
+                        "navigationBarTitleText": "佣金明细",
+                        "navigationStyle": "custom"
                     }
                 },
                 {
@@ -684,7 +702,8 @@
                 {
                     "path": "pages/integral_sign/integral_sign",
                     "style": {
-                        "navigationBarTitleText": "签到"
+                        "navigationBarTitleText": "签到",
+                        "navigationStyle": "custom"
                     },
                     "meta": {
                         "auth": true
@@ -879,6 +898,306 @@
                     },
                     "meta": {
                         "auth": false
+                    }
+                }
+            ]
+        },
+        {
+            "root": "bundle_home_service",
+            "pages": [
+                {
+                    "path": "pages/home_service_index/home_service_index",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "家政服务",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_category/service_category",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "全部服务",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_list/service_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "服务列表",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_detail/service_detail",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/store_service_list/store_service_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "店铺服务",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_info/service_info",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "服务详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/merchant_join/merchant_join",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "入驻商家",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_publish/service_publish",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布服务",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_confirm_order/service_confirm_order",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "确认订单",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_order_list/service_order_list",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的订单",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_order_detail/service_order_detail",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "订单详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_user/service_user",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#FF3D00"
+                    }
+                },
+                {
+                    "path": "pages/master_apply/master_apply",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "师傅入驻",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "bundle_express",
+            "pages": [
+                {
+                    "path": "pages/send_express/send_express",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "寄快递",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/sender_address_list/sender_address_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "寄件地址",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/receiver_address_list/receiver_address_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "收件地址",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/express_address_edit/express_address_edit",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "编辑地址",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "bundle_life_payment",
+            "pages": [
+                {
+                    "path": "pages/life_payment_index/life_payment_index",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "生活缴费",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/utility_payment/utility_payment",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "缴费",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/phone_recharge/phone_recharge",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "话费充值",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/account_management/account_management",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "户号管理",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/payment_records/payment_records",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "缴费记录",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                }
+            ]
+        },
+        {
+            "root": "bundle_secondhand",
+            "pages": [
+                {
+                    "path": "pages/publish_idle/publish_idle",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发闲置",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/my_idle/my_idle",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的",
+                        "navigationBarBackgroundColor": "#FFFFFF"
+                    }
+                },
+                {
+                    "path": "pages/my_published_list/my_published_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我发布的",
+                        "navigationBarBackgroundColor": "#FFFFFF"
                     }
                 }
             ]

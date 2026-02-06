@@ -172,21 +172,45 @@ export default {
                 order_id: this.order_id
             })
                 .then((res) => {
-                    if (res.code != 1) throw new Error(res.msg)
+                    if (res.code != 1) {
+                        // API 调用失败时，至少保留 URL 参数中的金额
+                        this.loadingSkeleton = false
+                        if (this.amount <= 0) {
+                            throw new Error(res.msg || '获取支付信息失败')
+                        }
+                        // 如果金额存在，至少显示金额，支付方式列表为空
+                        this.paywayList = []
+                        return
+                    }
                     return res.data
                 })
                 .then((data) => {
+                    if (!data) return // 如果 data 为空（API 失败但金额存在的情况），直接返回
+                    
                     this.loadingSkeleton = false
-                    this.amount = data.order_amount
-                    this.paywayList = data.pay_way
-                    this.payway = this.paywayList[0]?.pay_way
+                    // 优先使用 API 返回的金额，如果 API 返回的金额为 0 或无效，则使用 URL 参数中的金额
+                    const apiAmount = parseFloat(data.order_amount) || 0
+                    this.amount = apiAmount > 0 ? apiAmount : (this.amount || 0)
+                    this.paywayList = data.pay_way || []
+                    this.payway = this.paywayList[0]?.pay_way || ''
                     // 倒计时
                     const startTimestamp = new Date().getTime()
-                    const endTimestamp = data.cancel_time
-                    this.timeout = endTimestamp - startTimestamp / 1000
+                    const endTimestamp = data.cancel_time || 0
+                    this.timeout = endTimestamp > 0 ? (endTimestamp - startTimestamp / 1000) : 0
                 })
                 .catch((err) => {
-                    throw new Error(err)
+                    this.loadingSkeleton = false
+                    console.error('获取支付信息失败:', err)
+                    // 如果金额存在，至少显示金额
+                    if (this.amount <= 0) {
+                        uni.showToast({
+                            title: err.message || '获取支付信息失败',
+                            icon: 'none'
+                        })
+                        setTimeout(() => {
+                            this.$Router.back()
+                        }, 1500)
+                    }
                 })
         },
 
@@ -324,24 +348,42 @@ export default {
         },
         // 支付后处理
         handPayResult(result) {
-            // 页面出栈
-            //记录支付结果
+            // 记录支付结果
             this.result = result
-            // uni.navigateBack()
-            this.$Router.back(1)
+            // 支付成功后跳转到支付结果页面
+            if (result === 'success') {
+                this.$Router.replaceAll({
+                    path: '/pages/pay_result/pay_result',
+                    query: {
+                        id: this.order_id,
+                        from: this.from
+                    }
+                })
+            } else {
+                // 支付失败，返回上一页
+                this.$Router.back(1)
+            }
         }
     },
 
     onLoad() {
         const options = this.$Route.query
-        const from = options?.from || 'trade'
+        // 支持 from 参数，如果没有则尝试使用 type 参数（兼容旧版本）
+        const from = options?.from || options?.type || 'trade'
         const order_id = options?.order_id
+        // 从 URL 参数中读取金额作为备用值
+        const amountFromUrl = options?.amount ? parseFloat(options.amount) : 0
+        
         this.getUserInfoFun()
 
         try {
             if (!from && !order_id) throw new Error('页面参数有误')
             this.from = from
             this.order_id = order_id
+            // 如果 URL 中有金额参数，先设置一个备用值，等 API 返回后再更新
+            if (amountFromUrl > 0) {
+                this.amount = amountFromUrl
+            }
             this.initPageData()
         } catch (err) {
             console.log(err)

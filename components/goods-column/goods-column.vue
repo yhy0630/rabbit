@@ -16,7 +16,7 @@
 			
 			<!-- 小标题栏 -->
 			<view class="sub-title-wrap">
-				<scroll-view scroll-x="true" class="sub-title-scroll"></scroll-view>
+				<scroll-view scroll-x="true" class="sub-title-scroll">
 					<view class="sub-title-list">
 						<view 
 							class="sub-title-item" 
@@ -30,15 +30,6 @@
 					</view>
 				</scroll-view>
 				
-				<!-- 举报/建议按钮 -->
-				<view class="report-btn" @tap="handleReport">
-					<image 
-						src="/static/picture/Frame 1171275731.png" 
-						class="report-icon"
-						mode="aspectFit"
-					></image>
-					<text class="report-text">投诉/建议</text>
-				</view>
 			</view>
 		</view>
 		<view class="goods">
@@ -109,11 +100,6 @@
 				// 这里可以根据小标题筛选商品
 				console.log('切换小标题:', index)
 			},
-			handleReport() {
-				// 处理举报/建议功能
-				console.log('点击举报/建议')
-				// 这里可以添加跳转到举报/建议页面的逻辑
-			},
 			async getData() {
 				await this.getGoodsColumnFun()
 				this.$refs.uWaterfall && this.$refs.uWaterfall.clear();
@@ -132,6 +118,7 @@
 				const pageSize = page.size; // 页长, 默认每页10条
 				if(!columnList.length) return
 				const columnId = columnList[active].id
+				const categoryName = columnList[active].name // 获取当前分类名称
 				getGoodsListColumn({
 					page_size: pageSize,
 					page_no: pageNum,
@@ -140,6 +127,11 @@
 					data
 				}) => {
 					let curPageData = data.lists;
+					// 给每个商品添加分类名称
+					curPageData = curPageData.map(item => ({
+						...item,
+						categoryName: categoryName
+					}))
 					let curPageLen = curPageData.length;
 					let hasNext = !!data.more;
 					if (page.num == 1) this.goodsList = [];
@@ -156,6 +148,16 @@
 					this.columnList = data
 					this.hasData = data.length ? true : false
 				}
+			}
+		},
+		computed: {
+			currentCategoryName() {
+				const name = this.columnList[this.active] ? this.columnList[this.active].name : ''
+				console.log('=== goods-column computed ===')
+				console.log('active:', this.active)
+				console.log('columnList:', this.columnList)
+				console.log('currentCategoryName:', name)
+				return name
 			}
 		}
 	}
@@ -215,27 +217,6 @@
 						color: #1B8902;
 						font-weight: bold;
 					}
-				}
-			}
-			
-			.report-btn {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				justify-content: center;
-				flex-shrink: 0;
-				margin-left: 20rpx;
-				
-				.report-icon {
-					width: 80rpx;
-					height: 80rpx;
-					margin-bottom: 4rpx;
-				}
-				
-				.report-text {
-					font-size: 20rpx;
-					color: #289301;
-					white-space: nowrap;
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 <template>
 	<view class="integral-sign" v-show="user.id">
+		<custom-navbar title="签到" :bg-color="'#149906'"></custom-navbar>
 		<view class="user-sgin">
 			<view class="header">
 				<view class="flex">
@@ -32,27 +33,37 @@
 				</view>
 			</view>
 			<view class="main">
-				<!-- 签到列表 -->
+				<!-- 日历签到 -->
 				<view class="contain bg-white">
 					<view class="title">已累积签到 {{user.days}}天</view>
-					<view class="day-list flex flex-wrap">
-						<view v-for="(item, index) in signList" :key="index"
-							class="item flex-col col-center">
-							<view :class="'circle flex row-center ' + (item.status == 1 ? 'active-circle' : '')">
-								<view class="num xs lighter" v-if="item.status == 0">+{{item.integral}}</view>
-								<image class="num" src="../../static/jifen_icon_select.png" v-if="item.status == 1">
-								</image>
-							</view>
-							<view class="day m-t-10 lighter sm">{{item.day}}</view>
-						</view>
+					<view class="calendar-wrap">
+						<uni-calendar
+							:insert="true"
+							:show-month="false"
+							:selected="selectedDates"
+						/>
 					</view>
 					<view class="right-sgin">
 						<button :class="'lighter br60 ' + (user.today_sign ? 'gray' : 'primary-button')"
-							@tap="userSignFun" size="md">{{user.today_sign ? '已签到' : '立即签到' }}</button>
+							@tap="userSignFun" size="md">{{user.today_sign ? '已签到' : '点击签到' }}</button>
+					</view>
+				</view>
+
+				<!-- 签到规则 -->
+				<view class="contain bg-white m-t-20 sign-rule">
+					<view class="sign-rule-header">
+						<image class="sign-rule-icon" src="/static/images/qiandao-left.png" mode="aspectFit" />
+						<text class="sign-rule-title">签到规则</text>
+						<image class="sign-rule-icon" src="/static/images/qiandao-right.png" mode="aspectFit" />
+					</view>
+					<view class="sign-rule-box">
+						<text class="sign-rule-text">
+							连续5天额外奖励5积分！10天额外奖励10积分，总计签到满30天奖励100积分！
+						</text>
 					</view>
 				</view>
 				<!-- 赚积分 -->
-				<view class="contain bg-white m-t-20" v-if="integralTips.length > 0">
+				<!-- <view class="contain bg-white m-t-20" v-if="integralTips.length > 0">
 					<view class="title flex">
 						<view class="line br60 m-r-20"></view>
 						<view class="bold xl">赚积分</view>
@@ -69,11 +80,11 @@
 								size="xs">{{item.status ? '已完成' : '未完成'}}</button>
 						</view>
 					</view>
-				</view>
+				</view> -->
 			</view>
 		</view>
 
-		<u-popup v-model="showPop" mode="center">
+		<!-- <u-popup v-model="showPop" mode="center">
 			<view class="pop-container">
 				<view class="header-score flex row-center">+{{signInfo.integral}}</view>
 				<view class="box column-center">
@@ -98,11 +109,13 @@
 					<view class="white br60 primary-btn" style="margin-top: 26rpx" @tap="showPop = false">确定</view>
 				</view>
 			</view>
-		</u-popup>
+		</u-popup> -->
 	</view>
 </template>
 
 <script>
+	import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+	import UniCalendar from '@/uni_modules/uni-calendar/components/uni-calendar/uni-calendar.vue'
 	import {
 		getSignLists,
 		userSignIn
@@ -111,6 +124,7 @@
 		trottle
 	} from "@/utils/tools"
 	export default {
+		components: { CustomNavbar, UniCalendar },
 		data() {
 			return {
 				// 用户信息
@@ -125,7 +139,9 @@
 				showPop: false,
 				// 签到结果
 				signInfo: {
-				}
+				},
+				// 日历选中（已签到）日期
+				selectedDates: []
 			};
 		},
 
@@ -148,10 +164,30 @@
 							this.user = user
 							this.signList = sign_list
 							this.integralTips = integral_tips
+							this.buildSelectedDates()
 						}
 					}).catch((err) => {
 
 					})
+			},
+			// 根据 signList 构建日历需要的 selected 数组
+			buildSelectedDates() {
+				const now = new Date()
+				const year = now.getFullYear()
+				const month = now.getMonth() + 1
+				const mm = month < 10 ? `0${month}` : `${month}`
+				this.selectedDates = (this.signList || [])
+					.filter(item => item.status == 1)
+					.map(item => {
+						const dayNum = parseInt(item.day, 10) || 0
+						if (!dayNum) return null
+						const dd = dayNum < 10 ? `0${dayNum}` : `${dayNum}`
+						return {
+							date: `${year}-${mm}-${dd}`,
+							info: '已签到'
+						}
+					})
+					.filter(Boolean)
 			},
 			// 点击签到
 			userSignFun() {
@@ -168,14 +204,19 @@
 	};
 </script>
 <style lang="scss">
+	.integral-sign {
+		padding-top: calc(127rpx + var(--status-bar-height));
+		background: linear-gradient(180deg, #149906 15%, #B2DF14 25%, #F8F8F8 60%);
+	}
+
 	.user-sgin {
 		padding-bottom: 100rpx;
 	}
 
 	.user-sgin .header {
-		background-image: url(../../static/bg_sgin.png);
+		
 		background-repeat: no-repeat;
-		background-size: 100%;
+		
 		height: 400rpx;
 		width: 750rpx;
 		padding-top: 40rpx;
@@ -197,7 +238,7 @@
 	}
 
 	.user-sgin .main .contain {
-		border-radius: 10rpx;
+		border-radius: 30rpx;
 	}
 
 	.user-sgin .main .contain .title {
@@ -210,57 +251,54 @@
 		background-color: #ff2c3c;
 	}
 
-	.user-sgin .main .day-list {
-		width: 100%;
+	.calendar-wrap {
+		padding: 0 20rpx 20rpx;
 	}
 
-	.user-sgin .main .day-list .item {
-		width: 14.2%;
-		margin-bottom: 10rpx;
+	.sign-rule {
+		border-radius: 20rpx;
+		padding: 30rpx 20rpx;
 	}
 
-	.user-sgin .main .day-list .item .num {
-		width: 68rpx;
-		height: 68rpx;
-		line-height: 58rpx;
-		border-radius: 50%;
+	.sign-rule-header {
+		height: 88rpx;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background-color: #f2f2f2;
 	}
 
-	.user-sgin .main .day-list .item .circle {
-		position: relative;
+	.sign-rule-title {
+		margin: 0 24rpx;
+		font-size: 40rpx;
+		font-weight: 600;
+		color: #111111;
 	}
 
-	.user-sgin .main .day-list .item .circle::before {
-		content: "";
-		height: 6rpx;
-		background-color: #f2f2f2;
-		width: 34rpx;
-		position: absolute;
-		right: 68rpx;
-		top: 34rpx;
+	.sign-rule-icon {
+		width: 44rpx;
+		height: 36rpx;
 	}
 
-	.user-sgin .main .day-list .item:nth-of-type(7n+1) .circle::before {
-		background-color: rgba(0, 0, 0, 0);
+	.sign-rule-box {
+		margin: 0 20rpx 24rpx;
+		padding: 20rpx 24rpx;
+		border-radius: 20rpx;
+		background-color: #F0FFF8;
 	}
 
-	.user-sgin .main .day-list .item .active-circle::before {
-		background-color: #FFBD40;
-	
+	.sign-rule-text {
+		font-size: 26rpx;
+		color: #56855E;
+		line-height: 40rpx;
 	}
-
 
 	.user-sgin .main .right-sgin {
-		padding: 35rpx 145rpx;
+		padding: 45rpx 180rpx;
 	}
 
 	.user-sgin .main .right-sgin .primary-button {
 		color: #fff;
-		background: linear-gradient(270deg, rgba(249, 95, 47, 1) 0%, rgba(252, 67, 54, 1) 55%, rgba(255, 44, 60, 1) 100%);
+		background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 	}
 
 	.user-sgin .main .contain .task {
@@ -348,7 +386,7 @@
 		border-radius: 37rpx;
 		padding: 16rpx 190rpx;
 		// background: linear-gradient(#f95f2f 0%, #ff2c3c 100%);
-		background: linear-gradient(#f95f2f 0%, #ff2c3c 100%);
+        background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 	}
 
 	.gray {

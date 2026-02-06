@@ -221,13 +221,17 @@
                     transform: `translate(${this.scrollBarLeft}px, -100%)`,
                     // 滑块在页面渲染后第一次滑动时，无需动画效果
                     'transition-duration': `${this.barFirstTimeMove ? 0 : this.duration }s`,
-                    'background-color': this.activeColor,
                     height: this.barHeight + 'rpx',
                     opacity: this.barFirstTimeMove ? 0 : 1,
                     // 设置一个很大的值，它会自动取能用的最大值，不用高度的一半，是因为高度可能是单数，会有小数出现
                     'border-radius': `${this.barHeight / 2}px`
                 };
+                // 先合并自定义样式
                 Object.assign(style, this.barStyle);
+                // 如果自定义样式中没有设置 background，则使用 activeColor
+                if (!this.barStyle.background && !this.barStyle.backgroundImage) {
+                    style['background-color'] = this.activeColor;
+                }
                 return style;
             },
             // tab的样式
@@ -287,12 +291,16 @@
                 this.getTabRect();
             },
             // 点击某一个tab菜单
-            clickTab(index) {
+            clickTab(index, e) {
                 // 发送事件给父组件
                 this.$emit('change', index);
                 // 点击当前活动tab，不触发事件
-                if(this.isAsync) return;
-                if (index == this.currentIndex) return;
+                if(this.isAsync) {
+                    return;
+                }
+                if (index == this.currentIndex) {
+                    return;
+                }
                 this.$nextTick(() => {
                     this.currentIndex = index;
                     this.scrollByIndex();

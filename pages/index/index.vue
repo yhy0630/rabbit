@@ -84,13 +84,13 @@
                                 <text style="color: #FFFFFF; font-size: 24rpx;">招聘会</text>
                             </view>
                             
-                            <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;">
+                            <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;" @click="goToGoodsCate">
                                 <image 
                                     src="/static/picture/shuidian-2 1.png" 
                                     style="width: 80rpx; height: 80rpx; margin-bottom: 16rpx;"
                                     mode="aspectFit"
                                 ></image>
-                                <text style="color: #FFFFFF; font-size: 24rpx;">生活缴费</text>
+                                <text style="color: #FFFFFF; font-size: 24rpx;">二手交易</text>
                             </view>
                             
                             <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;">
@@ -168,6 +168,16 @@
                         </view>
                     </template>
                 </view>
+            </view>
+
+            <!-- 悬浮：投诉/建议 -->
+            <view class="float-report" @tap="handleReport">
+                <image 
+                    src="/static/picture/Frame 1171275731.png" 
+                    class="float-report-icon"
+                    mode="aspectFit"
+                ></image>
+                <text class="float-report-text">投诉/建议</text>
             </view>
             <!-- #ifdef APP-PLUS -->
             <lyg-popup
@@ -319,6 +329,18 @@ export default {
                 this.showCateList = []
             }
         },
+        handleReport() {
+            // 悬浮按钮：投诉/建议
+            console.log('点击投诉/建议')
+            // TODO: 如果你有具体页面路径，我可以直接接上跳转
+            // uni.navigateTo({ url: '/bundle_b/pages/xxx/xxx' })
+        },
+        // 跳转到二手交易页面
+        goToGoodsCate() {
+            uni.navigateTo({
+                url: '/pages/goods_cate/goods_cate'
+            })
+        },
         // 获取菜单
         async getMenuFun() {
             const { code, data } = await getMenu({
@@ -445,5 +467,33 @@ page {
     text-align: center;
     padding: 30rpx;
     font-size: 24rpx;
+}
+
+/* 悬浮投诉/建议按钮 */
+.float-report {
+    position: fixed;
+    right: 24rpx;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1201; /* 高于 u-no-network(1200) */
+    width: 120rpx;
+    padding: 10rpx 10rpx;
+    border-radius: 16rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.float-report-icon {
+    width: 90rpx;
+    height: 90rpx;
+}
+
+.float-report-text {
+    margin-top: 6rpx;
+    font-size: 20rpx;
+    color: #289301;
+    white-space: nowrap;
+    font-weight: bold;
 }
 </style>

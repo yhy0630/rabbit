@@ -94,33 +94,58 @@ export default {
 			this.currentIndex = index
 			this.$emit('change', index)
 			
-			// 页面跳转
-			const path = this.iconList[index].path
-			
 			// 检查当前页面路径
 			const pages = getCurrentPages()
 			const currentPage = pages[pages.length - 1]
 			const currentRoute = '/' + currentPage.route
 			
+			// 根据当前页面和点击的按钮，决定跳转路径
+			let targetPath = this.iconList[index].path
+			
+			// 如果在 goods_cate 页面
+			if (currentRoute === '/pages/goods_cate/goods_cate') {
+				// 点击"发布"按钮（索引2），跳转到发布闲置页面
+				if (index === 2) {
+					targetPath = '/bundle_secondhand/pages/publish_idle/publish_idle'
+				}
+				// 点击"我的"按钮（索引4），跳转到我的闲置页面
+				else if (index === 4) {
+					targetPath = '/bundle_secondhand/pages/my_idle/my_idle'
+				}
+			}
+			// 如果在首页，点击"我的"按钮（索引4），保持原跳转（不跳转到 my_idle）
+			// 这里不需要特殊处理，因为默认路径就是 /pages/user/user
+			
 			// 如果已经在目标页面，不进行跳转
-			if (currentRoute === path) {
+			if (currentRoute === targetPath) {
 				return
 			}
 			
-			// 使用 uni.reLaunch 进行跳转
-			uni.reLaunch({
-				url: path,
-				fail: () => {
-					uni.redirectTo({
-						url: path,
-						fail: () => {
-							uni.navigateTo({ 
-								url: path
-							})
-						}
-					})
-				}
-			})
+			// 使用 uni.navigateTo 进行跳转（因为 publish_idle 和 my_idle 不是 tabbar 页面）
+			if (targetPath === '/bundle_secondhand/pages/publish_idle/publish_idle' || 
+			    targetPath === '/bundle_secondhand/pages/my_idle/my_idle') {
+				uni.navigateTo({
+					url: targetPath,
+					fail: (err) => {
+						console.error('跳转失败:', err)
+					}
+				})
+			} else {
+				// 对于其他页面，使用原来的跳转逻辑
+				uni.reLaunch({
+					url: targetPath,
+					fail: () => {
+						uni.redirectTo({
+							url: targetPath,
+							fail: () => {
+								uni.navigateTo({ 
+									url: targetPath
+								})
+							}
+						})
+					}
+				})
+			}
 		}
 	}
 }

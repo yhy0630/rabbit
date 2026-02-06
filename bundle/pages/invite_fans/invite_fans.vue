@@ -1,5 +1,6 @@
 <template>
     <view class="pages">
+        <custom-navbar title="邀请海报"></custom-navbar>
         <view class="invite-fans flex-col col-center">
             <image :src="path" mode="widthFix" class="poster"></image>
             <invite-poster v-if="showPoster" :config="{
@@ -48,7 +49,12 @@
 	import {
 		copy
 	} from '@/utils/tools.js'
+    import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+    
     export default {
+        components: {
+            CustomNavbar
+        },
         data() {
             return {
                 path: '',
@@ -135,6 +141,7 @@
     .invite-fans {
         min-height: 100vh;
         overflow: hidden;
+        padding-top: 88px; // Account for fixed navbar height (statusBar + navbar)
 
         .poster {
             width: 600rpx;

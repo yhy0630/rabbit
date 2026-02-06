@@ -1,6 +1,6 @@
 <template>
 	<view class="goods-cate">
-		<custom-navbar title="分类" :show-back="false"></custom-navbar>
+		<custom-navbar title="二手交易" :show-back="false"></custom-navbar>
 		<router-link to="/pages/goods_search/goods_search">
 			<view class="header" :style="{ marginTop: navbarHeight + 'px' }">
 				<u-search bg-color="#FFF" :disabled="true" :show-publish-icon="true"></u-search>
@@ -10,9 +10,19 @@
 			<cate-two :cate-list="cateList"></cate-two>
 		</view>
 		<view class="content bg-body" v-if="appConfig.cate_style == 3 || appConfig.cate_style == 2">
-			<cate-one :cate-list="cateList"></cate-one>
+			 <cate-one  :listType="'yhy'" :cate-list="cateList"></cate-one>
 		</view>
 		<custom-tabbar :current="1"></custom-tabbar>
+
+		<!-- 悬浮：投诉/建议 -->
+		<view class="float-report" @tap="handleReport">
+			<image 
+				src="/static/picture/Frame 1171275731.png" 
+				class="float-report-icon"
+				mode="aspectFit"
+			></image>
+			<text class="float-report-text">投诉/建议</text>
+		</view>
 	</view>
 </template>
 
@@ -47,6 +57,11 @@ export default {
 	},
 	methods: {
 		...mapActions(['getCartNum']),
+		handleReport() {
+			// 悬浮投诉/建议按钮（与首页保持一致）
+			console.log('点击投诉/建议');
+			// TODO: 有具体页面时，可改为 uni.navigateTo({ url: '...' })
+		},
 		async getLevelOneListFun() {
 			const { code, data } = await getLevelOneList();
 			if (code == 1) {
@@ -83,5 +98,33 @@ page {
 		flex-direction: column;
 		margin-top: 30rpx;
 	}
+}
+
+/* 悬浮投诉/建议按钮（与首页保持一致） */
+.float-report {
+	position: fixed;
+	right: 24rpx;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 1201; /* 高于 u-no-network(1200) */
+	width: 120rpx;
+	padding: 10rpx 10rpx;
+	border-radius: 16rpx;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.float-report-icon {
+	width: 90rpx;
+	height: 90rpx;
+}
+
+.float-report-text {
+	margin-top: 6rpx;
+	font-size: 20rpx;
+	color: #289301;
+	white-space: nowrap;
+	font-weight: bold;
 }
 </style>

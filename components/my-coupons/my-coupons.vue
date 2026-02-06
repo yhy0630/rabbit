@@ -1,5 +1,5 @@
 <template>
-	<mescroll-uni ref="mescrollRef" top="80rpx" @init="mescrollInit" @down="downCallback" @up="upCallback"
+	<mescroll-uni ref="mescrollRef" top="250rpx" @init="mescrollInit" @down="downCallback" @up="upCallback"
 		:down="downOption" :up="upOption">
 		<view class="my-coupons">
 			<coupon-list :list="couponList" :btnType="btnType"></coupon-list>

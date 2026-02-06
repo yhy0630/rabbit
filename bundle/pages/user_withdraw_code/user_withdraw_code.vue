@@ -2,6 +2,7 @@
 
 <template>
     <view class="user-withdraw-code">
+        <custom-navbar title="提现记录 "></custom-navbar>
         <mescroll-body
             ref="mescrollRef"
             @init="mescrollInit"
@@ -106,6 +107,8 @@ export default {
 
 <style lang="scss" scoped>
 .user-withdraw-code {
+    padding-top: 88px; // Account for fixed navbar height (statusBar + navbar)
+
     .item {
         padding: 22rpx 30rpx;
         &:not(:last-of-type) {

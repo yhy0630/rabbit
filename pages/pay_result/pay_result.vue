@@ -88,6 +88,8 @@ export default {
             switch (this.from) {
                 case 'integral':
                     return '/bundle/pages/exchange_order/exchange_order'
+                case 'home_service':
+                    return '/bundle_home_service/pages/service_order_list/service_order_list'
                 default:
                     return '/bundle/pages/user_order/user_order'
             }
