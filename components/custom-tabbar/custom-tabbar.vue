@@ -4,35 +4,25 @@
 		<image class="tabbar-bg" src="/static/picture/bottom_bar.png" mode="widthFix"></image>
 		
 		<!-- 导航项容器 -->
-		<view class="tabbar-content">
-			<!-- 首页 -->
-			<view class="tabbar-item item-1" @click="switchTab(0)">
-				<image class="item-icon" :src="currentIndex === 0 ? iconList[0].selected : iconList[0].normal" mode="aspectFit"></image>
-				<text class="item-text" :class="{ active: currentIndex === 0 }">首页</text>
-			</view>
-			
-			<!-- 商城 -->
-			<view class="tabbar-item item-2" @click="switchTab(1)">
-				<image class="item-icon" :src="currentIndex === 1 ? iconList[1].selected : iconList[1].normal" mode="aspectFit"></image>
-				<text class="item-text" :class="{ active: currentIndex === 1 }">商城</text>
-			</view>
-			
-			<!-- 发布 (中间最高) -->
-			<view class="tabbar-item item-3" @click="switchTab(2)">
-				<image class="item-icon" :src="currentIndex === 2 ? iconList[2].selected : iconList[2].normal" mode="aspectFit"></image>
-				<text class="item-text" :class="{ active: currentIndex === 2 }">发布</text>
-			</view>
-			
-			<!-- 订单 -->
-			<view class="tabbar-item item-4" @click="switchTab(3)">
-				<image class="item-icon" :src="currentIndex === 3 ? iconList[3].selected : iconList[3].normal" mode="aspectFit"></image>
-				<text class="item-text" :class="{ active: currentIndex === 3 }">订单</text>
-			</view>
-			
-			<!-- 我的 -->
-			<view class="tabbar-item item-5" @click="switchTab(4)">
-				<image class="item-icon" :src="currentIndex === 4 ? iconList[4].selected : iconList[4].normal" mode="aspectFit"></image>
-				<text class="item-text" :class="{ active: currentIndex === 4 }">我的</text>
+		<view class="tabbar-content" :class="'tabs-' + displayTabs.length">
+			<view
+				class="tabbar-item"
+				v-for="(tab, index) in displayTabs"
+				:key="tab.id || index"
+				:class="'item-' + (index + 1)"
+				@click="switchTab(index)"
+			>
+				<image
+					class="item-icon"
+					:src="currentIndex === index ? tab.selected : tab.normal"
+					mode="aspectFit"
+				></image>
+				<text
+					class="item-text"
+					:class="{ active: currentIndex === index }"
+				>
+					{{ tab.text }}
+				</text>
 			</view>
 		</view>
 	</view>
@@ -46,39 +36,99 @@ export default {
 		current: {
 			type: Number,
 			default: 0
+		},
+		// 要显示的导航按钮配置（由各页面传入）
+		// 例如：
+		// [
+		//   { id: 'home', path: '/pages/index/index' },
+		//   { id: 'mall', path: '/pages/goods_cate/goods_cate' },
+		//   { id: 'publish', path: '/bundle_b/pages/published_works/published_works' }
+		// ]
+		tabs: {
+			type: Array,
+			default: () => []
 		}
 	},
 	data() {
 		return {
 			currentIndex: 0,
-			// 图标配置
+			// 图标 & 文案配置（仅负责样式和展示，不包含路径）
+			// 新增通用按钮时，只需要在这里追加一项，并约定一个唯一的 id
 			iconList: [
 				{
+					id: 'home',
+					text: '首页',
 					normal: '/static/picture/HOME 1.png',
-					selected: '/static/picture/HOME 1.png',
-					path: '/pages/index/index'
+					selected: '/static/picture/HOME 1.png'
 				},
 				{
+					id: 'mall',
+					text: '商城',
 					normal: '/static/picture/shopping_car.png',
-					selected: '/static/picture/shopping_car.png',
-					path: '/pages/goods_cate/goods_cate'
+					selected: '/static/picture/shopping_car.png'
 				},
 				{
+					id: 'publish',
+					text: '发布',
 					normal: '/static/picture/publish.png',
-					selected: '/static/picture/publish.png',
-					path: '/bundle_b/pages/published_works/published_works'
+					selected: '/static/picture/publish.png'
 				},
 				{
+					id: 'order',
+					text: '订单',
 					normal: '/static/picture/message.png',
-					selected: '/static/picture/message.png',
-					path: '/bundle/pages/user_order/user_order'
+					selected: '/static/picture/message.png'
 				},
 				{
+					id: 'user',
+					text: '我的',
 					normal: '/static/picture/user.png',
-					selected: '/static/picture/user.png',
-					path: '/pages/user/user'
+					selected: '/static/picture/user.png'
+				},
+				{
+					id: 'message',
+					text: '消息',
+					normal: '/static/picture/message.png',
+					selected: '/static/picture/message.png'
 				}
-			]
+			],
+			// 默认路径（兼容未传 tabs 的情况，使用现在的 5 个按钮和跳转）
+			defaultPaths: {
+				home: '/pages/index/index',
+				mall: '/pages/goods_cate/goods_cate',
+				publish: '/bundle_b/pages/published_works/published_works',
+				order: '/bundle/pages/user_order/user_order',
+				user: '/pages/user/user'
+			}
+		}
+	},
+	computed: {
+		// 实际要渲染的按钮列表（最多 5 个，最少由业务自己控制不低于 3 个）
+		displayTabs() {
+			// 如果页面没有传 tabs，就使用默认的 5 个按钮和默认路径
+			if (!Array.isArray(this.tabs) || this.tabs.length === 0) {
+				return this.iconList.map((icon) => {
+					const path = this.defaultPaths[icon.id] || ''
+					return {
+						...icon,
+						path
+					}
+				})
+			}
+			
+			// 页面传入了 tabs：根据 id 关联到 iconList，并覆盖路径
+			const result = this.tabs
+				.map((tab) => {
+					const icon = this.iconList.find((item) => item.id === tab.id)
+					if (!icon) return null
+					
+					return {
+						...icon,
+						path: tab.path || this.defaultPaths[icon.id] || ''
+					}
+				})
+				.filter((item) => !!item)
+			return result.slice(0, 5)
 		}
 	},
 	watch: {
@@ -93,9 +143,16 @@ export default {
 		switchTab(index) {
 			this.currentIndex = index
 			this.$emit('change', index)
+			const tabs = this.displayTabs
+			if (!tabs || !tabs[index]) {
+				return
+			}
 			
 			// 页面跳转
-			const path = this.iconList[index].path
+			const path = tabs[index].path
+			if (!path) {
+				return
+			}
 			
 			// 检查当前页面路径
 			const pages = getCurrentPages()
@@ -211,6 +268,18 @@ export default {
 			.item-icon {
 				width: 90rpx;
 				height: 90rpx;
+			}
+		}
+
+		// 当只有 3 个按钮时，首页与“我的”按钮齐平，中间按钮略高
+		&.tabs-3 {
+			.item-1,
+			.item-3 {
+				padding-bottom: 10rpx;
+			}
+
+			.item-2 {
+				padding-bottom: 15rpx;
 			}
 		}
 	}

@@ -1,18 +1,7 @@
 <template>
     <view class="service-detail-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">详情</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+        <!-- 自定义导航栏 -->
+        <custom-navbar title="详情"></custom-navbar>
 
         <!-- 内容区域 -->
         <scroll-view class="content-scroll" scroll-y>
@@ -92,18 +81,18 @@
 
             <!-- 关联店铺 -->
             <view class="section-card" v-if="storeInfo.name">
-                <view class="section-title">e家政</view>
+                <view class="section-title">{{ storeInfo.name }}</view>
                 <view class="store-card">
-                    <image :src="storeInfo.image" mode="aspectFill" class="store-image"></image>
+                    <image src="/static/picture/pi.png" mode="aspectFill" class="store-image"></image>
                     <view class="store-info">
-                        <text class="store-name">{{ storeInfo.name }}</text>
+                        <text class="store-address">{{ storeInfo.address || '西百花巷16号3D打印别墅' }}</text>
                         <view class="store-tags" v-if="storeInfo.tags && storeInfo.tags.length > 0">
                             <text class="store-tag" v-for="(tag, index) in storeInfo.tags" :key="index">{{ tag }}</text>
                         </view>
-                        <view class="store-btn" @click="goToStore">
-                            <text class="store-btn-text">进店看看</text>
-                        </view>
                     </view>
+                </view>
+                <view class="store-btn" @click="goToStore">
+                    <text class="store-btn-text">进店看看</text>
                 </view>
             </view>
         </scroll-view>
@@ -112,11 +101,11 @@
         <view class="bottom-action-bar">
             <view class="action-left">
                 <view class="action-icon-item" @click="toggleFavorite">
-                    <u-icon :name="isFavorite ? 'heart-fill' : 'heart'" size="24" :color="isFavorite ? '#FF5722' : '#666666'"></u-icon>
+                    <image src="/static/images/shoucang.png" class="action-icon" mode="aspectFit"></image>
                     <text class="action-icon-text">收藏</text>
                 </view>
                 <view class="action-icon-item" @click="goToStore">
-                    <u-icon name="shop" size="24" color="#666666"></u-icon>
+                    <image src="/static/images/dianpu 1.png" class="action-icon" mode="aspectFit"></image>
                     <text class="action-icon-text">店铺</text>
                 </view>
             </view>
@@ -134,12 +123,15 @@
 
 <script>
 import { getHomeServiceDetail } from '@/api/store'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'ServiceDetail',
+    components: {
+        CustomNavbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
             isFavorite: false,
             loading: true,
             serviceInfo: {
@@ -160,24 +152,19 @@ export default {
             storeInfo: {
                 name: '',
                 image: '/static/picture/store-image.png',
-                tags: []
+                address: '西百花巷16号3D打印别墅',
+                tags: ['育儿嫂', '保姆']
             },
             serviceDescription: '',
             serviceContent: ''
         }
     },
     onLoad(options) {
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
-        
         if (options.id) {
             this.loadServiceDetail(options.id);
         }
     },
     methods: {
-        goBack() {
-            uni.navigateBack();
-        },
         async loadServiceDetail(id) {
             uni.showLoading({ title: '加载中...' });
             try {
@@ -295,6 +282,10 @@ export default {
                     } else {
                         this.storeInfo.name = 'e家政';
                     }
+                    // 地址先写死，后续从接口获取
+                    // this.storeInfo.address = data.address || '西百花巷16号3D打印别墅';
+                    // 标签先写死，后续从接口获取
+                    // this.storeInfo.tags = data.tags || ['育儿嫂', '保姆'];
                     
                     // 处理服务描述
                     if (data.description) {
@@ -350,45 +341,7 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-.status-bar {
-    width: 100%;
-    background-color: #4CAF50;
-}
-
-.header-navbar {
-    width: 100%;
-    background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-    padding: 10rpx 0;
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    height: 88rpx;
-}
-
-.back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-title {
-    flex: 1;
-    text-align: center;
-    color: #FFFFFF;
-    font-size: 36rpx;
-    font-weight: bold;
-}
-
-.navbar-right {
-    width: 60rpx;
+    padding-top: 88px; // 为固定定位的导航栏留出空间
 }
 
 .content-scroll {
@@ -440,15 +393,14 @@ export default {
 }
 
 .profile-details {
-    display: flex;
-    flex-direction: column;
-    gap: 16rpx;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20rpx;
+    row-gap: 20rpx;
 }
 
 .detail-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20rpx;
+    display: contents;
 }
 
 .detail-item {
@@ -564,16 +516,14 @@ export default {
 .store-card {
     display: flex;
     gap: 20rpx;
-    background-color: #F5F5F5;
-    border-radius: 12rpx;
     padding: 20rpx;
     box-sizing: border-box;
     margin-right: -10rpx;
 }
 
-.store-image {
-    width: 160rpx;
-    height: 120rpx;
+.store-image { 
+    width: 200rpx;
+    height: 150rpx;
     border-radius: 8rpx;
     flex-shrink: 0;
 }
@@ -585,37 +535,42 @@ export default {
     gap: 16rpx;
 }
 
-.store-name {
+.store-address {
     font-size: 28rpx;
     color: #333333;
     font-weight: 500;
+    margin-bottom: 8rpx;
 }
 
 .store-tags {
     display: flex;
     gap: 12rpx;
     flex-wrap: wrap;
+    margin-bottom: 8rpx;
 }
 
 .store-tag {
-    background-color: #4CAF50;
-    color: #FFFFFF;
+    background-color: #F0FFF8;
+    border: 1rpx solid #1B8902;
+    color: #1B8902;
     font-size: 22rpx;
     padding: 6rpx 16rpx;
-    border-radius: 20rpx;
+    border-radius: 8rpx;
 }
 
 .store-btn {
-    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
     border-radius: 40rpx;
-    padding: 16rpx 0;
+    padding: 25rpx 0;
     text-align: center;
-    margin-top: 10rpx;
+    margin-top: 20rpx;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .store-btn-text {
     color: #FFFFFF;
-    font-size: 28rpx;
+    font-size: 32rpx;
     font-weight: bold;
 }
 
@@ -647,6 +602,11 @@ export default {
     gap: 8rpx;
 }
 
+.action-icon {
+    width: 48rpx;
+    height: 48rpx;
+}
+
 .action-icon-text {
     font-size: 22rpx;
     color: #666666;
@@ -659,19 +619,19 @@ export default {
 }
 
 .action-btn {
-    padding: 20rpx 40rpx;
+    padding: 20rpx 60rpx;
     border-radius: 40rpx;
-    min-width: 160rpx;
+    min-width: 220rpx;
     text-align: center;
 }
 
 .consult-btn {
-    border: 2rpx solid #4CAF50;
+    border: 2rpx solid #149906;
     background-color: transparent;
 }
 
 .order-btn {
-    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
 }
 
 .action-btn-text {
@@ -680,7 +640,7 @@ export default {
 }
 
 .consult-btn .action-btn-text {
-    color: #4CAF50;
+    color: #159907;
 }
 
 .order-btn .action-btn-text {

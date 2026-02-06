@@ -995,6 +995,18 @@
                     }
                 },
                 {
+                    "path": "pages/service_order_list/service_order_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的订单",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
                     "path": "pages/service_detail/service_detail",
                     "meta": {
                         "auth": false
@@ -1025,6 +1037,54 @@
                     },
                     "style": {
                         "navigationBarTitleText": "服务详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_user/service_user",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/merchant_join/merchant_join",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "入驻商家",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/service_confirm_order/service_confirm_order",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "确认订单",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/select_appointment_time/select_appointment_time",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "上门时间",
                         "navigationStyle": "custom",
                         "navigationBarTextStyle": "white",
                         "navigationBarBackgroundColor": "#4CAF50"

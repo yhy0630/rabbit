@@ -1,18 +1,6 @@
 <template>
     <view class="service-list-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">{{ categoryName || '保姆月嫂' }}</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+        <custom-navbar :title="categoryName || '保姆月嫂'"></custom-navbar>
 
         <!-- 筛选栏 -->
         <view class="filter-bar">
@@ -37,12 +25,15 @@
             >
                 <view class="service-image-wrapper">
                     <view class="recommend-tag" v-if="item.recommend">推荐</view>
-                    <image :src="item.image" mode="aspectFill" class="service-image"></image>
+                    <image src="/static/picture/Rectangle 30305.png" mode="aspectFill" class="service-image"></image>
                 </view>
                 <view class="service-info">
                     <view class="service-header">
                         <text class="service-name">{{ item.name }}</text>
-                        <text class="service-distance">{{ item.distance }}</text>
+                        <view class="service-distance-wrapper">
+                            <u-icon name="map" size="14" color="#4CAF50" class="distance-icon"></u-icon>
+                            <text class="service-distance">{{ item.distance }}</text>
+                        </view>
                     </view>
                     <view class="service-details">
                         <text class="service-detail-text">{{ item.age }}岁 | {{ item.origin }} | {{ item.education }} | {{ item.experience }}</text>
@@ -77,26 +68,30 @@
 </template>
 
 <script>
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+
 export default {
     name: 'ServiceList',
+    components: {
+        CustomNavbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
             categoryName: '',
             showFilter: false,
             currentFilterIndex: 0,
             filterOptions: [
-                { label: '区域-', key: 'area' },
-                { label: '分类-', key: 'category' },
-                { label: '筛选-', key: 'filter' },
-                { label: '排序-', key: 'sort' }
+                { label: '区域', key: 'area' },
+                { label: '分类', key: 'category' },
+                { label: '筛选', key: 'filter' },
+                { label: '排序', key: 'sort' }
             ],
             filterData: [],
             serviceList: [
                 {
                     id: 1,
                     name: '杜阿姨',
-                    distance: '@ 16.66Km',
+                    distance: '16.66Km',
                     age: 29,
                     origin: '北京人',
                     education: '本科',
@@ -110,7 +105,7 @@ export default {
                 {
                     id: 2,
                     name: '杜阿姨',
-                    distance: '@ 16.66Km',
+                    distance: '16.66Km',
                     age: 29,
                     origin: '北京人',
                     education: '本科',
@@ -124,7 +119,7 @@ export default {
                 {
                     id: 3,
                     name: '杜阿姨',
-                    distance: '@ 16.66Km',
+                    distance: '16.66Km',
                     age: 29,
                     origin: '北京人',
                     education: '本科',
@@ -138,7 +133,7 @@ export default {
                 {
                     id: 4,
                     name: '杜阿姨',
-                    distance: '@ 16.66Km',
+                    distance: '16.66Km',
                     age: 29,
                     origin: '北京人',
                     education: '本科',
@@ -152,7 +147,7 @@ export default {
                 {
                     id: 5,
                     name: '杜阿姨',
-                    distance: '@ 16.66Km',
+                    distance: '16.66Km',
                     age: 29,
                     origin: '北京人',
                     education: '本科',
@@ -172,17 +167,12 @@ export default {
         }
     },
     onLoad(options) {
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
-        
-        if (options.category) {
-            this.categoryName = decodeURIComponent(options.category);
+        if (options && options.category) {
+            // uni-app 会自动解码 URL 参数，直接使用即可
+            this.categoryName = options.category;
         }
     },
     methods: {
-        goBack() {
-            uni.navigateBack();
-        },
         showFilterPopup(index) {
             this.currentFilterIndex = index;
             // 根据不同的筛选类型加载不同的数据
@@ -227,45 +217,7 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-.status-bar {
-    width: 100%;
-    background-color: #4CAF50;
-}
-
-.header-navbar {
-    width: 100%;
-    background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-    padding: 10rpx 0;
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    height: 88rpx;
-}
-
-.back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-title {
-    flex: 1;
-    text-align: center;
-    color: #FFFFFF;
-    font-size: 36rpx;
-    font-weight: bold;
-}
-
-.navbar-right {
-    width: 60rpx;
+    padding-top: 88px; // 为固定定位的导航栏留出空间（状态栏高度 + 导航栏高度）
 }
 
 .filter-bar {
@@ -308,7 +260,7 @@ export default {
 
 .service-image-wrapper {
     width: 160rpx;
-    height: 160rpx;
+    height: 220rpx;
     border-radius: 12rpx;
     overflow: hidden;
     flex-shrink: 0;
@@ -324,8 +276,9 @@ export default {
     color: #FFFFFF;
     font-size: 20rpx;
     padding: 4rpx 12rpx;
-    border-radius: 0 0 12rpx 0;
+    border-radius: 8rpx;
     z-index: 10;
+    font-weight: bold;
 }
 
 .service-image {
@@ -343,7 +296,7 @@ export default {
 .service-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 20rpx;
     margin-bottom: 10rpx;
 }
 
@@ -353,9 +306,24 @@ export default {
     color: #333333;
 }
 
+.service-distance-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4rpx;
+}
+
+.distance-icon {
+    flex-shrink: 0;
+}
+
+/* 放大距离图标：覆盖 u-icon 内部的 font-size */
+/deep/ .distance-icon .u-icon__icon {
+    font-size: 18px !important; /* 按需可再调大或调小 */
+}
+
 .service-distance {
     font-size: 24rpx;
-    color: #999999;
+    color: #4CAF50;
 }
 
 .service-details {
@@ -373,7 +341,12 @@ export default {
 
 .service-type-text {
     font-size: 26rpx;
-    color: #4CAF50;
+    color: #1B8902;
+    background-color: #F0FFF8;
+    padding: 4rpx 12rpx;
+    border-radius: 10rpx;
+    font-weight: bold;
+    display: inline-block;
 }
 
 .service-footer {
@@ -385,11 +358,14 @@ export default {
 .service-price {
     font-size: 32rpx;
     font-weight: bold;
-    color: #FF5722;
+    color: #F94B30;
+    border-bottom: 1rpx dashed #E4E4E4;
+    padding-bottom: 20rpx;
+    margin-bottom: 8rpx;
 }
 
 .service-company {
-    font-size: 24rpx;
+    font-size: 26rpx;
     color: #999999;
 }
 

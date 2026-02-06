@@ -1,58 +1,54 @@
 <template>
     <view class="service-confirm-order-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">确认订单</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+        <!-- 自定义导航栏 -->
+        <custom-navbar title="确认订单"></custom-navbar>
 
         <!-- 内容区域 -->
         <scroll-view class="content-scroll" scroll-y>
-            <!-- 服务地址选择 -->
-            <navigator hover-class="none" url="/bundle/pages/user_address/user_address?type=1">
-                <view class="address-card">
-                    <image class="address-icon" src="/static/images/icon_address.png"></image>
-                    <view class="address-content">
-                        <view class="address-info" v-if="!address.contact">
-                            <text class="address-placeholder">设置服务地址</text>
-                        </view>
-                        <view class="address-info" v-else>
-                            <view class="address-header">
-                                <text class="address-name">{{ address.contact }}</text>
-                                <text class="address-phone">{{ address.telephone }}</text>
+            <!-- 服务地址和服务信息合并卡片 -->
+            <view class="combined-card">
+                <!-- 服务地址选择 -->
+                <navigator hover-class="none" url="/bundle/pages/user_address/user_address?type=1">
+                    <view class="address-section">
+                        <image class="address-icon" src="/static/images/map-pin-2-fill.png" mode="aspectFit"></image>
+                        <view class="address-content">
+                            <view class="address-info" v-if="!address.contact">
+                                <text class="address-placeholder">设置服务地址</text>
                             </view>
-                            <view class="address-detail">
-                                {{ address.province }} {{ address.city }} {{ address.district }} {{ address.address }}
+                            <view class="address-info" v-else>
+                                <view class="address-detail">
+                                    {{ address.province }} {{ address.city }} {{ address.district }} {{ address.address }}
+                                </view>
+                                <view class="address-header">
+                                    <text class="address-name">{{ address.contact }}</text>
+                                    <text class="address-phone">{{ address.telephone }}</text>
+                                </view>
+                            
                             </view>
                         </view>
+                        <u-icon name="arrow-right" size="16" color="#999999"></u-icon>
                     </view>
-                    <u-icon name="arrow-right" size="16" color="#999999"></u-icon>
-                </view>
-            </navigator>
+                </navigator>
 
-            <!-- 服务信息 -->
-            <view class="service-card">
-                <image :src="serviceInfo.avatar" mode="aspectFill" class="service-image"></image>
-                <view class="service-info">
-                    <text class="service-name">{{ serviceInfo.name }}</text>
-                    <view class="service-price">
-                        <text class="price-symbol">¥</text>
-                        <text class="price-amount">{{ serviceInfo.price.toFixed(2) }}</text>
+                <!-- 分隔线 -->
+                <view class="divider"></view>
+
+                <!-- 服务信息 -->
+                <view class="service-section">
+                    <image :src="serviceInfo.avatar" mode="aspectFill" class="service-image"></image>
+                    <view class="service-info">
+                        <text class="service-name">{{ serviceInfo.name }}</text>
+                        <view class="service-price">
+                            <text class="price-symbol">¥</text>
+                            <text class="price-amount">{{ serviceInfo.price.toFixed(2) }}</text>
+                        </view>
                     </view>
                 </view>
             </view>
 
             <!-- 上门时间 -->
             <view class="form-card">
-                <view class="form-item" @click="showAppointmentTimePicker = true">
+                <view class="form-item" @click="goToSelectTime">
                     <text class="form-label">上门时间</text>
                     <view class="form-value">
                         <text class="form-text" :class="{ placeholder: !appointmentTime }">
@@ -113,7 +109,7 @@
                 <u-checkbox 
                     v-model="agreeProtocol" 
                     shape="circle"
-                    :active-color="colorConfig.primary"
+                    active-color="#4AAB03"
                 >
                     <text class="protocol-text">同意《下单协议》</text>
                 </u-checkbox>
@@ -137,9 +133,12 @@
         <u-modal
             v-model="showConfirmDialog"
             :show-cancel-button="true"
-            confirm-text="确认提交"
+            confirm-text="确定"
+            cancel-text="取消"
             :confirm-color="colorConfig.primary"
-            :show-title="false"
+            title="温馨提示"
+            :show-title="true"
+            :title-style="{ fontSize: '32rpx', color: '#333333', fontWeight: '700', textAlign: 'center' }"
             @confirm="confirmSubmitOrder"
         >
             <view class="confirm-dialog-content">
@@ -153,12 +152,15 @@
 import { getHomeServiceDetail } from '@/api/store'
 import { createHomeServiceOrder } from '@/api/store'
 import { getAddressLists, getOneAddress } from '@/api/user'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'ServiceConfirmOrder',
+    components: {
+        CustomNavbar
+    },
     data() {
         return {
-            statusBarHeight: 0,
             serviceId: 0,
             serviceInfo: {
                 id: 0,
@@ -202,9 +204,6 @@ export default {
         }
     },
     onLoad(options) {
-        const systemInfo = uni.getSystemInfoSync();
-        this.statusBarHeight = systemInfo.statusBarHeight || 0;
-        
         if (options.service_id) {
             this.serviceId = parseInt(options.service_id);
             this.loadServiceDetail();
@@ -228,6 +227,11 @@ export default {
             this.loadAddress();
         });
 
+        // 监听时间选择
+        uni.$on('selectAppointmentTime', (time) => {
+            this.appointmentTime = time;
+        });
+
         // 页面显示时加载地址
         this.loadAddress();
     },
@@ -237,11 +241,9 @@ export default {
     },
     onUnload() {
         uni.$off('selectaddress');
+        uni.$off('selectAppointmentTime');
     },
     methods: {
-        goBack() {
-            uni.navigateBack();
-        },
         async loadServiceDetail() {
             uni.showLoading({ title: '加载中...' });
             try {
@@ -353,6 +355,11 @@ export default {
                 }
             }
         },
+        goToSelectTime() {
+            uni.navigateTo({
+                url: '/bundle_home_service/pages/select_appointment_time/select_appointment_time'
+            });
+        },
         onAppointmentTimeConfirm(e) {
             const time = e;
             const year = time.year || new Date().getFullYear();
@@ -461,70 +468,41 @@ export default {
 <style lang="scss" scoped>
 .service-confirm-order-page {
     width: 100%;
-    height: 100vh;
-    background-color: #F5F5F5;
+    height: 135vh;
+    background: linear-gradient(180deg, #AEEB72 20%, #F4F5F6 20%);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
+    padding-top: 88px; // 为固定定位的导航栏留出空间
 
-.status-bar {
-    width: 100%;
-    background-color: #4CAF50;
-}
-
-.header-navbar {
-    width: 100%;
-    background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-    padding: 10rpx 0;
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    height: 88rpx;
-}
-
-.back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-title {
-    flex: 1;
-    text-align: center;
-    color: #FFFFFF;
-    font-size: 36rpx;
-    font-weight: bold;
-}
-
-.navbar-right {
-    width: 60rpx;
 }
 
 .content-scroll {
     flex: 1;
     width: 100%;
     padding-bottom: 200rpx;
+    padding: 60rpx 20rpx 200rpx 20rpx;
+    box-sizing: border-box;
 }
 
-.address-card {
+.combined-card {
+    background-color: #FFFFFF;
+    border-radius: 12rpx;
+    margin-bottom: 20rpx;
+    box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.address-section {
     display: flex;
     align-items: center;
-    background-color: #FFFFFF;
-    padding: 30rpx;
-    margin-bottom: 20rpx;
+    padding: 24rpx;
     gap: 20rpx;
 }
 
 .address-icon {
-    width: 40rpx;
-    height: 40rpx;
+    width: 44rpx;
+    height: 44rpx;
     flex-shrink: 0;
 }
 
@@ -561,24 +539,28 @@ export default {
 }
 
 .address-detail {
-    font-size: 26rpx;
-    color: #666666;
+    font-size: 32rpx;
+    color: #333;
     line-height: 1.5;
 }
 
-.service-card {
+.divider {
+    height: 1rpx;
+    background-color: #F7F8F9;
+    margin: 0 24rpx;
+}
+
+.service-section {
     display: flex;
     align-items: center;
-    background-color: #FFFFFF;
-    padding: 30rpx;
-    margin-bottom: 20rpx;
+    padding: 24rpx;
     gap: 20rpx;
 }
 
 .service-image {
-    width: 160rpx;
-    height: 160rpx;
-    border-radius: 12rpx;
+    width: 180rpx;
+    height: 180rpx;
+    border-radius: 10rpx;
     flex-shrink: 0;
 }
 
@@ -615,7 +597,8 @@ export default {
 .form-card {
     background-color: #FFFFFF;
     padding: 30rpx;
-    margin-bottom: 20rpx;
+    border-bottom:1rpx solid #F7F8F9 ;
+    // margin-bottom: 20rpx;
 }
 
 .form-item {
@@ -669,9 +652,9 @@ export default {
 }
 
 .notice-title {
-    font-size: 28rpx;
-    color: #333333;
-    font-weight: 500;
+    font-size: 34rpx;
+    color: #000;
+    font-weight: 700;
     margin-bottom: 20rpx;
     display: block;
 }
@@ -683,8 +666,8 @@ export default {
 }
 
 .notice-item {
-    font-size: 24rpx;
-    color: #666666;
+    font-size: 28rpx;
+    color: #333;
     line-height: 1.6;
 }
 
@@ -713,7 +696,7 @@ export default {
 
 .protocol-text {
     font-size: 24rpx;
-    color: #333333;
+    color: #4AAC03;
 }
 
 .total-price {
@@ -734,11 +717,11 @@ export default {
 }
 
 .pay-btn {
-    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
     color: #FFFFFF;
     font-size: 32rpx;
     font-weight: bold;
-    padding: 24rpx 60rpx;
+    padding: 0rpx 140rpx;
     border-radius: 44rpx;
     border: none;
 }
@@ -748,13 +731,22 @@ export default {
 }
 
 .confirm-dialog-content {
-    padding: 40rpx;
+    padding: 50rpx 20rpx;
     text-align: center;
 }
 
 .confirm-title {
-    font-size: 32rpx;
-    color: #333333;
+    font-size: 28rpx;
+    color: #666666;
+    line-height: 1.6;
+}
+
+/* 覆盖 u-modal 标题样式，使之与图片接近 */
+/deep/ .u-model__title {
+    font-size: 32rpx !important;
+    font-weight: 700 !important;
+    color: #333333 !important;
+    text-align: center !important;
 }
 </style>
 

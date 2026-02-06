@@ -467,7 +467,7 @@ page {
             align-items: center;
             height: 100rpx;
             padding: 0 20rpx;
-            background-color: #ffffff;
+            // background-color: #ffffff;
         }
 
         .payway-container {
@@ -523,7 +523,7 @@ page {
             border-radius: 60px;
             margin-top: 10rpx;
             font-size: 22rpx;
-            background-color: #ffffff;
+            // background-color: #ffffff;
             color: $-color-normal;
         }
 

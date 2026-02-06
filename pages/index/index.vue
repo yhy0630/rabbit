@@ -206,7 +206,7 @@
         <!-- <tabbar></tabbar> -->
         
         <!-- 自定义导航栏 -->
-        <custom-tabbar :current="0" @change="onTabChange"></custom-tabbar>
+        <custom-tabbar :current="0" :tabs="tabbarTabs" @change="onTabChange"></custom-tabbar>
 
         <!-- 无网络提示 -->
         <u-no-network z-index="1200" @retry="handleRetry"></u-no-network>
@@ -241,7 +241,32 @@ export default {
             cateList: [homeItem],
             showCateList: [],
             liveLists: [],
-            showPrivacyPopup: false //微信用户隐私协议
+            showPrivacyPopup: false, //微信用户隐私协议
+            // 自定义底部导航栏按钮配置
+            // 这里只配置「使用哪些按钮」以及「各自的跳转路径」
+            // 图标和文字在 components/custom-tabbar/custom-tabbar.vue 中统一维护
+            tabbarTabs: [
+                {
+                    id: 'home',
+                    path: '/pages/index/index'
+                },
+                {
+                    id: 'mall',
+                    path: '/pages/goods_cate/goods_cate'
+                },
+                {
+                    id: 'publish',
+                    path: '/bundle_b/pages/published_works/published_works'
+                },
+                {
+                    id: 'order',
+                    path: '/bundle/pages/user_order/user_order'
+                },
+                {
+                    id: 'user',
+                    path: '/pages/user/user'
+                }
+            ]
         }
     },
     async onLoad(options) {

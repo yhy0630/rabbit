@@ -42,12 +42,8 @@
             </view>
             <view class="line m-t-40"></view>
             <view class="m-t-40 flex-col row-center">
-                <router-link :to="getPagesUrl" navType="replace">
-                    <button type="primary" size="lg" class="br60">查看订单</button>
-                </router-link>
-                <router-link navType="pushTab" to="/pages/index/index">
-                    <button size="lg" class="br60 plain primary m-t-30">返回首页</button>
-                </router-link>
+                <button type="primary" size="lg" class="br60" @click="goToOrder">查看订单</button>
+                <button size="lg" class="br60 plain primary m-t-30" @click="backHome">返回首页</button>
             </view>
         </view>
     </view>
@@ -79,6 +75,32 @@ export default {
             }).then((res) => {
                 if (res.code == 1) {
                     this.payInfo = res.data
+                }
+            })
+        }
+        ,
+        goToOrder() {
+            const target = this.getPagesUrl
+            if (!target) return
+            uni.navigateTo({
+                url: target,
+                fail: () => {
+                    // fallback to redirectTo
+                    uni.redirectTo({
+                        url: target,
+                        fail: () => {
+                            // last resort: reLaunch
+                            uni.reLaunch({ url: target })
+                        }
+                    })
+                }
+            })
+        },
+        backHome() {
+            uni.reLaunch({
+                url: '/pages/index/index',
+                fail: () => {
+                    uni.navigateTo({ url: '/pages/index/index' })
                 }
             })
         }
@@ -123,6 +145,17 @@ export default {
         }
         .plain {
             border: 1px solid $-color-primary;
+        }
+        /* 自定义：查看订单按钮渐变背景 */
+        button[type="primary"] {
+            background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
+            color: #FFFFFF;
+            border: none;
+        }
+        /* 自定义：返回首页 按钮 字体与边框颜色 */
+        button.plain {
+            color: #149906;
+            border-color: #149906;
         }
     }
 }
