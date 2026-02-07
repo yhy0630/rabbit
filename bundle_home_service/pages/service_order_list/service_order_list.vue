@@ -28,16 +28,16 @@
                             size="28"
                             class="status-icon"
                         ></u-icon>
-                        <text class="order-status" :class="{
-                            'status-pending': item.status === 0 && item.pay_status === 0,
-                            'status-pending-accept': item.status === 0 && item.pay_status === 1,
-                            'status-waiting': item.status === 1,
-                            'status-completed': item.status === 3,
-                            'status-cancelled': item.status === 4
-                        }">
-                            {{ getStatusText(item.status, item.pay_status) }}
-                        </text>
-                    </view>
+                    <text class="order-status" :class="{
+                        'status-pending': item.status === 0 && item.pay_status === 0,
+                        'status-pending-accept': item.status === 0 && item.pay_status === 1,
+                        'status-waiting': item.status === 1,
+                        'status-completed': item.status === 3,
+                        'status-cancelled': item.status === 4
+                    }">
+                        {{ getStatusText(item.status, item.pay_status) }}
+                    </text>
+                </view>
                 </view>
                 <view class="order-content" @click="goToDetail(item.id)">
                     <view class="service-image-wrapper">
@@ -48,7 +48,7 @@
                         ></image>
                     </view>
                     <view class="service-info">
-                        <text class="service-name">{{ item.service_name }}</text>
+                    <text class="service-name">{{ item.service_name }}</text>
                         <text class="service-address" v-if="item.service_address">{{ item.service_address }}</text>
                         <text class="appointment-time" v-if="item.appointment_time">上门时间：{{ item.appointment_time }}</text>
                         <text class="order-price">¥{{ Number(item.total_amount || 0).toFixed(2) }}</text>
@@ -151,7 +151,7 @@ export default {
     onLoad(options) {
         // 计算导航栏高度和 scroll-view 高度
         try {
-            const systemInfo = uni.getSystemInfoSync();
+        const systemInfo = uni.getSystemInfoSync();
             const statusBarHeight = systemInfo.statusBarHeight || 0;
             this.navbarHeight = statusBarHeight + 44; // 状态栏高度 + 导航栏内容高度(44px)
             
@@ -509,7 +509,7 @@ export default {
 
 .status-completed {
     color: #999;
-} 
+}
 
 .status-cancelled {
     color: #35393F;

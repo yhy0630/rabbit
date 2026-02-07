@@ -1089,6 +1089,18 @@
                         "navigationBarTextStyle": "white",
                         "navigationBarBackgroundColor": "#4CAF50"
                     }
+                },
+                {
+                    "path": "pages/service_order_detail/service_order_detail",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "订单详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
                 }
             ]
         }

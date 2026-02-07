@@ -1,57 +1,50 @@
 <template>
     <view class="service-order-detail-page">
-        <!-- 状态栏占位 -->
-        <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-        
-        <!-- 顶部导航栏 -->
-        <view class="header-navbar">
-            <view class="navbar-content">
-                <view class="back-btn" @click="goBack">
-                    <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-                </view>
-                <view class="navbar-title">订单详情</view>
-                <view class="navbar-right"></view>
-            </view>
-        </view>
+        <!-- 自定义导航栏 -->
+        <custom-navbar title="订单详情"></custom-navbar>
 
         <!-- 内容区域 -->
         <scroll-view class="content-scroll" scroll-y v-if="orderDetail.id">
-            <!-- 订单状态 -->
+            <!-- 订单状态（图片样式：白色卡片） -->
             <view class="status-card">
-                <view class="status-text" :class="statusClass">
+                <text class="status-text">
                     {{ getStatusText(orderDetail.status, orderDetail.pay_status) }}
-                </view>
-                <view class="status-desc" v-if="orderDetail.status === 0 && orderDetail.pay_status === 0">
-                    请尽快完成支付，超时订单将自动取消
-                </view>
+                </text>
             </view>
 
-            <!-- 服务地址 -->
-            <view class="info-card">
-                <view class="card-title">服务地址</view>
-                <view class="address-info">
-                    <view class="address-header">
+            <!-- 地址卡片（左侧地图图标 + 右侧箭头） -->
+            <view class="address-card">
+                <image class="address-icon" src="/static/images/map-pin-2-fill.png" mode="aspectFit"></image>
+                <view class="address-main">
+                    <text class="address-text">{{ displayAddress }}</text>
+                    <view class="address-sub">
                         <text class="contact-name">{{ orderDetail.contact_name }}</text>
                         <text class="contact-phone">{{ orderDetail.contact_phone }}</text>
                     </view>
-                    <view class="address-detail">{{ orderDetail.address }}</view>
+                </view>
+                <u-icon name="arrow-right" size="16" color="#999999"></u-icon>
+            </view>
+
+            <!-- 服务信息卡片（左图 + 名称 + 价格 + 说明） -->
+            <view class="service-card">
+                <image
+                    class="service-image"
+                    :src="orderDetail.service_info && orderDetail.service_info.avatar || orderDetail.service_image || orderDetail.service_img || orderDetail.image"
+                    mode="aspectFill"
+                ></image>
+                <view class="service-main">
+                    <text class="service-title">{{ orderDetail.service_name }}</text>
+                    <view class="service-meta">
+                        <text class="service-price">¥{{ formatPrice(orderDetail.service_price) }}</text>
+                        <text class="service-desc" v-if="orderDetail.service_remark">说明</text>
+                    </view>
                 </view>
             </view>
 
-            <!-- 服务信息 -->
-            <view class="info-card">
-                <view class="card-title">服务信息</view>
-                <view class="service-info">
-                    <text class="service-name">{{ orderDetail.service_name }}</text>
-                    <view class="service-detail" v-if="orderDetail.appointment_time">
-                        <text class="detail-label">上门时间：</text>
-                        <text class="detail-value">{{ orderDetail.appointment_time }}</text>
-                    </view>
-                    <view class="service-detail" v-if="orderDetail.service_remark">
-                        <text class="detail-label">服务备注：</text>
-                        <text class="detail-value">{{ orderDetail.service_remark }}</text>
-                    </view>
-                </view>
+            <!-- 上门时间（单行） -->
+            <view class="time-row" v-if="orderDetail.appointment_time">
+                <text class="time-label">上门时间</text>
+                <text class="time-value">{{ orderDetail.appointment_time }}</text>
             </view>
 
             <!-- 上传照片 -->
@@ -80,42 +73,90 @@
                     <text class="info-label">下单时间：</text>
                     <text class="info-value">{{ formatTime(orderDetail.create_time) }}</text>
                 </view>
-                <view class="order-info-item">
+                <!-- <view class="order-info-item">
                     <text class="info-label">服务价格：</text>
-                    <text class="info-value">¥{{ orderDetail.service_price.toFixed(2) }}</text>
-                </view>
-                <view class="order-info-item total">
+                    <text class="info-value">¥{{ formatPrice(orderDetail.service_price) }}</text>
+                </view> -->
+                <!-- <view class="order-info-item total">
                     <text class="info-label">合计：</text>
-                    <text class="info-value price">¥{{ orderDetail.total_amount.toFixed(2) }}</text>
-                </view>
+                    <text class="info-value price">¥{{ formatPrice(orderDetail.total_amount) }}</text>
+                </view> -->
             </view>
         </scroll-view>
 
         <!-- 底部操作栏 -->
         <view class="footer-bar" v-if="orderDetail.id">
-            <button 
-                class="footer-btn cancel-btn" 
-                v-if="orderDetail.status === 0 && orderDetail.pay_status === 0"
-                @click="cancelOrder"
-            >
-                取消订单
-            </button>
-            <button 
-                class="footer-btn pay-btn" 
-                v-if="orderDetail.status === 0 && orderDetail.pay_status === 0"
-                @click="goToPay"
-            >
-                立即支付
-            </button>
+            <view class="footer-amount">
+                <text class="amount-label">实付：</text>
+                <text class="amount-value">
+                    ¥{{ formatPrice(orderDetail.total_amount || orderDetail.pay_price || orderDetail.service_price) }}
+                </text>
+            </view>
+            <view class="footer-actions">
+                <button 
+                    class="footer-btn cancel-btn" 
+                    v-if="Number(orderDetail.status) === 0 && Number(orderDetail.pay_status) === 0"
+                    @click="cancelOrder"
+                >
+                    取消订单
+                </button>
+                <button 
+                    class="footer-btn pay-btn" 
+                    v-if="Number(orderDetail.status) === 0 && Number(orderDetail.pay_status) === 0"
+                    @click="goToPay"
+                >
+                    去支付
+                </button>
+                <button 
+                    class="footer-btn cancel-btn" 
+                    v-if="Number(orderDetail.status) === 0 && Number(orderDetail.pay_status) === 1"
+                    @click="cancelOrder"
+                >
+                    取消订单
+                </button>
+                <button 
+                    class="footer-btn cancel-btn" 
+                    v-if="Number(orderDetail.status) === 1"
+                    @click="applyRefund"
+                >
+                    申请退款
+                </button>
+                <button 
+                    class="footer-btn detail-btn" 
+                    v-if="Number(orderDetail.status) === 3"
+                    @click="goToEvaluate"
+                >
+                    订单评价
+                </button>
+            </view>
         </view>
     </view>
 </template>
 
 <script>
 import { getHomeServiceOrderDetail } from '@/api/store'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'ServiceOrderDetail',
+    components: {
+        CustomNavbar
+    },
+    computed: {
+        statusClass() {
+            return this.getStatusClass(this.orderDetail.status, this.orderDetail.pay_status);
+        },
+        displayAddress() {
+            const d = this.orderDetail || {};
+            // 兼容不同字段命名：service_address / address / province+city+district+address
+            const addr =
+                d.service_address ||
+                d.address ||
+                [d.province, d.city, d.district, d.address_detail || d.detail_address].filter(Boolean).join(' ') ||
+                '';
+            return addr || '-';
+        }
+    },
     data() {
         return {
             statusBarHeight: 0,
@@ -133,15 +174,7 @@ export default {
             this.loadOrderDetail();
             }
         },
-        computed: {
-            statusClass() {
-                return this.getStatusClass(this.orderDetail.status, this.orderDetail.pay_status);
-            }
-        },
         methods: {
-        goBack() {
-            uni.navigateBack();
-        },
         async loadOrderDetail() {
             uni.showLoading({ title: '加载中...' });
             try {
@@ -170,34 +203,59 @@ export default {
             }
         },
         getStatusText(status, payStatus) {
-            if (status === 0 && payStatus === 0) {
+            const s = Number(status);
+            const p = Number(payStatus);
+            if (s === 0 && p === 0) {
                 return '待付款';
-            } else if (status === 1) {
+            } else if (s === 0 && p === 1) {
+                return '待接单';
+            } else if (s === 1) {
                 return '待服务';
-            } else if (status === 2) {
+            } else if (s === 2) {
                 return '服务中';
-            } else if (status === 3) {
+            } else if (s === 3) {
                 return '已完成';
-            } else if (status === 4) {
+            } else if (s === 4) {
                 return '已取消';
             }
             return '未知';
         },
         getStatusClass(status, payStatus) {
-            if (status === 0 && payStatus === 0) {
+            const s = Number(status);
+            const p = Number(payStatus);
+            if (s === 0 && p === 0) {
                 return 'status-pending';
-            } else if (status === 1) {
+            } else if (s === 0 && p === 1) {
+                return 'status-pending-accept';
+            } else if (s === 1) {
                 return 'status-waiting';
-            } else if (status === 3) {
+            } else if (s === 3) {
                 return 'status-completed';
-            } else if (status === 4) {
+            } else if (s === 4) {
                 return 'status-cancelled';
             }
             return '';
         },
+        formatPrice(value) {
+            const n = Number(value);
+            if (Number.isFinite(n)) return n.toFixed(2);
+            return '0.00';
+        },
         formatTime(timestamp) {
             if (!timestamp) return '';
-            const date = new Date(timestamp * 1000);
+            // 接口可能返回：秒级时间戳 / 毫秒时间戳 / 已格式化字符串
+            if (typeof timestamp === 'string') {
+                // 已格式化时间直接返回
+                if (timestamp.includes('-') || timestamp.includes('/')) return timestamp;
+                const parsed = Number(timestamp);
+                if (Number.isFinite(parsed)) timestamp = parsed;
+            }
+
+            let ms = Number(timestamp);
+            if (!Number.isFinite(ms)) return '';
+            // 10位通常是秒级，13位通常是毫秒级
+            if (String(Math.floor(ms)).length === 10) ms = ms * 1000;
+            const date = new Date(ms);
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
@@ -229,9 +287,39 @@ export default {
                 }
             });
         },
+        applyRefund() {
+            uni.showModal({
+                title: '提示',
+                content: '确定要申请退款吗？',
+                success: (res) => {
+                    if (res.confirm) {
+                        // TODO: 调用申请退款接口
+                        uni.showToast({
+                            title: '退款申请已提交',
+                            icon: 'success'
+                        });
+                        setTimeout(() => {
+                            this.loadOrderDetail();
+                        }, 1500);
+                    }
+                }
+            });
+        },
         goToPay() {
             uni.redirectTo({
                 url: `/pages/payment/payment?order_id=${this.orderDetail.id}&amount=${this.orderDetail.total_amount}&type=home_service`
+            });
+        },
+        goToEvaluate() {
+            uni.navigateTo({
+                url: `/bundle_home_service/pages/service_order_evaluate/service_order_evaluate?order_id=${this.orderDetail.id}`,
+                fail: (err) => {
+                    console.error('跳转评价页面失败:', err);
+                    uni.showToast({
+                        title: '页面不存在',
+                        icon: 'none'
+                    });
+                }
             });
         }
     }
@@ -241,50 +329,12 @@ export default {
 <style lang="scss" scoped>
 .service-order-detail-page {
     width: 100%;
-    height: 100vh;
-    background-color: #F5F5F5;
+    min-height: 100vh;
+    background: linear-gradient(180deg, #B2ED76 10%, rgba(178, 237, 118, 0) 40%);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-}
-
-.status-bar {
-    width: 100%;
-    background-color: #4CAF50;
-}
-
-.header-navbar {
-    width: 100%;
-    background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-    padding: 10rpx 0;
-}
-
-.navbar-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 30rpx;
-    height: 88rpx;
-}
-
-.back-btn {
-    width: 60rpx;
-    height: 60rpx;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-title {
-    flex: 1;
-    text-align: center;
-    color: #FFFFFF;
-    font-size: 36rpx;
-    font-weight: bold;
-}
-
-.navbar-right {
-    width: 60rpx;
+    padding-top: calc(128rpx + var(--status-bar-height));
 }
 
 .content-scroll {
@@ -292,42 +342,137 @@ export default {
     width: 100%;
     padding: 20rpx;
     padding-bottom: 200rpx;
+    box-sizing: border-box;
 }
 
 .status-card {
-    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    background-color: #FFFFFF;
     border-radius: 16rpx;
-    padding: 40rpx 30rpx;
+    padding: 26rpx 30rpx;
     margin-bottom: 20rpx;
-    text-align: center;
 }
 
 .status-text {
-    font-size: 48rpx;
-    font-weight: bold;
-    color: #FFFFFF;
+    font-size: 30rpx;
+    font-weight: 600;
+    color: #333333;
+}
+
+.address-card {
+    background-color: #FFFFFF;
+    border-radius: 16rpx;
+    padding: 26rpx 30rpx;
+    margin-bottom: 20rpx;
+    display: flex;
+    align-items: flex-start;
+    gap: 18rpx;
+}
+
+.address-icon {
+    width: 44rpx;
+    height: 44rpx;
+    flex-shrink: 0;
+    margin-top: 4rpx;
+}
+
+.address-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.address-text {
+    display: block;
+    font-size: 28rpx;
+    color: #333333;
+    line-height: 1.4;
     margin-bottom: 10rpx;
 }
 
-.status-desc {
+.address-sub {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+    font-size: 26rpx;
+    color: #666666;
+}
+
+.service-card {
+    background-color: #FFFFFF;
+    border-radius: 16rpx;
+    padding: 26rpx 30rpx;
+    margin-bottom: 20rpx;
+    display: flex;
+    gap: 20rpx;
+    align-items: center;
+}
+
+.service-image {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 12rpx;
+    flex-shrink: 0;
+}
+
+.service-main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12rpx;
+}
+
+.service-title {
+    font-size: 28rpx;
+    color: #333333;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.service-meta {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+}
+
+.service-price {
+    font-size: 28rpx;
+    color: #FF3B30;
+    font-weight: 600;
+}
+
+.service-desc {
     font-size: 24rpx;
-    color: rgba(255, 255, 255, 0.8);
+    color: #999999;
+    padding: 6rpx 14rpx;
+    border-radius: 999rpx;
+    background-color: #F4F5F6;
 }
 
-.status-pending {
-    color: #FFEB3B;
+.time-row {
+    background-color: #FFFFFF;
+    border-radius: 16rpx;
+    padding: 26rpx 30rpx;
+    margin-bottom: 20rpx;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20rpx;
 }
 
-.status-waiting {
-    color: #FF9800;
+.time-label {
+    font-size: 28rpx;
+    color: #333333;
+    font-weight: 500;
 }
 
-.status-completed {
-    color: #FFFFFF;
-}
+.time-value {
+    font-size: 26rpx;
+    color: #333333;
+    font-weight: 600;
 
-.status-cancelled {
-    color: #CCCCCC;
 }
 
 .info-card {
@@ -340,7 +485,7 @@ export default {
 .card-title {
     font-size: 28rpx;
     color: #333333;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 20rpx;
     padding-bottom: 20rpx;
     border-bottom: 1rpx solid #F0F0F0;
@@ -429,7 +574,7 @@ export default {
 }
 
 .info-label {
-    color: #999999;
+    color: #333;
 }
 
 .info-value {
@@ -451,15 +596,39 @@ export default {
     padding: 20rpx 30rpx;
     padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
     display: flex;
-    gap: 20rpx;
+    align-items: center;
+    justify-content: space-between;
     border-top: 1rpx solid #E0E0E0;
     z-index: 100;
     box-sizing: border-box;
 }
 
-.footer-btn {
+.footer-amount {
     flex: 1;
-    height: 88rpx;
+    display: flex;
+    align-items: center;
+    font-size: 28rpx;
+}
+
+.amount-label {
+    color: #333333;
+}
+
+.amount-value {
+    margin-left: 6rpx;
+    color: #FF3B30;
+    font-size: 30rpx;
+    font-weight: 600;
+}
+
+.footer-actions {
+    display: flex;
+    align-items: center;
+    gap: 20rpx;
+}
+
+.footer-btn {
+    height: 68rpx;
     border-radius: 44rpx;
     font-size: 32rpx;
     font-weight: bold;
@@ -467,16 +636,24 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 40rpx;
 }
 
 .cancel-btn {
-    background-color: #F5F5F5;
-    color: #666666;
+    background-color: #FFFFFF;
+    color: #149906;
+    border: 1rpx solid #149906;
 }
 
 .pay-btn {
-    background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%);
+    background: linear-gradient(90deg, #2B920A 0%, #E9F66B 100%);
     color: #FFFFFF;
+}
+
+.detail-btn {
+    background-color: #FFFFFF;
+    color: #149906;
+    border: 1rpx solid #149906;
 }
 
 .footer-btn::after {
