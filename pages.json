@@ -1101,6 +1101,18 @@
                         "navigationBarTextStyle": "white",
                         "navigationBarBackgroundColor": "#4CAF50"
                     }
+                },
+                {
+                    "path": "pages/service_order_evaluate/service_order_evaluate",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "评价",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
                 }
             ]
         }
