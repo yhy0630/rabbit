@@ -1019,6 +1019,18 @@
                     }
                 },
                 {
+                    "path": "pages/service_detail_card/service_detail_card",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
                     "path": "pages/store_service_list/store_service_list",
                     "meta": {
                         "auth": false

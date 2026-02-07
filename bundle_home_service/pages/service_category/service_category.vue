@@ -217,7 +217,8 @@ export default {
                             serviceType: item.serviceType || item.category_name || '',
                             price: item.price || 0,
                             company: item.company_name || '',
-                            image: item.avatar || '/static/picture/service-avatar.png'
+                            image: item.avatar || item.image || '/static/picture/service-avatar.png',
+                            category_id: item.category_id || 0
                         };
                     });
                     
@@ -254,6 +255,21 @@ export default {
                 }
             }
         },
+        navigateToDetail(serviceId, categoryId) {
+            // 根据 category_id 跳转到不同页面
+            // category_id = 1: 跳转到个人信息样式页面
+            // category_id = 2: 跳转到卡片样式页面
+            if (categoryId === 2) {
+                uni.navigateTo({
+                    url: `/bundle_home_service/pages/service_detail_card/service_detail_card?id=${serviceId}`
+                });
+            } else {
+                // 默认跳转到个人信息样式页面
+                uni.navigateTo({
+                    url: `/bundle_home_service/pages/service_detail/service_detail?id=${serviceId}`
+                });
+            }
+        },
         goToDetail(event, index) {
             // 跳转到服务详情页面
             let item = null;
@@ -271,17 +287,17 @@ export default {
 
             // 如果从 dataset 获取到了 id，直接使用
             if (serviceId && serviceId !== 'undefined' && serviceId !== 'null' && serviceId !== '') {
-                uni.navigateTo({
-                    url: `/bundle_home_service/pages/service_detail/service_detail?id=${serviceId}`
-                });
+                // 从 serviceList 中查找对应的 item 获取 category_id
+                const foundItem = this.serviceList.find(s => s.id == serviceId);
+                const categoryId = foundItem ? foundItem.category_id : 0;
+                this.navigateToDetail(serviceId, categoryId);
                 return;
             }
 
             // 否则从 item 对象中获取
             if (item && item.id !== undefined && item.id !== null && item.id !== '' && item.id !== 0) {
-                uni.navigateTo({
-                    url: `/bundle_home_service/pages/service_detail/service_detail?id=${item.id}`
-                });
+                const categoryId = item.category_id || 0;
+                this.navigateToDetail(item.id, categoryId);
                 return;
             }
 
@@ -289,9 +305,8 @@ export default {
             if (index !== undefined && this.serviceList && this.serviceList[index]) {
                 item = this.serviceList[index];
                 if (item && item.id !== undefined && item.id !== null && item.id !== '' && item.id !== 0) {
-                    uni.navigateTo({
-                        url: `/bundle_home_service/pages/service_detail/service_detail?id=${item.id}`
-                    });
+                    const categoryId = item.category_id || 0;
+                    this.navigateToDetail(item.id, categoryId);
                     return;
                 }
             }
