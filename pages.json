@@ -253,6 +253,83 @@
     // },
     "subPackages": [
         {
+            "root": "bundle_main",
+            "pages": [
+                {
+                    "path": "pages/login/login",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/register/register",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/goods_details/goods_details",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/forget_pwd/forget_pwd",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationStyle": "custom"
+                    }
+                },
+                {
+                    "path": "pages/confirm_order/confirm_order",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "Confirm Order"
+                    }
+                },
+                {
+                    "path": "pages/payment/payment",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "Payment"
+                    }
+                },
+                {
+                    "path": "pages/pay_result/pay_result",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "Pay Result"
+                    }
+                },
+                {
+                    "path": "pages/goods_search/goods_search",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "disableScroll": true
+                    }
+                }
+            ]
+        },
+        {
             "root": "bundle",
             "pages": [
                 {

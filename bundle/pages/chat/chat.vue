@@ -464,6 +464,7 @@
 </script>
 
 <style lang="scss">
+	@import url('@/plugin/emoji-awesome/css/apple.css');
 	page {
 		pading: 0;
 		height: 100%;

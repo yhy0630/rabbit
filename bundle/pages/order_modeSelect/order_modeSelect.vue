@@ -33,37 +33,37 @@ export default {
                 {
                     key: 'secondhand',
                     name: '二手交易',
-                    icon: '/static/images/Group 1410085276.png'
+                    icon: '/bundle/static/Group 1410085276.png'
                 },
                 {
                     key: 'life',
                     name: '生活缴费',
-                    icon: '/static/images/shenghuojiaofei.png'
+                    icon: '/bundle/static/shenghuojiaofei.png'
                 },
                 {
                     key: 'rent',
                     name: '房屋出租',
-                    icon: '/static/images/fangwuchuzu.png'
+                    icon: '/bundle/static/fangwuchuzu.png'
                 },
                 {
                     key: 'local',
                     name: '同城家政',
-                    icon: '/static/images/tongchengjiazheng.png'
+                    icon: '/bundle/static/tongchengjiazheng.png'
                 },
                 {
                     key: 'rideshare',
                     name: '顺风车',
-                    icon: '/static/images/shunfengche.png'
+                    icon: '/bundle/static/shunfengche.png'
                 },
                 {
                     key: 'express',
                     name: '快递服务',
-                    icon: '/static/images/kuaidi.png'
+                    icon: '/bundle/static/kuaidi.png'
                 },
                 {
                     key: 'recharge',
                     name: '话费充值',
-                    icon: '/static/images/huafei.png'
+                    icon: '/bundle/static/huafei.png'
                 }
             ]
         }
