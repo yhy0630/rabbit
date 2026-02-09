@@ -1,0 +1,162 @@
+<template>
+    <view class="pay-result">
+        <view class="contain bg-white">
+            <view class="header flex-col col-center">
+                <view>
+                    <image class="tips-icon" src="/static/images/icon_success.png"></image>
+                </view>
+                <view class="xl m-t-20" v-if="payInfo.pay_way == '线下支付'">订单创建成功</view>
+                <view class="xl m-t-20" v-else>订单支付成功</view>
+            </view>
+            <view class="info">
+                <view class="order-num flex row-between m-t-20">
+                    <view>订单编号</view>
+                    <view>
+                        {{ payInfo.order_sn }}
+                    </view>
+                </view>
+                <view
+                    v-if="payInfo.pay_time && payInfo.pay_way != '线下支付'"
+                    class="order-time flex row-between m-t-20"
+                >
+                    <view>付款时间</view>
+                    <view>{{ payInfo.pay_time }}</view>
+                </view>
+                <view
+                    v-if="payInfo.pay_time && payInfo.pay_way == '线下支付'"
+                    class="order-time flex row-between m-t-20"
+                >
+                    <view>下单时间</view>
+                    <view>{{ payInfo.pay_time }}</view>
+                </view>
+                <view class="order-pay-type flex row-between m-t-20">
+                    <view>支付方式</view>
+                    <view>{{ payInfo.pay_way }}</view>
+                </view>
+                <view class="order-pay-money flex row-between m-t-20">
+                    <view>支付金额</view>
+                    <view>
+                        {{ payInfo.total_amount }}
+                    </view>
+                </view>
+            </view>
+            <view class="line m-t-40"></view>
+            <view class="m-t-40 flex-col row-center">
+                <button type="primary" size="lg" class="br60" @click="goToOrder">查看订单</button>
+                <button size="lg" class="br60 plain primary m-t-30" @click="backHome">返回首页</button>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import { getPayResult } from '@/api/order'
+export default {
+    data() {
+        return {
+            payInfo: {},
+            from: ''
+        }
+    },
+
+    onLoad() {
+        const options = this.$Route.query
+        console.log(options)
+        this.id = options.id
+        this.from = options.from
+        this.getOrderResultFun()
+    },
+
+    methods: {
+        getOrderResultFun() {
+            getPayResult({
+                id: this.id,
+                from: this.from
+            }).then((res) => {
+                if (res.code == 1) {
+                    this.payInfo = res.data
+                }
+            })
+        }
+        ,
+        goToOrder() {
+            const target = this.getPagesUrl
+            if (!target) return
+            uni.navigateTo({
+                url: target,
+                fail: () => {
+                    // fallback to redirectTo
+                    uni.redirectTo({
+                        url: target,
+                        fail: () => {
+                            // last resort: reLaunch
+                            uni.reLaunch({ url: target })
+                        }
+                    })
+                }
+            })
+        },
+        backHome() {
+            uni.reLaunch({
+                url: '/pages/index/index',
+                fail: () => {
+                    uni.navigateTo({ url: '/pages/index/index' })
+                }
+            })
+        }
+    },
+    computed: {
+        getPagesUrl() {
+            switch (this.from) {
+                case 'integral':
+                    return '/bundle/pages/exchange_order/exchange_order'
+                case 'home_service':
+                    return '/bundle_home_service/pages/service_order_list/service_order_list'
+                default:
+                    return '/bundle/pages/user_order/user_order'
+            }
+        }
+    }
+}
+</script>
+<style lang="scss">
+.pay-result {
+    .contain {
+        border-radius: 10rpx;
+        padding: 0 30rpx 40rpx;
+        position: relative;
+        margin: 78rpx 20rpx 0;
+        .tips-icon {
+            width: 112rpx;
+            height: 112rpx;
+        }
+
+        .header {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: -50rpx;
+        }
+        .info {
+            padding-top: 180rpx;
+        }
+        .line {
+            border-top: $-solid-border;
+        }
+        .plain {
+            border: 1px solid $-color-primary;
+        }
+        /* 自定义：查看订单按钮渐变背景 */
+        button[type="primary"] {
+            background: linear-gradient(91.58deg, #49AB02 15.84%, #E4E872 83.36%, #EFFD6B 96.79%);
+            color: #FFFFFF;
+            border: none;
+        }
+        /* 自定义：返回首页 按钮 字体与边框颜色 */
+        button.plain {
+            color: #149906;
+            border-color: #149906;
+        }
+    }
+}
+</style>

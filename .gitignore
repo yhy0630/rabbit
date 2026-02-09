@@ -5,3 +5,4 @@ node_modules/
 .env.development
 .env.production
 /.idea/vcs.xml
+_unused_static_backup/

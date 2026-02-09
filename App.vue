@@ -108,6 +108,5 @@ export default {
 <style lang="scss">
 @import 'styles/common.scss';
 @import 'components/uview-ui/index.scss';
-@import url('@/plugin/emoji-awesome/css/apple.css');
 /*每个页面公共css */
 </style>
