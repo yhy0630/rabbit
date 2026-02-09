@@ -3,6 +3,9 @@
         <custom-navbar title="登录"></custom-navbar>
 
         <view class="acount-login">
+             <!-- 顶部 Logo -->
+             <image class="logo" src="/bundle_b/static/logo.jpg" mode="aspectFit"></image>
+
              <!-- 顶部标题：根据是否为手机号登录切换文案 -->
              <view class="login-title-wrapper">
                  <text class="login-title">
@@ -516,7 +519,7 @@ export default {
 </script>
 <style lang="scss">
 page {
-    background: linear-gradient(180deg, #F4FFF2 0%, #FFFFFF 100%);
+    background:#FFFFFF;
     text-align: center;
     padding-top: calc(180rpx + var(--status-bar-height));    // background-image: url(../../static/images/login_bg.png);
 
@@ -589,7 +592,7 @@ page {
             }
 
             .logo {
-                width: 180rpx;
+                width: 375rpx;
                 height: 180rpx;
                 margin-bottom: 50rpx;
                 margin-top: 50rpx;
