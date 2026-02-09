@@ -93,18 +93,18 @@
                 </text>
             </view>
             <view class="footer-actions">
-                <button 
-                    class="footer-btn cancel-btn" 
+            <button 
+                class="footer-btn cancel-btn" 
                     v-if="Number(orderDetail.status) === 0 && Number(orderDetail.pay_status) === 0"
-                    @click="cancelOrder"
-                >
-                    取消订单
-                </button>
-                <button 
-                    class="footer-btn pay-btn" 
+                @click="cancelOrder"
+            >
+                取消订单
+            </button>
+            <button 
+                class="footer-btn pay-btn" 
                     v-if="Number(orderDetail.status) === 0 && Number(orderDetail.pay_status) === 0"
-                    @click="goToPay"
-                >
+                @click="goToPay"
+            >
                     去支付
                 </button>
                 <button 
@@ -127,7 +127,7 @@
                     @click="goToEvaluate"
                 >
                     订单评价
-                </button>
+            </button>
             </view>
         </view>
     </view>

@@ -1,9 +1,13 @@
 <template>
   <view class="utility-payment-page">
+    <!-- 自定义导航栏 -->
+    <custom-navbar :title="typeConfig.name" bgColor="#cbfac5" textColor="#333" iconColor="#333"></custom-navbar>
+
+    
     <!-- 顶部类型栏 -->
-    <view class="type-header" :style="{ backgroundColor: typeConfig.headerColor }">
+    <view class="type-header">
       <view class="type-icon">
-        <u-icon :name="typeConfig.icon" size="32" :color="typeConfig.iconColor"></u-icon>
+        <image :src="typeConfig.iconImage" mode="aspectFit" class="type-icon-img"></image>
       </view>
       <text class="type-name">{{ typeConfig.name }}</text>
       <view class="city-selector" @click="selectCity">
@@ -14,37 +18,43 @@
 
     <!-- 主要内容区域 -->
     <scroll-view class="content-scroll" scroll-y>
-      <!-- 缴费单位 -->
-      <view class="form-section" @click="selectPaymentUnit">
-        <view class="section-label">缴费单位</view>
-        <view class="section-value">
-          <text class="value-text">{{ paymentUnit || '请选择缴费单位' }}</text>
-          <u-icon name="arrow-right" size="16" color="#999999"></u-icon>
-        </view>
-      </view>
-
-      <!-- 户号 -->
+      <!-- 缴费单位和户号 -->
       <view class="form-section">
-        <view class="section-label">户号</view>
-        <view class="input-wrapper">
-          <input 
-            class="account-input" 
-            type="number"
-            v-model="accountNumber"
-            placeholder="请输入13位户号"
-            maxlength="13"
-          />
-          <text class="help-link" @click="viewHelp">查看获取方式</text>
-        </view>
-        <view class="quick-get" @click="quickGetAccount">
-          <view class="quick-icon">
-            <u-icon name="grid" size="20" color="#4CAF50"></u-icon>
+        <!-- 缴费单位 -->
+        <view class="unit-section" @click="selectPaymentUnit">
+          <view class="section-label">缴费单位</view>
+          <view class="section-value">
+            <text class="value-text">{{ paymentUnit || '请选择缴费单位' }}</text>
+            <u-icon name="arrow-right" size="16" color="#999999"></u-icon>
           </view>
-          <text class="quick-text">快速获取网上国网户号</text>
-          <u-icon name="arrow-right" size="16" color="#4CAF50"></u-icon>
         </view>
-        <view class="account-tip">
-          户号已升级至13位(160+原户号,若为13位165新户号则直接输入户号)
+        
+        <!-- 分隔线 -->
+        <view class="divider"></view>
+        
+        <!-- 户号 -->
+        <view class="account-section">
+          <view class="section-label">户号</view>
+          <view class="input-wrapper">
+            <input 
+              class="account-input" 
+              type="number"
+              v-model="accountNumber"
+              placeholder="请输入13位户号"
+              maxlength="13"
+            />
+            <text class="help-link" @click.stop="viewHelp">查看获取方式</text>
+          </view>
+          <view class="quick-get" @click="quickGetAccount">
+            <view class="quick-icon">
+              <u-icon name="grid" size="20" color="#4CAF50"></u-icon>
+            </view>
+            <text class="quick-text">快速获取网上国网户号</text>
+            <u-icon name="arrow-right" size="16" color="#4CAF50"></u-icon>
+          </view>
+          <view class="account-tip">
+            户号已升级至13位(160+原户号,若为13位165新户号则直接输入户号)
+          </view>
         </view>
       </view>
 
@@ -95,7 +105,12 @@
 </template>
 
 <script>
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+
 export default {
+  components: {
+    CustomNavbar
+  },
   data() {
     return {
       type: 'electricity', // electricity, water, gas
@@ -103,7 +118,8 @@ export default {
         name: '电费',
         icon: 'flash',
         iconColor: '#FFC107',
-        headerColor: '#FFC107'
+        headerColor: '#FFC107',
+        iconImage: '/static/images/dianfei.png'
       },
       selectedCity: '廊坊市',
       paymentUnit: '',
@@ -117,6 +133,7 @@ export default {
           icon: 'bolt',
           iconColor: '#FFC107',
           headerColor: '#FFC107',
+          iconImage: '/static/images/dianfei.png',
           defaultUnit: '国网冀北电力有限公司'
         },
         water: {
@@ -124,6 +141,7 @@ export default {
           icon: 'info-circle',
           iconColor: '#2196F3',
           headerColor: '#2196F3',
+          iconImage: '/static/images/shuifei.png',
           defaultUnit: '霸州市新胜供水有限公司'
         },
         gas: {
@@ -131,6 +149,7 @@ export default {
           icon: 'star',
           iconColor: '#F44336',
           headerColor: '#F44336',
+          iconImage: '/static/images/ranqi-2 1.png',
           defaultUnit: '霸州市新胜燃气有限公司'
         }
       }
@@ -147,14 +166,13 @@ export default {
     }
   },
   onLoad(options) {
-    this.type = options.type || 'electricity';
+    if (options && options.type) {
+      this.type = options.type;
+    } else {
+      this.type = 'electricity';
+    }
     this.typeConfig = this.typeConfigs[this.type] || this.typeConfigs.electricity;
     this.paymentUnit = this.typeConfig.defaultUnit;
-    
-    // 设置导航栏标题
-    uni.setNavigationBarTitle({
-      title: this.typeConfig.name
-    });
   },
   methods: {
     selectCity() {
@@ -251,16 +269,21 @@ export default {
 .utility-payment-page {
   width: 100%;
   min-height: 100vh;
-  background-color: #F5F5F5;
+  background: linear-gradient(180deg, #cbfac5 30%, #F5F5F5 45%);
   display: flex;
   flex-direction: column;
+  padding-top: calc(128rpx + var(--status-bar-height));
 }
 
 .type-header {
   display: flex;
   align-items: center;
-  padding: 30rpx;
+  padding: 20rpx 30rpx 30rpx;
   gap: 20rpx;
+  margin: 20rpx;
+  margin-top: 10rpx;
+  background: linear-gradient(90deg, #36AF29 0%, #ECF93B 100%);
+  border-radius: 30rpx;
 }
 
 .type-icon {
@@ -269,6 +292,14 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  background: #FFFFFF;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.type-icon-img {
+  width: 40rpx;
+  height: 40rpx;
 }
 
 .type-name {
@@ -296,6 +327,7 @@ export default {
   flex: 1;
   overflow-y: auto;
   padding: 20rpx;
+  box-sizing: border-box;
 }
 
 .form-section {
@@ -303,6 +335,21 @@ export default {
   border-radius: 16rpx;
   padding: 30rpx;
   margin-bottom: 20rpx;
+  margin-top: -20rpx;
+}
+
+.unit-section {
+  padding-bottom: 30rpx;
+}
+
+.account-section {
+  padding-top: 30rpx;
+}
+
+.divider {
+  height: 1rpx;
+  background: #E0E0E0;
+  margin: 0 -30rpx;
 }
 
 .section-label {

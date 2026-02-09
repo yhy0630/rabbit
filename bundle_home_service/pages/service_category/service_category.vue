@@ -495,7 +495,7 @@ export default {
     gap: 8rpx;
 }
 
-.service-price { 
+.service-price {
     font-size: 32rpx;
     font-weight: bold;
     color: #F94B30;

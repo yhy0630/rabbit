@@ -1,36 +1,32 @@
 <template>
   <view class="life-payment-page">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    
-    <!-- 顶部导航栏 -->
-    <view class="header-navbar">
-      <view class="navbar-content">
-        <view class="back-btn" @click="goBack">
-          <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-        </view>
-        <view class="navbar-title">生活缴费</view>
-        <view class="navbar-right"></view>
-      </view>
-    </view>
+    <!-- 自定义导航栏 -->
+    <custom-navbar title="生活缴费" bgColor="#cbfac5" textColor="#333" iconColor="#333"></custom-navbar>
 
     <!-- 主要内容区域 -->
     <scroll-view class="content-scroll" scroll-y>
       <!-- 标题和特性 -->
       <view class="header-section">
-        <view class="main-title">生活缴费</view>
-        <view class="features">
-          <view class="feature-item">
-            <u-icon name="checkmark" size="16" color="#4CAF50"></u-icon>
-            <text class="feature-text">极速到账</text>
+        <view class="header-content">
+          <view class="header-left">
+            <view class="main-title">生活缴费</view>
+            <view class="features">
+              <view class="feature-item">
+                <u-icon name="checkmark-circle" size="20" color="#646B67"></u-icon>
+                <text class="feature-text">极速到账</text>
+              </view>
+              <view class="feature-item">
+                <u-icon name="checkmark-circle" size="20" color="#646B67"></u-icon>
+                <text class="feature-text">随时可缴</text>
+              </view>
+              <view class="feature-item">
+                <u-icon name="checkmark-circle" size="20" color="#646B67"></u-icon>
+                <text class="feature-text">到账通知</text>
+              </view>
+            </view>
           </view>
-          <view class="feature-item">
-            <u-icon name="checkmark" size="16" color="#4CAF50"></u-icon>
-            <text class="feature-text">随时可缴</text>
-          </view>
-          <view class="feature-item">
-            <u-icon name="checkmark" size="16" color="#4CAF50"></u-icon>
-            <text class="feature-text">到账通知</text>
+          <view class="header-right">
+            <image src="https://pw3.yihaiguantao.com/static/picture/hand.png" mode="aspectFit" class="hand-icon"></image>
           </view>
         </view>
       </view>
@@ -43,8 +39,9 @@
           :key="index"
           @click="goToPayment(item)"
         >
-          <view class="card-icon" :style="{ backgroundColor: item.iconBg }">
-            <u-icon :name="item.icon" size="40" :color="item.iconColor"></u-icon>
+          <view class="card-icon">
+            <image v-if="item.iconImage" :src="item.iconImage" mode="aspectFit" class="card-icon-img"></image>
+            <u-icon v-else :name="item.icon" size="40" :color="item.iconColor"></u-icon>
           </view>
           <view class="card-content">
             <text class="card-title">{{ item.name }}</text>
@@ -58,17 +55,17 @@
 
       <!-- Banner -->
       <view class="banner-section">
-        <image src="/static/images/life_payment_banner.jpg" mode="aspectFill" class="banner-img"></image>
-        <view class="banner-content">
+        <image src="https://pw3.yihaiguantao.com/static/picture/keji.png" mode="aspectFill" class="banner-img"></image>
+        <!-- <view class="banner-content">
           <text class="banner-title">科技创享 遇见未来</text>
           <text class="banner-subtitle">TECHNOLOGY MEETS THE FUTURE</text>
-        </view>
+        </view> -->
       </view>
 
       <!-- 新增缴费户号按钮 -->
       <view class="add-account-section">
         <button class="add-account-btn" @click="addAccount">
-          <u-icon name="plus" size="20" color="#4CAF50"></u-icon>
+          <image src="/static/images/tianjia-fang-F 1.png" mode="aspectFit" class="add-icon"></image>
           <text class="btn-text">新增缴费户号</text>
         </button>
       </view>
@@ -77,13 +74,13 @@
       <view class="function-cards">
         <view class="function-card" @click="goToAccountManagement">
           <view class="function-icon">
-            <u-icon name="account" size="32" color="#4CAF50"></u-icon>
+            <image src="/static/images/jiazhao 1.png" mode="aspectFit" class="function-icon-img"></image>
           </view>
           <text class="function-text">户号管理</text>
         </view>
         <view class="function-card" @click="goToPaymentRecords">
           <view class="function-icon">
-            <u-icon name="list" size="32" color="#4CAF50"></u-icon>
+            <image src="/static/images/dingdanchaxun 1.png" mode="aspectFit" class="function-icon-img"></image>
           </view>
           <text class="function-text">缴费记录</text>
         </view>
@@ -91,61 +88,50 @@
     </scroll-view>
 
     <!-- 投诉/建议按钮 -->
-    <view class="feedback-btn" @click="showFeedback">
+    <!-- <view class="feedback-btn" @click="showFeedback">
       <u-icon name="shield" size="24" color="#FFFFFF"></u-icon>
-    </view>
+    </view> -->
   </view>
 </template>
 
 <script>
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+
 export default {
+  components: {
+    CustomNavbar
+  },
   data() {
     return {
-      statusBarHeight: 0,
       paymentTypes: [
         {
           type: 'electricity',
           name: '电费',
-          icon: 'bolt',
-          iconColor: '#FFC107',
-          iconBg: '#FFF9E6',
+          iconImage: '/static/images/dianfei.png',
           path: '/bundle_life_payment/pages/utility_payment/utility_payment?type=electricity'
         },
         {
           type: 'water',
           name: '水费',
-          icon: 'info-circle',
-          iconColor: '#2196F3',
-          iconBg: '#E3F2FD',
+          iconImage: '/static/images/shuifei.png',
           path: '/bundle_life_payment/pages/utility_payment/utility_payment?type=water'
         },
         {
           type: 'gas',
           name: '燃气费',
-          icon: 'star',
-          iconColor: '#F44336',
-          iconBg: '#FFEBEE',
+          iconImage: '/static/images/ranqi-2 1.png',
           path: '/bundle_life_payment/pages/utility_payment/utility_payment?type=gas'
         },
         {
           type: 'phone',
           name: '话费充值',
-          icon: 'phone',
-          iconColor: '#4CAF50',
-          iconBg: '#E8F5E9',
+          iconImage: '/static/images/huafeichongzhi.png',
           path: '/bundle_life_payment/pages/phone_recharge/phone_recharge'
         }
       ]
     };
   },
-  onLoad() {
-    const systemInfo = uni.getSystemInfoSync();
-    this.statusBarHeight = systemInfo.statusBarHeight || 0;
-  },
   methods: {
-    goBack() {
-      uni.navigateBack();
-    },
     goToPayment(item) {
       if (item.type === 'phone') {
         uni.navigateTo({
@@ -198,49 +184,12 @@ export default {
 .life-payment-page {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #E8F5E9 0%, #F5F5F5 100%);
+  background: linear-gradient(180deg, #cbfac5 30%, #F5F5F5 45%);
   display: flex;
   flex-direction: column;
+  padding-top: calc(130rpx + var(--status-bar-height));
 }
 
-.status-bar {
-  width: 100%;
-  background-color: #4CAF50;
-}
-
-.header-navbar {
-  width: 100%;
-  background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-  padding: 10rpx 0;
-}
-
-.navbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-  height: 88rpx;
-}
-
-.back-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.navbar-title {
-  flex: 1;
-  text-align: center;
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #FFFFFF;
-}
-
-.navbar-right {
-  width: 60rpx;
-}
 
 .content-scroll {
   flex: 1;
@@ -248,7 +197,30 @@ export default {
 }
 
 .header-section {
-  padding: 40rpx 30rpx 30rpx;
+  padding: 40rpx 30rpx 0rpx;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.header-right {
+  width: 200rpx;
+  height: 200rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hand-icon {
+  width: 100%;
+  height: 100%;
 }
 
 .main-title {
@@ -267,6 +239,16 @@ export default {
   display: flex;
   align-items: center;
   gap: 8rpx;
+  
+  /deep/ .u-icon {
+    font-size: 24rpx !important;
+  }
+  
+  /deep/ .u-icon__icon {
+    font-size: 24rpx !important;
+    width: 24rpx !important;
+    height: 24rpx !important;
+  }
 }
 
 .feature-text {
@@ -286,38 +268,43 @@ export default {
   border-radius: 16rpx;
   padding: 30rpx;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  gap: 20rpx;
 }
 
 .card-icon {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
+  width: 60rpx;
+  height: 60rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20rpx;
+  flex-shrink: 0;
+}
+
+.card-icon-img {
+  width: 60rpx;
+  height: 60rpx;
 }
 
 .card-content {
-  width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: center;
+  gap: 10rpx;
 }
 
 .card-title {
   font-size: 32rpx;
   font-weight: bold;
   color: #333333;
-  margin-bottom: 20rpx;
 }
 
 .card-actions {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
+  flex-direction: column;
+  gap: 8rpx;
   font-size: 24rpx;
 }
 
@@ -381,6 +368,11 @@ export default {
   gap: 10rpx;
 }
 
+.add-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
 .btn-text {
   font-size: 28rpx;
   color: #4CAF50;
@@ -410,6 +402,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.function-icon-img {
+  width: 64rpx;
+  height: 64rpx;
 }
 
 .function-text {

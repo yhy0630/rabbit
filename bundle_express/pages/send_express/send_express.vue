@@ -16,7 +16,7 @@
 
     <!-- Banner图 -->
     <view class="banner-section">
-      <image src="/static/images/banner_express.jpg" mode="aspectFill" class="banner-img"></image>
+      <image src="https://pw3.yihaiguantao.com/static/picture/banner_express.jpg" mode="aspectFill" class="banner-img"></image>
     </view>
 
     <!-- 主要内容区域 -->

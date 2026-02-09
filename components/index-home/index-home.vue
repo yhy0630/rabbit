@@ -1,5 +1,5 @@
 <template>
-    <view class="index-home p-t-20">
+    <view class="index-home">
         <!-- 轮播 -->
         <ad-swipers :pid="7" height="312rpx" padding="0 30rpx" radius="20rpx"></ad-swipers>
 
@@ -34,14 +34,16 @@
                 </view>
             </view>
             <!-- 中部广告 -->
-            <ad-swipers
-                :pid="8"
-                height="165rpx"
-                :is-swiper="false"
-                padding="20rpx 0 0"
-                radius="20rpx"
-            >
-            </ad-swipers>
+            <view class="middle-ad">
+                <ad-swipers
+                    :pid="8"
+                    height="165rpx"
+                    :is-swiper="false"
+                    padding="-20rpx 0 0"
+                    radius="20rpx"
+                >
+                </ad-swipers>
+            </view>
             <!-- 资讯 -->
             <router-link
                 v-if="newsList.length"
@@ -319,7 +321,7 @@ export default {
 
 <style lang="scss" scoped>
 .index-home {
-    margin-top: 320rpx;
+    margin-top: 250rpx;
     .content {
         padding: 0 30rpx 20rpx;
         background: transparent;
@@ -392,6 +394,10 @@ export default {
         .title-iamge {
             width: 200rpx;
             height: 100rpx;
+        }
+
+        .middle-ad {
+            margin-top: -45rpx;
         }
 
         .activity-zone {

@@ -10,9 +10,12 @@
             <view class="index index-bg" :style="[headerStyle]">
                 <view class="index-bg" :style="[headerStyle]">
                     <!-- #ifdef MP -->
+                    <!-- 顶部导航栏标题文字已隐藏 -->
+                    <!--
                     <view class="mp-title-test" style="padding-top: 100rpx; padding-bottom: 20rpx; text-align: center; position: relative; z-index: 9999;">
                         <text style="color: #FFFFFF; font-size: 36rpx; font-weight: bold; text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.5);">首页</text>
                     </view>
+                    -->
                     <!-- #endif -->
                     
                     <u-navbar
@@ -84,16 +87,16 @@
                                 <text style="color: #FFFFFF; font-size: 24rpx;">招聘会</text>
                             </view>
                             
-                            <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;" @click="goToGoodsCate">
+                            <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;" @click="goToLifePayment">
                                 <image 
                                     src="/static/picture/shuidian-2 1.png" 
                                     style="width: 80rpx; height: 80rpx; margin-bottom: 16rpx;"
                                     mode="aspectFit"
                                 ></image>
-                                <text style="color: #FFFFFF; font-size: 24rpx;">二手交易</text>
+                                <text style="color: #FFFFFF; font-size: 24rpx;">生活缴费</text>
                             </view>
                             
-                            <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;">
+                            <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;" @click="goToExpress">
                                 <image 
                                     src="/static/picture/kuaidi 1.png" 
                                     style="width: 80rpx; height: 80rpx; margin-bottom: 16rpx;"
@@ -173,7 +176,7 @@
             <!-- 悬浮：投诉/建议 -->
             <view class="float-report" @tap="handleReport">
                 <image
-                    src="/static/picture/Frame 1171275731.png"
+                    :src="STATIC_BASE_URL + 'static/picture/Frame 1171275731.png'"
                     class="float-report-icon"
                     mode="aspectFit"
                 ></image>
@@ -219,7 +222,7 @@ import MescrollCompMixin from '@/components/mescroll-uni/mixins/mescroll-comp'
 import MescrollMixin from '@/components/mescroll-uni/mescroll-mixins'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { getMenu, getHome, getLevelOneList } from '@/api/store'
-import { getConfig } from '@/api/app'
+import { getConfig, STATIC_BASE_URL } from '@/api/app'
 import { getLiveLists } from '@/api/live'
 const homeItem = {
     name: '首页'
@@ -266,7 +269,9 @@ export default {
                     id: 'user',
                     path: '/pages/user/user'
                 }
-            ]
+            ],
+            // 静态资源基础地址（用于悬浮投诉/建议图片等）
+            STATIC_BASE_URL
         }
     },
     async onLoad(options) {
@@ -366,6 +371,18 @@ export default {
                 url: '/pages/goods_cate/goods_cate'
             })
         },
+        // 跳转到生活缴费页面
+        goToLifePayment() {
+            uni.navigateTo({
+                url: '/bundle_life_payment/pages/life_payment_index/life_payment_index'
+            })
+        },
+        // 跳转到寄快递页面
+        goToExpress() {
+            uni.navigateTo({
+                url: '/bundle_express/pages/send_express/send_express'
+            })
+        },
         // 获取菜单
         async getMenuFun() {
             const { code, data } = await getMenu({
@@ -438,7 +455,7 @@ page {
 }
 .index-bg {
     background-image: url('../../static/images/index_bg.png');
-    background-size: 100% 800rpx;
+    background-size: 100% 700rpx;
     background-repeat: no-repeat;
     background-position: top center;
 }

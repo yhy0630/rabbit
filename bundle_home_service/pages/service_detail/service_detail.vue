@@ -83,7 +83,7 @@
             <view class="section-card" v-if="storeInfo.name">
                 <view class="section-title">{{ storeInfo.name }}</view>
                 <view class="store-card">
-                    <image src="/static/picture/pi.png" mode="aspectFill" class="store-image"></image>
+                    <image src="https://pw3.yihaiguantao.com/static/picture/pi.png" mode="aspectFill" class="store-image"></image>
                     <view class="store-info">
                         <text class="store-address">{{ storeInfo.address || '西百花巷16号3D打印别墅' }}</text>
                         <view class="store-tags" v-if="storeInfo.tags && storeInfo.tags.length > 0">

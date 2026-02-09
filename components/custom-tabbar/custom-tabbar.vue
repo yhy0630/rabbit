@@ -1,7 +1,7 @@
 <template>
 	<view class="custom-tabbar">
 		<!-- 背景图 -->
-		<image class="tabbar-bg" src="/static/picture/bottom_bar.png" mode="widthFix"></image>
+		<image class="tabbar-bg" src="https://pw3.yihaiguantao.com/static/picture/bottom_bar.png" mode="widthFix"></image>
 		
 		<!-- 导航项容器 -->
 		<view class="tabbar-content" :class="'tabs-' + displayTabs.length">
@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import { STATIC_BASE_URL } from '@/api/app'
+
 export default {
 	name: 'CustomTabbar',
 	props: {
@@ -58,38 +60,38 @@ export default {
 				{
 					id: 'home',
 					text: '首页',
-					normal: '/static/picture/HOME 1.png',
-					selected: '/static/picture/HOME 1.png'
+					normal: STATIC_BASE_URL + 'static/picture/HOME 1.png',
+					selected: STATIC_BASE_URL + 'static/picture/HOME 1.png'
 				},
 				{
 					id: 'mall',
 					text: '商城',
-					normal: '/static/picture/shopping_car.png',
-					selected: '/static/picture/shopping_car.png'
+					normal: STATIC_BASE_URL + 'static/picture/shopping_car.png',
+					selected: STATIC_BASE_URL + 'static/picture/shopping_car.png'
 				},
 				{
 					id: 'publish',
 					text: '发布',
-					normal: '/static/picture/publish.png',
-					selected: '/static/picture/publish.png'
+					normal: STATIC_BASE_URL + 'static/picture/publish.png',
+					selected: STATIC_BASE_URL + 'static/picture/publish.png'
 				},
 				{
 					id: 'order',
 					text: '订单',
-					normal: '/static/picture/message.png',
-					selected: '/static/picture/message.png'
+					normal: STATIC_BASE_URL + 'static/picture/message.png',
+					selected: STATIC_BASE_URL + 'static/picture/message.png'
 				},
 				{
 					id: 'user',
 					text: '我的',
-					normal: '/static/picture/user.png',
-					selected: '/static/picture/user.png'
+					normal: STATIC_BASE_URL + 'static/picture/user.png',
+					selected: STATIC_BASE_URL + 'static/picture/user.png'
 				},
 				{
 					id: 'message',
 					text: '消息',
-					normal: '/static/picture/message.png',
-					selected: '/static/picture/message.png'
+					normal: STATIC_BASE_URL + 'static/picture/message.png',
+					selected: STATIC_BASE_URL + 'static/picture/message.png'
 				}
 			],
 			// 默认路径（兼容未传 tabs 的情况，使用现在的 5 个按钮和跳转）
@@ -105,15 +107,19 @@ export default {
 	computed: {
 		// 实际要渲染的按钮列表（最多 5 个，最少由业务自己控制不低于 3 个）
 		displayTabs() {
-			// 如果页面没有传 tabs，就使用默认的 5 个按钮和默认路径
+			// 如果页面没有传 tabs，就使用默认的 5 个按钮和默认路径（不包含消息按钮）
 			if (!Array.isArray(this.tabs) || this.tabs.length === 0) {
-				return this.iconList.map((icon) => {
-					const path = this.defaultPaths[icon.id] || ''
-					return {
-						...icon,
-						path
-					}
-				})
+				// 过滤掉 message 按钮，只返回前 5 个
+				return this.iconList
+					.filter((icon) => icon.id !== 'message')
+					.map((icon) => {
+						const path = this.defaultPaths[icon.id] || ''
+						return {
+							...icon,
+							path
+						}
+					})
+					.slice(0, 5)
 			}
 			
 			// 页面传入了 tabs：根据 id 关联到 iconList，并覆盖路径

@@ -7,7 +7,7 @@
             <!-- 顶部横幅：固定背景图 -->
             <view class="promo-banner">
                 <image
-                    src="/static/picture/beijing.png"
+                    src="https://pw3.yihaiguantao.com/static/picture/beijing.png"
                     mode="aspectFill"
                     class="promo-banner-image"
                 ></image>
@@ -49,7 +49,7 @@
             <!-- 最新入驻 -->
             <view class="latest-entry">
                 <image
-                    src="/static/picture/new.png"
+                    src="https://pw3.yihaiguantao.com/static/picture/new.png"
                     mode="aspectFit"
                     class="entry-badge-image"
                 ></image>
@@ -61,14 +61,14 @@
             </view>
 
             <!-- 操作按钮 -->
-            <view class="action-buttons">
+            <!-- <view class="action-buttons">
                 <view class="action-btn publish-btn" @click="publishService">
                     <text class="btn-text">发布服务</text>
                 </view>
                 <view class="action-btn merchant-btn" @click="joinMerchant">
                     <text class="btn-text">入驻商家</text>
                 </view>
-            </view>
+            </view> -->
 
             <!-- 广告位 -->
             <view class="ad-slots">
@@ -175,19 +175,20 @@ export default {
         },
         // 根据分类名称返回对应的图标图片
         getCategoryIcon(item) {
+            const baseUrl = 'https://pw3.yihaiguantao.com/';
             const name = item.name || '';
-            if (name === '保姆月嫂') return '/static/picture/baomu.png';
-            if (name === '保洁清洗') return '/static/picture/baojie.png';
-            if (name === '搬家货运') return '/static/picture/banjia.png';
-            if (name === '家电维修') return '/static/picture/jiadian.png';
-            if (name === '开锁换锁') return '/static/picture/kaisuo.png';
-            if (name === '鲜花绿植') return '/static/picture/xianhua.png';
-            if (name === '医护健康') return '/static/picture/yihu.png';
-            if (name === '美食餐饮') return '/static/picture/meishi.png';
-            if (name === '做饭阿姨') return '/static/picture/zuofan.png';
-            if (name === '更多服务' || item.id === 0) return '/static/picture/fuwu.png';
-            // 其他未指定的分类统一使用“更多服务”图标
-            return '/static/picture/fuwu.png';
+            if (name === '保姆月嫂') return baseUrl + 'static/picture/baomu.png';
+            if (name === '保洁清洗') return baseUrl + 'static/picture/baojie.png';
+            if (name === '搬家货运') return baseUrl + 'static/picture/banjia.png';
+            if (name === '家电维修') return baseUrl + 'static/picture/jiadian.png';
+            if (name === '开锁换锁') return baseUrl + 'static/picture/kaisuo.png';
+            if (name === '鲜花绿植') return baseUrl + 'static/picture/xianhua.png';
+            if (name === '医护健康') return baseUrl + 'static/picture/yihu.png';
+            if (name === '美食餐饮') return baseUrl + 'static/picture/meishi.png';
+            if (name === '做饭阿姨') return baseUrl + 'static/picture/zuofan.png';
+            if (name === '更多服务' || item.id === 0) return baseUrl + 'static/picture/fuwu.png';
+            // 其他未指定的分类统一使用"更多服务"图标
+            return baseUrl + 'static/picture/fuwu.png';
         },
         goToCategory(item) {
             // 如果是"更多服务"，跳转到全部服务页面

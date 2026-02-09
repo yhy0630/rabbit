@@ -2,6 +2,10 @@ import request from '@/utils/request'
 import wechath5 from '@/utils/wechath5'
 import { client } from '@/utils/tools'
 
+// 静态资源基础地址（用于拼接线上图片 URL）
+// 示例：STATIC_BASE_URL + 'static/picture/xxx.png'
+export const STATIC_BASE_URL = 'https://pw3.yihaiguantao.com/'
+
 //小程序授权登录
 export function authLogin(data) {
     return request.post('account/authLogin', data)

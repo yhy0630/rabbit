@@ -25,14 +25,14 @@
             >
                 <view class="service-image-wrapper">
                     <view class="recommend-tag" v-if="item.recommend">推荐</view>
-                    <image src="/static/picture/Rectangle 30305.png" mode="aspectFill" class="service-image"></image>
+                    <image src="https://pw3.yihaiguantao.com/static/picture/Rectangle 30305.png" mode="aspectFill" class="service-image"></image>
                 </view>
                 <view class="service-info">
                     <view class="service-header">
                         <text class="service-name">{{ item.name }}</text>
                         <view class="service-distance-wrapper">
                             <u-icon name="map" size="14" color="#4CAF50" class="distance-icon"></u-icon>
-                            <text class="service-distance">{{ item.distance }}</text>
+                        <text class="service-distance">{{ item.distance }}</text>
                         </view>
                     </view>
                     <view class="service-details">

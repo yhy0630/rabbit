@@ -1,10 +1,10 @@
 <template>
 	<view class="custom-navbar" :style="{ height: navbarHeight + 'px' }">
 		<view class="navbar-bg" :style="{ paddingTop: statusBarHeight + 'px', background: bgColor }">
-			<view class="navbar-content" :class="{ 'is-left-title': titleAlign === 'left' }">
+			<view class="navbar-content" :class="{ 'is-left-title': titleAlign === 'left' }" :style="{ '--text-color': textColor }">
 				<!-- 左侧返回按钮 -->
 				<view class="navbar-left" @tap="handleBack" v-if="showBack">
-					<u-icon name="arrow-left" color="#FFFFFF" size="44"></u-icon>
+					<u-icon name="arrow-left" :color="iconColor" size="44"></u-icon>
 				</view>
 
 				<!-- 标题（默认居中，可选靠左 + 下拉箭头） -->
@@ -63,6 +63,16 @@ export default {
 		bgColor: {
 			type: String,
 			default: 'linear-gradient(180deg, #149906 0%, #B3EE76 100%)'
+		},
+		// 文字颜色
+		textColor: {
+			type: String,
+			default: '#FFFFFF'
+		},
+		// 图标颜色
+		iconColor: {
+			type: String,
+			default: '#FFFFFF'
 		}
 	},
 	data() {
@@ -158,7 +168,7 @@ export default {
 				.navbar-title {
 					font-size: 36rpx;
 					font-weight: 600;
-					color: #FFFFFF;
+					color: var(--text-color, #FFFFFF);
 					max-width: 360rpx;
 					overflow: hidden;
 					text-overflow: ellipsis;
@@ -182,7 +192,7 @@ export default {
 				.navbar-title {
 					font-size: 36rpx;
 					font-weight: 500;
-					color: #FFFFFF;
+					color: var(--text-color, #FFFFFF);
 				}
 			}
 			

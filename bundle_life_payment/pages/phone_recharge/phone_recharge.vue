@@ -1,18 +1,7 @@
 <template>
   <view class="phone-recharge-page">
-    <!-- 状态栏占位 -->
-    <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
-    
-    <!-- 顶部导航栏 -->
-    <view class="header-navbar">
-      <view class="navbar-content">
-        <view class="back-btn" @click="goBack">
-          <u-icon name="arrow-left" size="20" color="#FFFFFF"></u-icon>
-        </view>
-        <view class="navbar-title">话费充值</view>
-        <view class="navbar-right"></view>
-      </view>
-    </view>
+    <!-- 自定义导航栏 -->
+    <custom-navbar title="话费充值" bgColor="#cbfac5" textColor="#333" iconColor="#333"></custom-navbar>
 
     <!-- 主要内容区域 -->
     <scroll-view class="content-scroll" scroll-y>
@@ -73,10 +62,14 @@
 </template>
 
 <script>
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+
 export default {
+  components: {
+    CustomNavbar
+  },
   data() {
     return {
-      statusBarHeight: 0,
       phoneNumber: '',
       rechargeAmount: '',
       presetAmounts: ['30', '50', '100', '200', '300', '500']
@@ -90,14 +83,7 @@ export default {
              parseFloat(this.rechargeAmount) > 0;
     }
   },
-  onLoad() {
-    const systemInfo = uni.getSystemInfoSync();
-    this.statusBarHeight = systemInfo.statusBarHeight || 0;
-  },
   methods: {
-    goBack() {
-      uni.navigateBack();
-    },
     selectFromContacts() {
       // #ifdef APP-PLUS || MP-WEIXIN
       uni.choosePhoneNumber({
@@ -181,50 +167,10 @@ export default {
 .phone-recharge-page {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #E8F5E9 0%, #F5F5F5 100%);
+  background: linear-gradient(180deg, #cbfac5 30%, #F5F5F5 45%);
   display: flex;
   flex-direction: column;
-}
-
-.status-bar {
-  width: 100%;
-  background-color: #4CAF50;
-}
-
-.header-navbar {
-  width: 100%;
-  background: linear-gradient(180deg, #4CAF50 0%, #45A049 100%);
-  padding: 10rpx 0;
-  border-bottom-left-radius: 20rpx;
-  border-bottom-right-radius: 20rpx;
-}
-
-.navbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 30rpx;
-  height: 88rpx;
-}
-
-.back-btn {
-  width: 60rpx;
-  height: 60rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.navbar-title {
-  flex: 1;
-  text-align: center;
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #FFFFFF;
-}
-
-.navbar-right {
-  width: 60rpx;
+  padding-top: calc(128rpx + var(--status-bar-height));
 }
 
 .content-scroll {

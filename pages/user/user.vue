@@ -234,14 +234,14 @@
                     <view class="invite-title">邀请好友</view>
                     <view class="invite-sub">迎优惠好礼 ></view>
                 </view>
-                <image class="invite-img" src="/static/picture/friend.png" mode="aspectFit"></image>
+                <image class="invite-img" src="https://pw3.yihaiguantao.com/static/picture/friend.png" mode="aspectFit"></image>
             </view>
             <view class="invite-card" @tap="goPromotionCenter">
                 <view class="invite-text">
                     <view class="invite-title">推广中心</view>
                     <view class="invite-sub">享更多特权 ></view>
                 </view>
-                <image class="invite-img" src="/static/picture/center.png" mode="aspectFit"></image>
+                <image class="invite-img" src="https://pw3.yihaiguantao.com/static/picture/center.png" mode="aspectFit"></image>
             </view>
         </view>
 
@@ -322,7 +322,7 @@
             </view>
         </view> -->
         <!-- <goods-column ref="mescrollItem"></goods-column> -->
-        <custom-tabbar :current="4"></custom-tabbar>
+        <custom-tabbar :current="4" :tabs="tabbarTabs"></custom-tabbar>
     </view>
 </template>
 
@@ -346,7 +346,15 @@ export default {
         return {
             showNav: false,
             navBg: 0,
-            menuList: []
+            menuList: [],
+            // 底部导航栏配置，不包含消息按钮
+            tabbarTabs: [
+                { id: 'home', path: '/pages/index/index' },
+                { id: 'mall', path: '/pages/goods_cate/goods_cate' },
+                { id: 'publish', path: '/bundle_b/pages/published_works/published_works' },
+                { id: 'order', path: '/bundle/pages/user_order/user_order' },
+                { id: 'user', path: '/pages/user/user' }
+            ]
         }
     },
 

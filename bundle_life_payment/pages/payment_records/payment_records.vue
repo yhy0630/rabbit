@@ -1,5 +1,8 @@
 <template>
   <view class="payment-records-page">
+    <!-- 自定义导航栏 -->
+    <custom-navbar title="缴费记录" bgColor="#cbfac5" textColor="#333" iconColor="#333"></custom-navbar>
+    
     <!-- 主要内容区域 -->
     <scroll-view class="content-scroll" scroll-y>
       <view class="records-list" v-if="recordsList.length > 0">
@@ -63,7 +66,12 @@
 </template>
 
 <script>
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+
 export default {
+  components: {
+    CustomNavbar
+  },
   data() {
     return {
       recordsList: [
@@ -209,9 +217,10 @@ export default {
 .payment-records-page {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(180deg, #4CAF50 0%, #E8F5E9 50%, #F5F5F5 100%);
+  background: linear-gradient(180deg, #cbfac5 30%, #F5F5F5 45%);
   display: flex;
   flex-direction: column;
+  padding-top: calc(128rpx + var(--status-bar-height));
 }
 
 .content-scroll {

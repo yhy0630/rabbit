@@ -42,7 +42,7 @@
                 <view class="order-content" @click="goToDetail(item.id)">
                     <view class="service-image-wrapper">
                         <image 
-                            :src="item.image || item.service_image || item.service_img || '/static/picture/Rectangle 30305.png'" 
+                            :src="item.image || item.service_image || item.service_img " 
                             mode="aspectFill" 
                             class="service-image"
                         ></image>

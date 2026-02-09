@@ -147,7 +147,7 @@ export default {
 .swiper-wrap {
   overflow: hidden;
   box-sizing: content-box;
-  //margin-top: 203rpx;
+ 
 
   .swiper-con {
     position: relative;

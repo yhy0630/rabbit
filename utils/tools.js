@@ -229,6 +229,14 @@ export function toast(info = {}, navigateOpt) {
 
 //菜单跳转
 export function menuJump(item) {
+  // 特殊处理：同城家政跳转到家政服务首页
+  if (item.name === '同城家政' || item.name === '家政服务') {
+    uni.navigateTo({
+      url: '/bundle_home_service/pages/home_service_index/home_service_index'
+    });
+    return;
+  }
+  
   const { is_tab, link, link_type } = item;
   switch (link_type) {
     case 1:

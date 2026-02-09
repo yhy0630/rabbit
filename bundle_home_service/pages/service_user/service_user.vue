@@ -5,12 +5,12 @@
         
         <!-- 头部区域（红色/橙色渐变） -->
         <view class="header-section">
-            <view class="header-top">
+            <!-- <view class="header-top">
                 <text class="switch-merchant" @click="switchIdentity">切换商家版＞</text>
-                <!-- <view class="settings-icon" @click="goToSettings">
+                <view class="settings-icon" @click="goToSettings">
                     <u-icon name="setting" size="20" color="#FFFFFF"></u-icon>
-                </view> -->
-            </view>
+                </view>
+            </view> -->
             <view class="user-info-section">
                 <image 
                     :src="userInfo.avatar || '/static/images/portrait_empty.png'" 
