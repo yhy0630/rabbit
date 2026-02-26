@@ -257,32 +257,32 @@
             "pages": [
                 {
                     "path": "pages/login/login",
-                    "meta": {
-                        "auth": false
-                    },
-                    "style": {
+            "meta": {
+                "auth": false
+            },
+            "style": {
                         "navigationStyle": "custom"
-                    }
-                },
-                {
+            }
+        },
+        {
                     "path": "pages/register/register",
-                    "meta": {
+            "meta": {
                         "auth": false
-                    },
-                    "style": {
+            },
+            "style": {
                         "navigationStyle": "custom"
-                    }
-                },
-                {
+            }
+        },
+        {
                     "path": "pages/goods_details/goods_details",
-                    "meta": {
-                        "auth": false
-                    },
-                    "style": {
-                        "navigationStyle": "custom"
-                    }
-                },
-                {
+            "meta": {
+                "auth": false
+            },
+            "style": {
+                "navigationStyle": "custom"
+            }
+        },
+        {
                     "path": "pages/forget_pwd/forget_pwd",
                     "meta": {
                         "auth": false
@@ -293,40 +293,42 @@
                 },
                 {
                     "path": "pages/confirm_order/confirm_order",
-                    "meta": {
-                        "auth": true
-                    },
-                    "style": {
+            "meta": {
+                "auth": true
+            },
+            "style": {
                         "navigationBarTitleText": "Confirm Order"
-                    }
-                },
-                {
+            }
+        },
+        {
                     "path": "pages/payment/payment",
-                    "meta": {
+            "meta": {
                         "auth": true
-                    },
-                    "style": {
-                        "navigationBarTitleText": "Payment"
-                    }
-                },
-                {
+            },
+            "style": {
+                        "navigationBarTitleText": "订单支付",
+                        "navigationStyle": "custom"
+            }
+        },
+        {
                     "path": "pages/pay_result/pay_result",
-                    "meta": {
+            "meta": {
                         "auth": true
                     },
                     "style": {
-                        "navigationBarTitleText": "Pay Result"
-                    }
-                },
-                {
+                        "navigationBarTitleText": "支付结果",
+                        "navigationStyle": "custom"
+            }
+        },
+        {
                     "path": "pages/goods_search/goods_search",
                     "meta": {
                         "auth": false
                     },
-                    "style": {
+            "style": {
                         "disableScroll": true
-                    }
-                }
+            }
+        }
             ]
         },
         {

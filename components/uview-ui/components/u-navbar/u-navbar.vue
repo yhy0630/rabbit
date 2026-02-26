@@ -332,5 +332,7 @@
 		@include vue-flex;
 		align-items: center;
 		position: relative;
+		margin-top: 170rpx;
+
 	}
 </style>

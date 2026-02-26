@@ -131,7 +131,7 @@ export default {
 					return {
 						...icon,
 						path: tab.path || this.defaultPaths[icon.id] || ''
-					}
+				}
 				})
 				.filter((item) => !!item)
 			return result.slice(0, 5)

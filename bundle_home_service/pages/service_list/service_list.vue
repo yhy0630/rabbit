@@ -167,10 +167,51 @@ export default {
         }
     },
     onLoad(options) {
+        console.log('[service_list调试] onLoad 接收到的 options:', JSON.stringify(options));
+        console.log('[service_list调试] options.category 原始值:', options?.category);
+        console.log('[service_list调试] options.category 类型:', typeof options?.category);
+        
         if (options && options.category) {
-            // uni-app 会自动解码 URL 参数，直接使用即可
-            this.categoryName = options.category;
+            let decodedName = options.category;
+            
+            // 调试：检查是否包含编码字符
+            const hasEncodedChars = /%[0-9A-Fa-f]{2}/.test(decodedName);
+            console.log('[service_list调试] 是否包含编码字符:', hasEncodedChars);
+            console.log('[service_list调试] 解码前的值:', decodedName);
+            
+            // 尝试解码
+            try {
+                // 第一次解码
+                decodedName = decodeURIComponent(decodedName);
+                console.log('[service_list调试] 第一次解码后:', decodedName);
+                
+                // 检查是否还有编码字符，如果有则再次解码（处理双重编码）
+                if (/%[0-9A-Fa-f]{2}/.test(decodedName)) {
+                    console.log('[service_list调试] 检测到双重编码，进行第二次解码');
+                    decodedName = decodeURIComponent(decodedName);
+                    console.log('[service_list调试] 第二次解码后:', decodedName);
+                }
+                
+                this.categoryName = decodedName;
+                console.log('[service_list调试] 最终设置的 categoryName:', this.categoryName);
+            } catch (e) {
+                console.error('[service_list调试] 解码出错:', e);
+                console.log('[service_list调试] 使用原始值:', options.category);
+                // 如果解码失败，尝试使用 unescape（兼容旧方法）
+                try {
+                    this.categoryName = unescape(options.category);
+                    console.log('[service_list调试] unescape 后:', this.categoryName);
+                } catch (e2) {
+                    console.error('[service_list调试] unescape 也失败:', e2);
+                    // 最后使用原始值
+                    this.categoryName = options.category;
+                }
+            }
+        } else {
+            console.log('[service_list调试] 没有 category 参数，使用默认值');
         }
+        
+        console.log('[service_list调试] 最终 categoryName:', this.categoryName);
     },
     methods: {
         showFilterPopup(index) {

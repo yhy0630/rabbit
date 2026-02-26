@@ -64,7 +64,7 @@
                 <view class="store-card">
                     <image :src="storeInfo.image" mode="aspectFill" class="store-image"></image>
                     <view class="store-info">
-                        <text class="store-address">{{ storeInfo.address || '西百花巷16号3D打印别墅' }}</text>
+                        <text class="store-address">{{ storeInfo.address }}</text>
                         <view class="store-tags" v-if="storeInfo.tags && storeInfo.tags.length > 0">
                             <text class="store-tag" v-for="(tag, index) in storeInfo.tags" :key="index">{{ tag }}</text>
                         </view>
@@ -102,6 +102,7 @@
 
 <script>
 import { getHomeServiceDetail } from '@/api/store'
+import { STATIC_BASE_URL } from '@/api/app'
 import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
@@ -124,12 +125,13 @@ export default {
             serviceTags: [],
             storeInfo: {
                 name: '',
-                image: '/static/picture/pi.png',
+                image: STATIC_BASE_URL + 'static/picture/pi.png',
                 address: '西百花巷16号3D打印别墅',
-                tags: []
+                tags: ['育儿嫂', '保姆']
             },
             serviceDescription: '',
-            serviceContent: ''
+            serviceContent: '',
+            STATIC_BASE_URL
         }
     },
     onLoad(options) {
@@ -151,9 +153,14 @@ export default {
         async loadServiceDetail(id) {
             uni.showLoading({ title: '加载中...' });
             try {
+                console.log('[service_detail_card调试] 开始加载服务详情，ID:', id);
                 const res = await getHomeServiceDetail({ id: id });
+                console.log('[service_detail_card调试] 接口返回结果:', res);
+                
                 if (res.code === 1 && res.data) {
                     const data = res.data;
+                    console.log('[service_detail_card调试] 接口返回的 data:', data);
+                    console.log('[service_detail_card调试] data.detail_images:', data.detail_images);
                     
                     // 处理服务基本信息
                     this.serviceInfo = {
@@ -163,17 +170,30 @@ export default {
                         sales_count: data.sales_count || data.sold_count || 0
                     };
                     
-                    // 处理图片列表
+                    // 处理图片列表 - 优先使用 detail_images
                     this.imageList = [];
-                    if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                    if (data.detail_images && Array.isArray(data.detail_images) && data.detail_images.length > 0) {
+                        // 使用接口返回的 detail_images
+                        this.imageList = data.detail_images;
+                        console.log('[service_detail_card调试] 使用 detail_images，图片数量:', this.imageList.length);
+                    } else if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                        // 兜底：使用 images
                         this.imageList = data.images;
+                        console.log('[service_detail_card调试] 使用 images 作为兜底，图片数量:', this.imageList.length);
                     } else if (data.image) {
+                        // 兜底：使用单个 image
                         this.imageList = [data.image];
+                        console.log('[service_detail_card调试] 使用单个 image 作为兜底');
                     } else if (data.avatar) {
+                        // 兜底：使用 avatar
                         this.imageList = [data.avatar];
+                        console.log('[service_detail_card调试] 使用 avatar 作为兜底');
                     } else {
+                        // 默认图片
                         this.imageList = ['/static/picture/service-avatar.png'];
+                        console.log('[service_detail_card调试] 使用默认图片');
                     }
+                    console.log('[service_detail_card调试] 最终 imageList:', this.imageList);
                     
                     // 处理服务标签
                     this.serviceTags = [];
@@ -193,8 +213,36 @@ export default {
                         this.storeInfo.name = 'e家政';
                     }
                     
+                    // 处理店铺地址，从接口获取 company_full_address
+                    console.log('[service_detail_card调试] data.company_full_address:', data.company_full_address);
+                    if (data.company_full_address) {
+                        this.storeInfo.address = data.company_full_address;
+                        console.log('[service_detail_card调试] 设置店铺地址为:', this.storeInfo.address);
+                    } else {
+                        // 如果没有返回地址，使用默认地址
+                        this.storeInfo.address = '西百花巷16号3D打印别墅';
+                        console.log('[service_detail_card调试] 使用默认地址');
+                    }
+                    
+                    // 处理店铺图片，转换为线上地址
                     if (data.company_image || data.company_avatar) {
-                        this.storeInfo.image = data.company_image || data.company_avatar || '/static/picture/pi.png';
+                        let imageUrl = data.company_image || data.company_avatar;
+                        // 如果图片地址是相对路径，转换为线上地址
+                        if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+                            // 如果已经是 /static/ 开头的路径，直接拼接
+                            if (imageUrl.startsWith('/static/')) {
+                                imageUrl = STATIC_BASE_URL + imageUrl.substring(1);
+                            } else if (imageUrl.startsWith('static/')) {
+                                imageUrl = STATIC_BASE_URL + imageUrl;
+                            } else {
+                                // 其他情况，假设是 static/ 开头的路径
+                                imageUrl = STATIC_BASE_URL + 'static/picture/' + imageUrl;
+                            }
+                        }
+                        this.storeInfo.image = imageUrl || STATIC_BASE_URL + 'static/picture/pi.png';
+                    } else {
+                        // 如果没有返回图片，使用默认图片
+                        this.storeInfo.image = STATIC_BASE_URL + 'static/picture/pi.png';
                     }
                     
                     // 处理服务描述

@@ -4,7 +4,7 @@
 
         <view class="acount-login">
              <!-- 顶部 Logo -->
-             <image class="logo" src="/bundle_b/static/logo.jpg" mode="aspectFit"></image>
+             <image class="logo" :src="STATIC_BASE_URL + 'static/picture/368ca.jpg'" mode="aspectFit"></image>
 
              <!-- 顶部标题：根据是否为手机号登录切换文案 -->
              <view class="login-title-wrapper">
@@ -227,7 +227,8 @@ import {
     smsCodeLogin,
     opLogin,
     authLogin,
-    updateUser
+    updateUser,
+    STATIC_BASE_URL
 } from '@/api/app'
 import { bindSuperior } from '@/api/user'
 import wechath5 from '@/utils/wechath5'
@@ -256,7 +257,8 @@ export default {
             showLoginPop: false,
             loginData: {},
             showModel: false,
-            phoneLogin: false
+            phoneLogin: false,
+            STATIC_BASE_URL
         }
     },
     components: {
@@ -285,17 +287,19 @@ export default {
             this.codeTips = tip
         },
         getCodeUrl() {
-            if (!this.isAgreement)
-                // return this.$toast({
-                //   title: '请先勾选"已阅读并同意《服务协议》和《隐私协议》"',
-                // });
+            if (!this.isAgreement) {
                 return (this.showModel = true)
+            }
             wechath5.getWxUrl()
         },
         // 公众号微信登录
         async oaLogin(code) {
-            const data = await wechath5.authLogin(code)
-            this.loginHandle(data)
+            try {
+                const data = await wechath5.authLogin(code)
+                this.loginHandle(data)
+            } catch (error) {
+                // 登录失败
+            }
         },
         oaAutoLogin() {
             // H5微信登录
@@ -319,35 +323,45 @@ export default {
         },
         // 小程序登录
         async mnpLoginFun() {
-            if (!this.isAgreement)
-                // return this.$toast({
-                //   title: '请先勾选"已阅读并同意《服务协议》和《隐私协议》"',
-                // });
+            if (!this.isAgreement) {
                 return (this.showModel = true)
-            const {
-                userInfo: { avatarUrl, nickName, gender }
-            } = await getUserProfile()
-            uni.showLoading({
-                title: '登录中...',
-                mask: true
-            })
-            const wxCode = await getWxCode()
-            const { code, data, msg } = await authLogin({
-                code: wxCode,
-                nickname: nickName,
-                headimgurl: avatarUrl
-            })
-            if (code == 1) {
-                if (data.is_new_user) {
-                    uni.hideLoading()
-                    this.showLoginPop = true
-                    this.loginData = data
+            }
+            try {
+                const {
+                    userInfo: { avatarUrl, nickName, gender }
+                } = await getUserProfile()
+                
+                uni.showLoading({
+                    title: '登录中...',
+                    mask: true
+                })
+                
+                const wxCode = await getWxCode()
+                
+                const { code, data, msg } = await authLogin({
+                    code: wxCode,
+                    nickname: nickName,
+                    headimgurl: avatarUrl
+                })
+                
+                if (code == 1) {
+                    if (data.is_new_user) {
+                        uni.hideLoading()
+                        this.showLoginPop = true
+                        this.loginData = data
+                    } else {
+                        this.loginHandle(data)
+                    }
                 } else {
-                    this.loginHandle(data)
+                    uni.hideLoading()
+                    this.$toast({
+                        title: msg
+                    })
                 }
-            } else {
+            } catch (error) {
+                uni.hideLoading()
                 this.$toast({
-                    title: msg
+                    title: '登录失败，请重试'
                 })
             }
         },
@@ -405,30 +419,69 @@ export default {
         },
         // 登录结果处理
         async loginHandle(data) {
-            this.login(data)
-            uni.hideLoading()
-            // 绑定邀请码
-            const inviteCode = Cache.get(INVITE_CODE)
-            if (inviteCode) {
-                bindSuperior({
-                    code: inviteCode
-                })
-                Cache.remove(INVITE_CODE)
-            }
+            try {
+                this.login(data)
+                uni.hideLoading()
+                
+                // 绑定邀请码
+                const inviteCode = Cache.get(INVITE_CODE)
+                if (inviteCode) {
+                    bindSuperior({
+                        code: inviteCode
+                    })
+                    Cache.remove(INVITE_CODE)
+                }
 
-            if (getCurrentPages().length > 1) {
-                uni.navigateBack({
-                    success() {
-                        const { onLoad, options } = currentPage()
-                        onLoad && onLoad(options)
+                const pages = getCurrentPages()
+                const pagesLength = pages.length
+                const backUrl = Cache.get(BACK_URL)
+
+                if (pagesLength > 1) {
+                    uni.navigateBack({
+                        success: () => {
+                            const { onLoad, options } = currentPage()
+                            if (onLoad) {
+                                onLoad(options)
+                            }
+                        },
+                        fail: () => {
+                            this.jumpToHome()
+                        }
+                    })
+                } else if (backUrl) {
+                    try {
+                        this.$Router.replace(backUrl)
+                    } catch (err) {
+                        this.jumpToHome()
                     }
-                })
-            } else if (Cache.get(BACK_URL)) {
-                this.$Router.replace(Cache.get(BACK_URL))
-            } else {
-                this.$Router.pushTab('/pages/index/index')
+                } else {
+                    this.jumpToHome()
+                }
+                Cache.remove(BACK_URL)
+            } catch (error) {
+                uni.hideLoading()
+                this.jumpToHome()
             }
-            Cache.remove(BACK_URL)
+        },
+        // 跳转到首页的通用方法
+        jumpToHome() {
+            // 由于项目使用自定义 tabBar，不是原生 tabBar，所以直接使用 reLaunch
+            // reLaunch 会关闭所有页面，然后打开指定页面，适合登录后跳转首页
+            uni.reLaunch({
+                url: '/pages/index/index',
+                fail: () => {
+                    // 如果 reLaunch 失败，尝试使用 redirectTo
+                    uni.redirectTo({
+                        url: '/pages/index/index',
+                        fail: () => {
+                            // 最后的兜底方案：使用 navigateTo
+                            uni.navigateTo({
+                                url: '/pages/index/index'
+                            })
+                        }
+                    })
+                }
+            })
         },
         changeLoginType() {
             if (this.loginType == loginType.ACCOUNT_LOGIN) {
@@ -461,7 +514,9 @@ export default {
         },
         // app微信登录
         async appWxLogin() {
-            if (!this.isAgreement) return (this.showModel = true)
+            if (!this.isAgreement) {
+                return (this.showModel = true)
+            }
             uni.login({
                 provider: 'weixin',
                 success: (res) => {

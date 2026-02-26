@@ -199,8 +199,28 @@ export default {
                 return;
             }
             // 其他分类跳转到列表页面
+            const categoryName = item.name;
+            console.log('[home_service_index调试] 准备跳转，分类名称:', categoryName);
+            console.log('[home_service_index调试] 分类名称类型:', typeof categoryName);
+            
+            // 尝试直接使用，不进行编码（uni-app 会自动处理）
+            const url = `/bundle_home_service/pages/service_list/service_list?category=${categoryName}&categoryId=${item.id}`;
+            console.log('[home_service_index调试] 跳转 URL:', url);
+            
             uni.navigateTo({
-                url: `/bundle_home_service/pages/service_list/service_list?category=${encodeURIComponent(item.name)}&categoryId=${item.id}`
+                url: url,
+                success: () => {
+                    console.log('[home_service_index调试] 跳转成功');
+                },
+                fail: (err) => {
+                    console.error('[home_service_index调试] 跳转失败:', err);
+                    // 如果失败，尝试使用编码的方式
+                    const encodedUrl = `/bundle_home_service/pages/service_list/service_list?category=${encodeURIComponent(categoryName)}&categoryId=${item.id}`;
+                    console.log('[home_service_index调试] 尝试编码后的 URL:', encodedUrl);
+                    uni.navigateTo({
+                        url: encodedUrl
+                    });
+                }
             });
         },
         publishService() {

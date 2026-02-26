@@ -1,5 +1,8 @@
 <template>
     <view class="pay-result">
+        <!-- 自定义导航栏 -->
+        <custom-navbar title="支付结果"></custom-navbar>
+        
         <view class="contain bg-white">
             <view class="header flex-col col-center">
                 <view>
@@ -51,7 +54,12 @@
 
 <script>
 import { getPayResult } from '@/api/order'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
+
 export default {
+    components: {
+        CustomNavbar
+    },
     data() {
         return {
             payInfo: {},
@@ -59,24 +67,82 @@ export default {
         }
     },
 
-    onLoad() {
-        const options = this.$Route.query
-        console.log(options)
-        this.id = options.id
-        this.from = options.from
-        this.getOrderResultFun()
+    onLoad(options) {
+        console.log('[pay_result页面调试] 支付结果页面 onLoad 被调用');
+        console.log('[pay_result页面调试] onLoad 接收到的 options 参数:', options);
+        console.log('[pay_result页面调试] options 类型:', typeof options);
+        console.log('[pay_result页面调试] options 键值:', Object.keys(options || {}));
+        
+        // 优先使用 onLoad 的 options 参数，如果没有则尝试使用 $Route.query（兼容路由跳转）
+        let routeOptions = options || {};
+        if (this.$Route && this.$Route.query) {
+            console.log('[pay_result页面调试] $Route.query 存在:', this.$Route.query);
+            // 如果 options 为空或没有关键参数，尝试使用 $Route.query
+            if (!routeOptions.id && !routeOptions.from) {
+                routeOptions = this.$Route.query;
+                console.log('[pay_result页面调试] 使用 $Route.query 作为参数源');
+            }
+        } else {
+            console.log('[pay_result页面调试] $Route.query 不存在或未初始化');
+        }
+        
+        console.log('[pay_result页面调试] 最终使用的路由参数:', routeOptions);
+        
+        this.id = routeOptions.id || routeOptions.order_id;
+        this.from = routeOptions.from || 'trade';
+        
+        console.log('[pay_result页面调试] 解析后的参数:');
+        console.log('[pay_result页面调试] - this.id:', this.id);
+        console.log('[pay_result页面调试] - this.from:', this.from);
+        
+        if (!this.id) {
+            console.error('[pay_result页面调试] 订单ID为空，无法获取支付结果');
+            uni.showToast({
+                title: '订单ID不能为空',
+                icon: 'none'
+            });
+            setTimeout(() => {
+                this.$Router.back();
+            }, 1500);
+            return;
+        }
+        
+        console.log('[pay_result页面调试] 开始获取订单结果');
+        this.getOrderResultFun();
     },
 
     methods: {
         getOrderResultFun() {
-            getPayResult({
+            console.log('[pay_result页面调试] getOrderResultFun 开始执行');
+            console.log('[pay_result页面调试] - id:', this.id);
+            console.log('[pay_result页面调试] - from:', this.from);
+            
+            const params = {
                 id: this.id,
-                from: this.from
-            }).then((res) => {
+                from: this.from,
+                order_id: this.id  // 兼容 order_id 参数
+            };
+            console.log('[pay_result页面调试] 调用 getPayResult API，参数:', params);
+            
+            getPayResult(params).then((res) => {
+                console.log('[pay_result页面调试] getPayResult API 返回结果:', res);
                 if (res.code == 1) {
-                    this.payInfo = res.data
+                    this.payInfo = res.data;
+                    console.log('[pay_result页面调试] 支付信息设置成功:', this.payInfo);
+                } else {
+                    console.error('[pay_result页面调试] getPayResult API 返回失败，code:', res.code, 'msg:', res.msg);
+                    uni.showToast({
+                        title: res.msg || '获取支付结果失败',
+                        icon: 'none'
+                    });
                 }
-            })
+            }).catch((err) => {
+                console.error('[pay_result页面调试] getPayResult API 调用出错:', err);
+                uni.showToast({
+                    title: '获取支付结果失败',
+                    icon: 'none'
+                });
+            });
         }
         ,
         goToOrder() {
@@ -121,6 +187,8 @@ export default {
 </script>
 <style lang="scss">
 .pay-result {
+    padding-top: 88px; // 为固定定位的导航栏留出空间
+    
     .contain {
         border-radius: 10rpx;
         padding: 0 30rpx 40rpx;

@@ -83,9 +83,9 @@
             <view class="section-card" v-if="storeInfo.name">
                 <view class="section-title">{{ storeInfo.name }}</view>
                 <view class="store-card">
-                    <image src="https://pw3.yihaiguantao.com/static/picture/pi.png" mode="aspectFill" class="store-image"></image>
+                    <image :src="storeInfo.image" mode="aspectFill" class="store-image"></image>
                     <view class="store-info">
-                        <text class="store-address">{{ storeInfo.address || '西百花巷16号3D打印别墅' }}</text>
+                        <text class="store-address">{{ storeInfo.address  }}</text>
                         <view class="store-tags" v-if="storeInfo.tags && storeInfo.tags.length > 0">
                             <text class="store-tag" v-for="(tag, index) in storeInfo.tags" :key="index">{{ tag }}</text>
                         </view>
@@ -123,6 +123,7 @@
 
 <script>
 import { getHomeServiceDetail } from '@/api/store'
+import { STATIC_BASE_URL } from '@/api/app'
 import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
@@ -137,7 +138,7 @@ export default {
             serviceInfo: {
                 id: 0,
                 name: '',
-                avatar: '/static/picture/service-avatar.png',
+                avatar: STATIC_BASE_URL + 'static/picture/service-avatar.png',
                 price: 0,
                 age: 0,
                 ethnicity: '',
@@ -151,7 +152,7 @@ export default {
             intentionList: [],
             storeInfo: {
                 name: '',
-                image: '/static/picture/store-image.png',
+                image: STATIC_BASE_URL + 'static/picture/pi.png',
                 address: '西百花巷16号3D打印别墅',
                 tags: ['育儿嫂', '保姆']
             },
@@ -169,12 +170,35 @@ export default {
             uni.showLoading({ title: '加载中...' });
             try {
                 const res = await getHomeServiceDetail({ id: id });
+                
                 if (res.code === 1 && res.data) {
                     const data = res.data;
+                    
+                    // 处理头像图片，优先使用 data.image
+                    let avatarUrl = data.image || data.avatar || '';
+                    
+                    if (avatarUrl) {
+                        // 如果图片地址是相对路径，转换为线上地址
+                        if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
+                            // 如果已经是 /static/ 开头的路径，直接拼接
+                            if (avatarUrl.startsWith('/static/')) {
+                                avatarUrl = STATIC_BASE_URL + avatarUrl.substring(1);
+                            } else if (avatarUrl.startsWith('static/')) {
+                                avatarUrl = STATIC_BASE_URL + avatarUrl;
+                            } else {
+                                // 其他情况，假设是 static/ 开头的路径
+                                avatarUrl = STATIC_BASE_URL + 'static/picture/' + avatarUrl;
+                            }
+                        }
+                    } else {
+                        // 如果没有返回图片，使用默认图片
+                        avatarUrl = STATIC_BASE_URL + 'static/picture/service-avatar.png';
+                    }
+                    
                     this.serviceInfo = {
                         id: data.id,
                         name: data.name || '服务名称',
-                        avatar: data.avatar || '/static/picture/service-avatar.png',
+                        avatar: avatarUrl,
                         price: data.price || 0,
                         age: data.age || 0,
                         ethnicity: data.ethnicity || '',
@@ -282,8 +306,27 @@ export default {
                     } else {
                         this.storeInfo.name = 'e家政';
                     }
-                    // 地址先写死，后续从接口获取
-                    // this.storeInfo.address = data.address || '西百花巷16号3D打印别墅';
+
+                    // 店铺地址：来自接口 company_full_address
+                    this.storeInfo.address = data.company_full_address || '西百花巷16号3D打印别墅';
+
+                    // 处理店铺图片（如果接口有返回则优先使用）
+                    if (data.company_image || data.company_avatar) {
+                        let imageUrl = data.company_image || data.company_avatar;
+                        if (imageUrl && !imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+                            if (imageUrl.startsWith('/static/')) {
+                                imageUrl = STATIC_BASE_URL + imageUrl.substring(1);
+                            } else if (imageUrl.startsWith('static/')) {
+                                imageUrl = STATIC_BASE_URL + imageUrl;
+                            } else {
+                                imageUrl = STATIC_BASE_URL + 'static/picture/' + imageUrl;
+                            }
+                        }
+                        if (imageUrl) {
+                            this.storeInfo.image = imageUrl;
+                        }
+                    }
+
                     // 标签先写死，后续从接口获取
                     // this.storeInfo.tags = data.tags || ['育儿嫂', '保姆'];
                     
@@ -325,8 +368,25 @@ export default {
         },
         placeOrder() {
             // 立即下单，跳转到确认订单页面
+            const serviceId = this.serviceInfo.id;
+            const orderUrl = `/bundle_home_service/pages/service_confirm_order/service_confirm_order?service_id=${serviceId}`;
+            
+            console.log('[service_detail调试] 点击立即下单按钮');
+            console.log('[service_detail调试] 服务ID:', serviceId);
+            console.log('[service_detail调试] 跳转URL:', orderUrl);
+            
             uni.navigateTo({
-                url: `/bundle_home_service/pages/service_confirm_order/service_confirm_order?service_id=${this.serviceInfo.id}`
+                url: orderUrl,
+                success: (res) => {
+                    console.log('[service_detail调试] 跳转到确认订单页面成功:', res);
+                },
+                fail: (err) => {
+                    console.error('[service_detail调试] 跳转到确认订单页面失败:', err);
+                    uni.showToast({
+                        title: '跳转失败，请重试',
+                        icon: 'none'
+                    });
+                }
             });
         }
     }

@@ -152,6 +152,7 @@
 import { getHomeServiceDetail } from '@/api/store'
 import { createHomeServiceOrder } from '@/api/store'
 import { getAddressLists, getOneAddress } from '@/api/user'
+import { STATIC_BASE_URL } from '@/api/app'
 import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
@@ -250,13 +251,51 @@ export default {
                 const res = await getHomeServiceDetail({ id: this.serviceId });
                 if (res.code === 1 && res.data) {
                     const price = parseFloat(res.data.price) || 0;
+
+                    // 服务信息图片：优先使用 detail_images，其次 detail_image，再次 avatar / image
+                    let serviceImageUrl = '';
+                    
+                    // 处理 detail_images（可能是数组或字符串）
+                    if (res.data.detail_images) {
+                        if (Array.isArray(res.data.detail_images) && res.data.detail_images.length > 0) {
+                            // 如果是数组，取第一张图片
+                            serviceImageUrl = res.data.detail_images[0];
+                        } else if (typeof res.data.detail_images === 'string') {
+                            // 如果是字符串，可能是逗号分隔的多张图片
+                            const images = res.data.detail_images.split(',');
+                            serviceImageUrl = images[0].trim();
+                        }
+                    }
+                    
+                    // 如果 detail_images 没有，则使用其他字段
+                    if (!serviceImageUrl) {
+                        serviceImageUrl = res.data.detail_image || res.data.avatar || res.data.image || '';
+                    }
+                    
+                    // 处理图片 URL
+                    if (serviceImageUrl) {
+                        if (!serviceImageUrl.startsWith('http://') && !serviceImageUrl.startsWith('https://')) {
+                            if (serviceImageUrl.startsWith('/static/')) {
+                                serviceImageUrl = STATIC_BASE_URL + serviceImageUrl.substring(1);
+                            } else if (serviceImageUrl.startsWith('static/')) {
+                                serviceImageUrl = STATIC_BASE_URL + serviceImageUrl;
+                            } else {
+                                serviceImageUrl = STATIC_BASE_URL + 'static/picture/' + serviceImageUrl;
+                            }
+                        }
+                    } else {
+                        serviceImageUrl = STATIC_BASE_URL + 'static/picture/service-avatar.png';
+                    }
+
                     this.serviceInfo = {
                         id: res.data.id,
                         name: res.data.name || '服务',
-                        avatar: res.data.avatar || '/static/picture/service-avatar.png',
+                        avatar: serviceImageUrl,
                         price: price
                     };
                     this.totalAmount = price;
+                    console.log('服务详情:', res.data);
+                    console.log('服务图片 URL:', serviceImageUrl);
                     console.log('服务价格:', price, '总金额:', this.totalAmount);
                 } else {
                     uni.showToast({
@@ -441,12 +480,54 @@ export default {
 
                 uni.hideLoading();
 
+                console.log('[service_confirm_order调试] 订单创建结果:', res);
+                
                 if (res.code === 1) {
+                    const orderId = res.data.order_id;
+                    // 直接跳转到实际的支付页面，跳过中间重定向层
+                    const paymentUrl = `/bundle_main/pages/payment/payment?order_id=${orderId}&from=home_service&amount=${finalAmount}`;
+                    
+                    console.log('[service_confirm_order调试] 准备跳转到支付页面');
+                    console.log('[service_confirm_order调试] 订单ID:', orderId);
+                    console.log('[service_confirm_order调试] 支付金额:', finalAmount);
+                    console.log('[service_confirm_order调试] 跳转URL:', paymentUrl);
+                    
                     // 跳转到支付页面
                     uni.redirectTo({
-                        url: `/pages/payment/payment?order_id=${res.data.order_id}&from=home_service&amount=${finalAmount}`
+                        url: paymentUrl,
+                        success: (res) => {
+                            console.log('[service_confirm_order调试] redirectTo 跳转成功:', res);
+                        },
+                        fail: (err) => {
+                            console.error('[service_confirm_order调试] redirectTo 跳转失败:', err);
+                            // 如果 redirectTo 失败，尝试使用 navigateTo
+                            uni.navigateTo({
+                                url: paymentUrl,
+                                success: (res) => {
+                                    console.log('[service_confirm_order调试] navigateTo 跳转成功:', res);
+                                },
+                                fail: (err2) => {
+                                    console.error('[service_confirm_order调试] navigateTo 跳转也失败:', err2);
+                                    // 如果 navigateTo 也失败，尝试使用 reLaunch
+                                    uni.reLaunch({
+                                        url: paymentUrl,
+                                        success: (res) => {
+                                            console.log('[service_confirm_order调试] reLaunch 跳转成功:', res);
+                                        },
+                                        fail: (err3) => {
+                                            console.error('[service_confirm_order调试] reLaunch 跳转也失败:', err3);
+                                            uni.showToast({
+                                                title: '跳转支付页面失败，请重试',
+                                                icon: 'none'
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
                     });
                 } else {
+                    console.error('[service_confirm_order调试] 订单创建失败:', res.msg);
                     uni.showToast({
                         title: res.msg || '提交订单失败',
                         icon: 'none'

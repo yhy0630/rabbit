@@ -167,7 +167,7 @@
                 </view>
                 <view class="card-item">
                     <view class="card-content">
-                        <view class="card-title">附件好物</view>
+                        <view class="card-title">附近好物</view>
                         <view class="card-subtitle">捡漏好物</view>
                     </view>
                     <image class="card-icon" src="/static/picture/goods_icon.png" mode="aspectFit"></image>

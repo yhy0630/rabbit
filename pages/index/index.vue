@@ -68,7 +68,7 @@
                         </u-navbar>
                         
                         <!-- 功能入口 -->
-                        <view class="service-menu" style="display: flex; justify-content: space-around; padding: 30rpx 20rpx; background: transparent;">
+                        <view class="service-menu" style="display: flex; justify-content: space-around; padding: 110rpx 20rpx; background: transparent;">
                             <view class="menu-item" style="display: flex; flex-direction: column; align-items: center;">
                                 <image 
                                     src="/static/picture/taohuafei 1.png" 

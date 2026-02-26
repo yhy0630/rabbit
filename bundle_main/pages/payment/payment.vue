@@ -1,5 +1,8 @@
 <template>
     <view class="payment-pages">
+        <!-- 自定义导航栏 -->
+        <custom-navbar title="订单支付"></custom-navbar>
+        
         <view class="payment u-skeleton">
             <!-- Header -->
             <view class="payment-header">
@@ -121,9 +124,13 @@ import { wxpay, alipay } from '@/utils/pay'
 import { getPayResult } from '@/api/order'
 import { getUserInfo } from '@/api/user'
 import { copy } from '@/utils/tools'
+import CustomNavbar from '@/components/custom-navbar/custom-navbar.vue'
 
 export default {
     name: 'Payment',
+    components: {
+        CustomNavbar
+    },
 
     data() {
         return {
@@ -138,7 +145,8 @@ export default {
             loadingPay: false, // 支付处理中Loading
             Alipayshow: false,
             userInfo: {},
-            key: ''
+            key: '',
+            skeletonTimeout: null // 骨架屏超时定时器
         }
     },
 
@@ -166,13 +174,29 @@ export default {
         },
         // 初始化页面数据
         initPageData() {
+            console.log('[payment页面调试] initPageData 开始执行');
+            console.log('[payment页面调试] initPageData - from:', this.from);
+            console.log('[payment页面调试] initPageData - order_id:', this.order_id);
+            console.log('[payment页面调试] initPageData - amount:', this.amount);
+            
             // 获取支付方式
-            getPayway({
+            const paywayParams = {
                 from: this.from,
                 order_id: this.order_id
-            })
+            };
+            console.log('[payment页面调试] 调用 getPayway API，参数:', paywayParams);
+            
+            getPayway(paywayParams)
                 .then((res) => {
+                    console.log('[payment页面调试] getPayway API 返回结果:', res);
+                    // 清除超时定时器
+                    if (this.skeletonTimeout) {
+                        clearTimeout(this.skeletonTimeout);
+                        this.skeletonTimeout = null;
+                    }
+                    
                     if (res.code != 1) {
+                        console.error('[payment页面调试] getPayway API 返回失败，code:', res.code, 'msg:', res.msg);
                         // API 调用失败时，至少保留 URL 参数中的金额
                         this.loadingSkeleton = false
                         if (this.amount <= 0) {
@@ -180,12 +204,24 @@ export default {
                         }
                         // 如果金额存在，至少显示金额，支付方式列表为空
                         this.paywayList = []
+                        console.log('[payment页面调试] API 失败但金额存在，设置 paywayList 为空数组');
                         return
                     }
                     return res.data
                 })
                 .then((data) => {
-                    if (!data) return // 如果 data 为空（API 失败但金额存在的情况），直接返回
+                    console.log('[payment页面调试] 处理 API 返回的数据:', data);
+                    // 清除超时定时器
+                    if (this.skeletonTimeout) {
+                        clearTimeout(this.skeletonTimeout);
+                        this.skeletonTimeout = null;
+                    }
+                    
+                    if (!data) {
+                        console.log('[payment页面调试] data 为空，直接返回');
+                        this.loadingSkeleton = false;
+                        return // 如果 data 为空（API 失败但金额存在的情况），直接返回
+                    }
                     
                     this.loadingSkeleton = false
                     // 优先使用 API 返回的金额，如果 API 返回的金额为 0 或无效，则使用 URL 参数中的金额
@@ -193,14 +229,29 @@ export default {
                     this.amount = apiAmount > 0 ? apiAmount : (this.amount || 0)
                     this.paywayList = data.pay_way || []
                     this.payway = this.paywayList[0]?.pay_way || ''
+                    
+                    console.log('[payment页面调试] 设置页面数据:');
+                    console.log('[payment页面调试] - this.amount:', this.amount);
+                    console.log('[payment页面调试] - this.paywayList:', this.paywayList);
+                    console.log('[payment页面调试] - this.payway:', this.payway);
+                    
                     // 倒计时
                     const startTimestamp = new Date().getTime()
                     const endTimestamp = data.cancel_time || 0
                     this.timeout = endTimestamp > 0 ? (endTimestamp - startTimestamp / 1000) : 0
+                    console.log('[payment页面调试] - this.timeout:', this.timeout);
+                    console.log('[payment页面调试] initPageData 执行完成');
                 })
                 .catch((err) => {
+                    // 清除超时定时器
+                    if (this.skeletonTimeout) {
+                        clearTimeout(this.skeletonTimeout);
+                        this.skeletonTimeout = null;
+                    }
+                    
                     this.loadingSkeleton = false
-                    console.error('获取支付信息失败:', err)
+                    console.error('[payment页面调试] initPageData 执行出错:', err);
+                    console.error('[payment页面调试] 错误堆栈:', err.stack);
                     // 如果金额存在，至少显示金额
                     if (this.amount <= 0) {
                         uni.showToast({
@@ -210,6 +261,8 @@ export default {
                         setTimeout(() => {
                             this.$Router.back()
                         }, 1500)
+                    } else {
+                        console.log('[payment页面调试] 金额存在，继续显示页面，paywayList 为空');
                     }
                 })
         },
@@ -348,45 +401,128 @@ export default {
         },
         // 支付后处理
         handPayResult(result) {
+            console.log('[payment页面调试] handPayResult 被调用，result:', result);
+            console.log('[payment页面调试] - order_id:', this.order_id);
+            console.log('[payment页面调试] - from:', this.from);
+            
             // 记录支付结果
             this.result = result
             // 支付成功后跳转到支付结果页面
             if (result === 'success') {
-                this.$Router.replaceAll({
-                    path: '/pages/pay_result/pay_result',
-                    query: {
-                        id: this.order_id,
-                        from: this.from
-                    }
-                })
+                // 直接跳转到实际的支付结果页面，跳过中间重定向层
+                const payResultUrl = `/bundle_main/pages/pay_result/pay_result?id=${this.order_id}&from=${this.from}`;
+                console.log('[payment页面调试] 准备跳转到支付结果页面，URL:', payResultUrl);
+                
+                // 优先使用 $Router.replaceAll（路由方式）
+                try {
+                    this.$Router.replaceAll({
+                        path: '/bundle_main/pages/pay_result/pay_result',
+                        query: {
+                            id: this.order_id,
+                            from: this.from
+                        }
+                    });
+                    console.log('[payment页面调试] $Router.replaceAll 跳转成功');
+                } catch (err) {
+                    console.error('[payment页面调试] $Router.replaceAll 跳转失败:', err);
+                    // 如果路由方式失败，使用原生 API
+                    uni.reLaunch({
+                        url: payResultUrl,
+                        success: (res) => {
+                            console.log('[payment页面调试] reLaunch 跳转成功:', res);
+                        },
+                        fail: (err2) => {
+                            console.error('[payment页面调试] reLaunch 跳转失败:', err2);
+                            uni.redirectTo({
+                                url: payResultUrl,
+                                success: (res) => {
+                                    console.log('[payment页面调试] redirectTo 跳转成功:', res);
+                                },
+                                fail: (err3) => {
+                                    console.error('[payment页面调试] redirectTo 跳转也失败:', err3);
+                                }
+                            });
+                        }
+                    });
+                }
             } else {
+                console.log('[payment页面调试] 支付失败，返回上一页');
                 // 支付失败，返回上一页
                 this.$Router.back(1)
             }
         }
     },
 
-    onLoad() {
-        const options = this.$Route.query
+    onLoad(options) {
+        console.log('[payment页面调试] 支付页面 onLoad 被调用');
+        console.log('[payment页面调试] onLoad 接收到的 options 参数:', options);
+        console.log('[payment页面调试] options 类型:', typeof options);
+        console.log('[payment页面调试] options 键值:', Object.keys(options || {}));
+        
+        // 优先使用 onLoad 的 options 参数，如果没有则尝试使用 $Route.query（兼容路由跳转）
+        let routeOptions = options || {};
+        if (this.$Route && this.$Route.query) {
+            console.log('[payment页面调试] $Route.query 存在:', this.$Route.query);
+            // 如果 options 为空或没有关键参数，尝试使用 $Route.query
+            if (!routeOptions.order_id && !routeOptions.from) {
+                routeOptions = this.$Route.query;
+                console.log('[payment页面调试] 使用 $Route.query 作为参数源');
+            }
+        } else {
+            console.log('[payment页面调试] $Route.query 不存在或未初始化');
+        }
+        
+        console.log('[payment页面调试] 最终使用的路由参数:', routeOptions);
+        
         // 支持 from 参数，如果没有则尝试使用 type 参数（兼容旧版本）
-        const from = options?.from || options?.type || 'trade'
-        const order_id = options?.order_id
+        const from = routeOptions?.from || routeOptions?.type || 'trade'
+        const order_id = routeOptions?.order_id
         // 从 URL 参数中读取金额作为备用值
-        const amountFromUrl = options?.amount ? parseFloat(options.amount) : 0
+        const amountFromUrl = routeOptions?.amount ? parseFloat(routeOptions.amount) : 0
+        
+        console.log('[payment页面调试] 解析后的参数:');
+        console.log('[payment页面调试] - from:', from);
+        console.log('[payment页面调试] - order_id:', order_id);
+        console.log('[payment页面调试] - amountFromUrl:', amountFromUrl);
         
         this.getUserInfoFun()
 
         try {
-            if (!from && !order_id) throw new Error('页面参数有误')
+            if (!from && !order_id) {
+                console.error('[payment页面调试] 页面参数有误: from 和 order_id 都为空');
+                console.error('[payment页面调试] 完整的 routeOptions:', JSON.stringify(routeOptions));
+                throw new Error('页面参数有误')
+            }
             this.from = from
             this.order_id = order_id
+            console.log('[payment页面调试] 设置页面数据:');
+            console.log('[payment页面调试] - this.from:', this.from);
+            console.log('[payment页面调试] - this.order_id:', this.order_id);
+            
             // 如果 URL 中有金额参数，先设置一个备用值，等 API 返回后再更新
             if (amountFromUrl > 0) {
                 this.amount = amountFromUrl
+                console.log('[payment页面调试] - this.amount:', this.amount);
             }
+            
+            console.log('[payment页面调试] 开始初始化页面数据');
+            
+            // 设置骨架屏超时，确保即使 API 失败也能显示页面（最多等待 10 秒）
+            if (this.skeletonTimeout) {
+                clearTimeout(this.skeletonTimeout);
+            }
+            this.skeletonTimeout = setTimeout(() => {
+                console.warn('[payment页面调试] 骨架屏超时，强制关闭骨架屏');
+                this.loadingSkeleton = false;
+            }, 10000);
+            
             this.initPageData()
+            console.log('[payment页面调试] 页面数据初始化完成');
         } catch (err) {
-            console.log(err)
+            console.error('[payment页面调试] 初始化页面时出错:', err);
+            console.error('[payment页面调试] 错误堆栈:', err.stack);
+            // 出错时也要关闭骨架屏
+            this.loadingSkeleton = false;
             // uni.navigateBack()
             this.$Router.back()
         }
@@ -412,6 +548,12 @@ export default {
     },
 
     onUnload() {
+        // 清理定时器
+        if (this.skeletonTimeout) {
+            clearTimeout(this.skeletonTimeout);
+            this.skeletonTimeout = null;
+        }
+        
         switch (this.result) {
             case 'success':
                 uni.$emit('payment', {
@@ -440,6 +582,7 @@ page {
 }
 .payment-pages {
     height: 100%;
+    padding-top: 88px; // 为固定定位的导航栏留出空间
     .payment {
         display: flex;
         flex-direction: column;
