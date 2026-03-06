@@ -301,6 +301,36 @@ export function uploadFile(path, options) {
   });
 }
 
+/** 上传视频（用于房源视频等），返回 { url, uri } */
+export function uploadVideo(path, options) {
+  const { header, name } = options || {};
+  return new Promise((resolve, reject) => {
+    uni.uploadFile({
+      url: baseURL + "/api/file/formvideo",
+      filePath: path,
+      name: name || "file",
+      header: {
+        token: store.getters.token,
+        ...header,
+      },
+      success: (res) => {
+        try {
+          let data = JSON.parse(res.data);
+          if (data.code == 1 && data.data) {
+            const d = data.data;
+            resolve({ url: d.url || d.uri, uri: d.uri || d.url });
+          } else {
+            reject(new Error(data.msg || '视频上传失败'));
+          }
+        } catch (e) {
+          reject(e);
+        }
+      },
+      fail: (err) => reject(err),
+    });
+  });
+}
+
 //当前页面
 
 export function currentPage() {

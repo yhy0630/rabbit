@@ -263,3 +263,57 @@ export function getHomeServiceMasterDetail() {
 export function checkHomeServiceMasterStatus() {
 	return request.get("home_service_master/checkStatus")
 }
+
+// ========== 房产模块 API ==========
+// 房源分类列表（首页/筛选）
+export function getPropertyCategoryList() {
+	return request.get("property/getCategoryList")
+}
+// 房源列表（支持 category_id, keyword, province_id, city_id, district_id, price_min, price_max, room, page, limit）
+export function getPropertyList(params) {
+	return request.get("property/getList", { params })
+}
+// 房源详情
+export function getPropertyDetail(params) {
+	return request.get("property/getDetail", { params })
+}
+// 提交房源（发布二手房，待审核）
+export function submitPropertyListing(data) {
+	return request.post("property/submit", data)
+}
+// 我的发布列表（type, status, page, limit）
+export function getMyPropertyList(params) {
+	return request.get("property/getMyPublishList", { params })
+}
+// 上架/下架房源
+export function togglePropertyStatus(data) {
+	return request.post("property/toggleStatus", data)
+}
+// 我的发布统计
+export function getMyPropertyStats() {
+	return request.get("property/getMyPublishStats")
+}
+// 会员角色列表（申请入驻）
+export function getPropertyMemberRoleList() {
+	return request.get("property/getMemberRoleList")
+}
+// 提交身份申请
+export function submitPropertyIdentityApply(data) {
+	return request.post("property/identityApply", data)
+}
+// 预约看房提交
+export function submitPropertyViewingBooking(data) {
+	return request.post("property/bookViewing", data)
+}
+// 我收到的预约看房列表（经纪人/发布人）
+export function getMyViewingBookings(params) {
+	return request.get("property/getMyViewingBookings", { params })
+}
+// 当前用户已通过的房产身份（经纪人/经纪公司）
+export function getMyPropertyIdentities() {
+	return request.get("property/getMyPropertyIdentities")
+}
+// 我收到的预约看房列表（按房源分组，选项卡用）
+export function getMyViewingBookingsGrouped() {
+	return request.get("property/getMyViewingBookingsGrouped")
+}

@@ -1273,6 +1273,275 @@
             ]
         },
         {
+            "root": "bundle_property",
+            "pages": [
+                {
+                    "path": "pages/house_index/house_index",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "房产",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_list/house_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "二手房",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_detail/house_detail",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "房源详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_book_visit/house_book_visit",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "预约看房",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_my_viewing/house_my_viewing",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的预约",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/layout_list/layout_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "户型列表",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/layout_detail/layout_detail",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "户型详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_publish_rent/house_publish_rent",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布出租房",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_publish_sell/house_publish_sell",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布二手房",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_publish_shop/house_publish_shop",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布商铺",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_publish_factory/house_publish_factory",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布厂房仓库",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_publish_parking/house_publish_parking",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布车位",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_publish_office/house_publish_office",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "发布写字楼",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_search_result/house_search_result",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "搜索结果",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_map/house_map",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "地图找房",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_map_list/house_map_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "地图房源列表",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_my/house_my",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_identity_apply/house_identity_apply",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "申请入驻",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_my_publish/house_my_publish",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "我的发布",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_news_list/house_news_list",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "购房资讯",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_news_detail/house_news_detail",
+                    "meta": {
+                        "auth": false
+                    },
+                    "style": {
+                        "navigationBarTitleText": "资讯详情",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                },
+                {
+                    "path": "pages/house_vip/house_vip",
+                    "meta": {
+                        "auth": true
+                    },
+                    "style": {
+                        "navigationBarTitleText": "开通会员",
+                        "navigationStyle": "custom",
+                        "navigationBarTextStyle": "white",
+                        "navigationBarBackgroundColor": "#4CAF50"
+                    }
+                }
+            ]
+        },
+        {
             "root": "bundle_express",
             "pages": [
                 {

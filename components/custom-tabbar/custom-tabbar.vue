@@ -8,7 +8,7 @@
 			<view
 				class="tabbar-item"
 				v-for="(tab, index) in displayTabs"
-				:key="tab.id || index"
+				:key="index"
 				:class="'item-' + (index + 1)"
 				@click="switchTab(index)"
 			>

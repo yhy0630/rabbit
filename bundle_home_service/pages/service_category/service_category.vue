@@ -40,7 +40,7 @@
                 <view 
                     class="service-item" 
                     v-for="(item, index) in serviceList" 
-                    :key="item.id || index"
+                    :key="index"
                     :data-index="index"
                     :data-id="item.id"
                     @click.stop="goToDetail($event, index)"
